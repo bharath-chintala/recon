@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Geist, Playfair_Display } from 'next/font/google'
 import { Navbar } from '@/components/Navbar/Navbar'
 import { Footer } from '@/components/Footer/Footer'
 import './globals.css'
@@ -7,6 +7,12 @@ import './globals.css'
 const geist = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+})
+
+const playfair = Playfair_Display({
+  variable: '--font-serif',
+  subsets: ['latin'],
+  weight: ['700', '800'],
 })
 
 export const metadata: Metadata = {
@@ -40,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} scroll-smooth`} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${playfair.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col antialiased" suppressHydrationWarning>
         <SmoothScroll>
           <Navbar />

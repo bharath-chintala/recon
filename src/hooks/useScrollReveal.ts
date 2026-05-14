@@ -7,19 +7,10 @@
 //   <motion.div ref={ref} variants={fadeInUp} initial="hidden" animate={isInView ? "visible" : "hidden"} />
 
 import { useRef } from 'react'
-import { useInView } from 'framer-motion'
-
-interface UseScrollRevealOptions {
-  /** Trigger once and stay visible (default: true) */
-  once?: boolean
-  /** Root margin for the intersection observer (default: '-80px') */
-  margin?: string
-  /** Amount of element visible before triggering (0–1, default: 0) */
-  amount?: number | 'some' | 'all'
-}
+import { useInView, UseInViewOptions } from 'framer-motion'
 
 export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
-  options: UseScrollRevealOptions = {}
+  options: UseInViewOptions = {}
 ) {
   const { once = true, margin = '-80px', amount = 0 } = options
   const ref = useRef<T>(null)
