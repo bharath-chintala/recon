@@ -52,7 +52,7 @@ export function Counter({
   return (
     <div ref={ref} className={`text-center ${className}`}>
       <motion.span
-        className="block text-4xl font-bold text-amber-600 tabular-nums"
+        className="block text-4xl font-bold text-[#335C8B] tabular-nums"
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.5 }}
@@ -62,7 +62,7 @@ export function Counter({
         {suffix}
       </motion.span>
       {label && (
-        <span className="mt-1 block text-sm text-stone-500 font-medium">
+        <span className="mt-1 block text-sm text-[#5a7394] font-medium">
           {label}
         </span>
       )}

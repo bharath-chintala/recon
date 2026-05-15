@@ -64,10 +64,10 @@ export function AboutPreview() {
     <section
       id="about-preview"
       ref={containerRef}
-      className="relative bg-stone-50 py-24 lg:py-36 overflow-hidden"
+      className="relative bg-[#FBFBFB] py-24 lg:py-36 overflow-hidden"
     >
       {/* Decorative background blob */}
-      <div className="pointer-events-none absolute -right-64 top-0 h-[600px] w-[600px] rounded-full bg-amber-50 blur-3xl" />
+      <div className="pointer-events-none absolute -right-64 top-0 h-[600px] w-[600px] rounded-full bg-[#dde6f0] blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-12">
         <div className="grid items-center gap-16 lg:grid-cols-2">
@@ -113,10 +113,10 @@ export function AboutPreview() {
             </div>
 
             {/* Floating badge */}
-            <div className="absolute -bottom-6 -right-6 hidden lg:flex items-center gap-3 rounded-2xl bg-amber-600 px-6 py-4 shadow-xl shadow-amber-600/30">
+            <div className="absolute -bottom-6 -right-6 hidden lg:flex items-center gap-3 rounded-2xl bg-[#335C8B] px-6 py-4 shadow-xl shadow-[#335C8B]/30">
               <span className="text-3xl font-bold text-white">30</span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-amber-200">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#a3caf0]">
                   Years of
                 </p>
                 <p className="text-sm font-bold text-white">Cultural Service</p>
@@ -126,13 +126,13 @@ export function AboutPreview() {
 
           {/* Copy */}
           <div ref={copyRef}>
-            <p className="about-text-item mb-3 text-xs font-bold uppercase tracking-[0.2em] text-amber-600">
+            <p className="about-text-item mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#335C8B]">
               About Recon International
             </p>
-            <h2 className="about-text-item mb-6 font-serif text-4xl font-bold leading-tight text-stone-900 lg:text-5xl uppercase">
+            <h2 className="about-text-item mb-6 font-serif text-4xl font-bold leading-tight text-[#1a2d47] lg:text-5xl uppercase">
               About Us
             </h2>
-            <p className="about-text-item mb-8 text-lg leading-relaxed text-stone-600 font-medium tracking-wide">
+            <p className="about-text-item mb-8 text-lg leading-relaxed text-[#5a7394] font-medium tracking-wide">
               Recon International bridges tradition with innovation and heritage with contemporary global audiences. Over the past three decades, Recon International has successfully conceptualized and delivered 160+ national and international initiatives across 16 countries.
             </p>
             <div className="about-text-item">
@@ -144,7 +144,7 @@ export function AboutPreview() {
         </div>
 
         {/* Stats row */}
-        <div className="mt-20 grid grid-cols-2 gap-8 rounded-3xl bg-white p-10 shadow-sm ring-1 ring-stone-100 lg:grid-cols-4">
+        <div className="mt-20 grid grid-cols-2 gap-8 rounded-3xl bg-white p-10 shadow-sm ring-1 ring-[#e0e7ef] lg:grid-cols-4">
           {STATS.map((stat) => (
             <div key={stat.label}>
               <Counter

@@ -10,20 +10,20 @@ export default function InitiativesPage() {
   return (
     <main className="pt-20">
       {/* Page hero */}
-      <section className="relative bg-stone-950 py-32 overflow-hidden">
+      <section className="relative bg-[#0b1526] py-32 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-15"
           style={{ backgroundImage: "url('/images/festivals.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/90 to-stone-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/90 to-[#0b1526]" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center">
-          <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
+          <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]">
             Our Programmes
           </motion.p>
           <motion.h1 variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }} className="font-serif text-5xl font-bold text-white md:text-6xl">
             Initiatives for Impact
           </motion.h1>
-          <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-stone-400">
+          <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5]">
             Four flagship programmes that form the backbone of our global cultural diplomacy mission.
           </motion.p>
         </div>
@@ -75,10 +75,10 @@ export default function InitiativesPage() {
                   >
                     {initiative.subtitle}
                   </p>
-                  <h2 className="mb-5 font-serif text-4xl font-bold text-stone-900">
+                  <h2 className="mb-5 font-serif text-4xl font-bold text-[#1a2d47]">
                     {initiative.title}
                   </h2>
-                  <p className="mb-8 text-lg leading-relaxed text-stone-600">
+                  <p className="mb-8 text-lg leading-relaxed text-[#5a7394]">
                     {initiative.description}
                   </p>
 
@@ -88,7 +88,7 @@ export default function InitiativesPage() {
                       {initiative.stats.map((stat) => (
                         <div key={stat.label}>
                           <Counter
-                            target={parseInt(stat.value?.replace(/[^0-9]/g, '')) || 0}
+                            target={parseInt(stat.value?.replace(/[^0-9]/g, '') || '0')}
                             suffix={stat.value?.replace(/[0-9,]/g, '') || ''}
                             label={stat.label}
                           />
@@ -108,7 +108,7 @@ export default function InitiativesPage() {
       </section>
 
       {/* CTA banner */}
-      <section className="bg-amber-600 py-20">
+      <section className="bg-[#335C8B] py-20">
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -119,7 +119,7 @@ export default function InitiativesPage() {
           <motion.h2 variants={fadeInUp} className="font-serif text-4xl font-bold text-white mb-5">
             Partner With Us
           </motion.h2>
-          <motion.p variants={fadeInUp} className="text-amber-100 text-lg mb-8">
+          <motion.p variants={fadeInUp} className="text-[#c8d6e8] text-lg mb-8">
             We welcome governments, foundations, and cultural organisations who share our vision of a world united through culture.
           </motion.p>
           <motion.div variants={fadeInUp}>

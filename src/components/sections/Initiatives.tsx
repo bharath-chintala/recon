@@ -21,9 +21,9 @@ export function Initiatives() {
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-overlay"
             style={{ backgroundImage: `url(${initiative.image})` }}
           />
-          {/* Overlay to give that solid blue/dark look from screenshots */}
-          <div className="absolute inset-0 bg-[#325d88] mix-blend-multiply" />
-          <div className="absolute inset-0 bg-stone-900/40" />
+          {/* Overlay to give that solid blue/dark look */}
+          <div className="absolute inset-0 bg-[#1a3a5c] mix-blend-multiply" />
+          <div className="absolute inset-0 bg-[#0f1d30]/40" />
 
           <div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-12">
             <motion.div

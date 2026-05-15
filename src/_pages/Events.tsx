@@ -222,15 +222,15 @@ export default function Events() {
   const blurBg = useTransform(scrollYProgress, [0, 1], ["blur(0px)", "blur(10px)"])
 
   return (
-    <main className="bg-stone-50 min-h-screen">
+    <main className="bg-[#FBFBFB] min-h-screen">
       {/* Scroll-Linked Dynamic Scaling Hero */}
-      <section ref={heroRef} className="relative h-[150vh] bg-stone-950">
+      <section ref={heroRef} className="relative h-[150vh] bg-[#0b1526]">
         <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-20">
           <motion.div
             style={{ filter: blurBg, backgroundImage: "url('/images/festivals.jpg')" }}
             className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-stone-950/40 via-stone-950/80 to-stone-950" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/40 via-[#0b1526]/80 to-[#0b1526]" />
           
           <motion.div 
             style={{ scale: scaleText, opacity: opacityText, transformOrigin: "center center" }}
@@ -238,17 +238,17 @@ export default function Events() {
           >
             {/* Eyebrow */}
             <motion.p
-              className="mb-6 inline-flex items-center justify-center gap-4 text-sm font-semibold uppercase tracking-[0.3em] text-amber-400"
+              className="mb-6 inline-flex items-center justify-center gap-4 text-sm font-semibold uppercase tracking-[0.3em] text-[#8bb8e8]"
             >
-              <span className="h-[1px] w-12 bg-amber-400/50" />
+              <span className="h-[1px] w-12 bg-[#335C8B]/50" />
               Impact & Initiatives
-              <span className="h-[1px] w-12 bg-amber-400/50" />
+              <span className="h-[1px] w-12 bg-[#335C8B]/50" />
             </motion.p>
 
             {/* Headline */}
             <h1 className="mb-8 font-serif text-5xl font-light leading-[1.1] text-white md:text-7xl lg:text-8xl mix-blend-screen">
               Key Events & <br/>
-              <span className="relative text-stone-300 italic pr-2">
+              <span className="relative text-[#a3b8d4] italic pr-2">
                 Programs
               </span>
             </h1>
@@ -257,13 +257,13 @@ export default function Events() {
       </section>
 
       {/* Intro Text (Overlaps the end of the sticky section) */}
-      <section className="relative z-20 bg-stone-50 pt-24 pb-16 px-6 lg:px-12 rounded-t-[3rem] -mt-12 shadow-2xl">
+      <section className="relative z-20 bg-[#FBFBFB] pt-24 pb-16 px-6 lg:px-12 rounded-t-[3rem] -mt-12 shadow-2xl">
         <div className="mx-auto max-w-4xl text-center">
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-2xl text-stone-1000 leading-relaxed font-light-bold mb-8"
+            className="text-2xl text-[#1a2d47] leading-relaxed font-light-bold mb-8"
           >
             Recon International Charitable Trust, Hyderabad, has successfully conceptualized and delivered a diverse portfolio of initiatives, encompassing cultural programs, spiritual observances, international forums, and corporate summits.
           </motion.p>
@@ -272,7 +272,7 @@ export default function Events() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-stone-500 leading-relaxed font-light"
+            className="text-lg text-[#5a7394] leading-relaxed font-light"
           >
             Since 1993, we have been actively engaged in international trade facilitation and the organisation of cultural programs and curated tour packages across global platforms, fostering cross-cultural exchange and international collaboration.
           </motion.p>
@@ -280,7 +280,7 @@ export default function Events() {
       </section>
 
       {/* Sleek Minimalist Filter */}
-      <section className="relative z-20 bg-stone-50 border-b border-stone-200 sticky top-20 shadow-sm transition-all duration-300">
+      <section className="relative z-20 bg-[#FBFBFB] border-b border-[#d0dae6] sticky top-20 shadow-sm transition-all duration-300">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <motion.div 
             variants={{
@@ -300,8 +300,8 @@ export default function Events() {
               onClick={() => handleFilterClick('All')}
               className={`whitespace-nowrap pb-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
                 filter === 'All'
-                  ? 'text-stone-900 border-b-2 border-amber-600'
-                  : 'text-stone-400 hover:text-stone-900 border-b-2 border-transparent'
+                  ? 'text-[#1a2d47] border-b-2 border-[#335C8B]'
+                  : 'text-[#8a9bb5] hover:text-[#1a2d47] border-b-2 border-transparent'
               }`}
             >
               All Programs
@@ -316,8 +316,8 @@ export default function Events() {
                 onClick={() => handleFilterClick(section.title)}
                 className={`whitespace-nowrap pb-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
                   filter === section.title
-                    ? 'text-stone-900 border-b-2 border-amber-600'
-                    : 'text-stone-400 hover:text-stone-900 border-b-2 border-transparent'
+                    ? 'text-[#1a2d47] border-b-2 border-[#335C8B]'
+                    : 'text-[#8a9bb5] hover:text-[#1a2d47] border-b-2 border-transparent'
                 }`}
               >
                 {section.title}
@@ -334,7 +334,7 @@ export default function Events() {
             
             {/* LEFT: Sticky Image Column */}
             <div className="hidden lg:block lg:col-span-6 relative h-full">
-              <div className="sticky top-40 h-[75vh] w-full overflow-hidden rounded-2xl bg-stone-200 shadow-2xl">
+              <div className="sticky top-40 h-[75vh] w-full overflow-hidden rounded-2xl bg-[#d0dae6] shadow-2xl">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImage}
@@ -349,7 +349,7 @@ export default function Events() {
                   />
                 </AnimatePresence>
                 {/* Subtle gradient overlay to make it look premium */}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526]/40 to-transparent pointer-events-none" />
               </div>
             </div>
 
@@ -374,12 +374,12 @@ export default function Events() {
                       {/* Mobile/Tablet Section Header (Image with Overlay) */}
                       <div className="block lg:hidden mb-12 w-full h-[50vh] md:h-[60vh] rounded-2xl overflow-hidden relative shadow-lg">
                          <img src={section.image} onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }} alt={section.title} className="w-full h-full object-cover" />
-                         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-900/30 to-transparent pointer-events-none flex flex-col justify-end p-8 md:p-12">
+                         <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526]/80 via-[#0f1d30]/30 to-transparent pointer-events-none flex flex-col justify-end p-8 md:p-12">
                             <h2 className="font-serif text-4xl md:text-5xl text-white mb-4 leading-tight">
                               {section.title}
                             </h2>
                             {section.description && (
-                              <p className="text-stone-200 text-lg md:text-xl font-light leading-relaxed">
+                              <p className="text-[#c8d6e8] text-lg md:text-xl font-light leading-relaxed">
                                 {section.description}
                               </p>
                             )}
@@ -388,11 +388,11 @@ export default function Events() {
 
                       {/* Desktop Section Header (Pure Typography) */}
                       <div className="hidden lg:block mb-16">
-                        <h2 className="font-serif text-3xl lg:text-5xl font-light text-stone-900 mb-6 leading-tight">
+                        <h2 className="font-serif text-3xl lg:text-5xl font-light text-[#1a2d47] mb-6 leading-tight">
                           {section.title}
                         </h2>
                         {section.description && (
-                          <p className="text-lg lg:text-xl text-stone-500 leading-relaxed font-light">
+                          <p className="text-lg lg:text-xl text-[#5a7394] leading-relaxed font-light">
                             {section.description}
                           </p>
                         )}
@@ -404,7 +404,7 @@ export default function Events() {
                       </div>
 
                       {/* Desktop: Vertical List */}
-                      <div className="hidden lg:block border-t border-stone-300">
+                      <div className="hidden lg:block border-t border-[#d0dae6]">
                         {section.items.map((item, itemIdx) => (
                           <motion.div
                             key={itemIdx}
@@ -414,22 +414,22 @@ export default function Events() {
                             transition={{ delay: itemIdx * 0.05, duration: 0.5 }}
                             onMouseEnter={() => setHoveredImage(item.image)}
                             onMouseLeave={() => setHoveredImage(null)}
-                            className="group py-10 lg:py-16 border-b border-stone-200 hover:bg-stone-100/50 lg:hover:px-8 lg:-mx-8 transition-all duration-500 cursor-default rounded-lg flex flex-col"
+                            className="group py-10 lg:py-16 border-b border-[#e0e7ef] hover:bg-[#e8edf3]/50 lg:hover:px-8 lg:-mx-8 transition-all duration-500 cursor-default rounded-lg flex flex-col"
                           >
                             {/* Text Content */}
                             <div>
                               {/* Number */}
-                              <div className="mb-4 text-xs font-bold tracking-[0.2em] text-amber-600 uppercase">
+                              <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase">
                                 No. {String(itemIdx + 1).padStart(2, '0')}
                               </div>
                               
                               {/* Title */}
-                              <h3 className="font-serif text-2xl lg:text-3xl text-stone-900 leading-snug mb-4 group-hover:text-amber-700 transition-colors duration-500 pr-4">
+                              <h3 className="font-serif text-2xl lg:text-3xl text-[#1a2d47] leading-snug mb-4 group-hover:text-[#335C8B] transition-colors duration-500 pr-4">
                                 {item.title}
                               </h3>
                               
                               {/* Description */}
-                              <p className="text-lg text-stone-500 leading-relaxed font-light">
+                              <p className="text-lg text-[#5a7394] leading-relaxed font-light">
                                 {item.desc}
                               </p>
                             </div>
@@ -447,8 +447,8 @@ export default function Events() {
       </section>
 
       {/* Legacy and Sign-off - Museum Style */}
-      <section className="bg-stone-950 py-32 lg:py-48 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,168,83,0.1)_0%,_transparent_60%)]" />
+      <section className="bg-[#0b1526] py-32 lg:py-48 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(51,92,139,0.1)_0%,_transparent_60%)]" />
         <div className="mx-auto max-w-5xl px-6 lg:px-12 relative">
           <motion.div
             initial="hidden"
@@ -463,10 +463,10 @@ export default function Events() {
             
             <motion.h2 variants={fadeInUp} className="mb-10 font-serif text-4xl font-light text-white md:text-6xl leading-tight">
               Legacy of Excellence <br />
-              <span className="italic text-stone-400">& Cultural Bridge-building</span>
+              <span className="italic text-[#8a9bb5]">& Cultural Bridge-building</span>
             </motion.h2>
             
-            <motion.p variants={fadeInUp} className="text-2xl text-stone-300 leading-relaxed font-light max-w-4xl mx-auto mb-20">
+            <motion.p variants={fadeInUp} className="text-2xl text-[#a3b8d4] leading-relaxed font-light max-w-4xl mx-auto mb-20">
               Recon International Charitable Trust, under the aegis of IIIRRC Trust, has continually bridged Tourism, Pilgrim, Spiritual Tradition, Cultural expression, and Global connectivity. With a proven track record in program execution, grassroots engagement, and international outreach, the Trust stands as a torchbearer of India’s Cultural Diplomacy and Spiritual ethos.
             </motion.p>
             
@@ -474,10 +474,10 @@ export default function Events() {
               <p className="text-3xl font-serif font-light text-white tracking-wide">
                 K. Chandra Shekher Rao
               </p>
-              <p className="mt-4 text-amber-500 font-bold tracking-[0.3em] uppercase text-xs">
+              <p className="mt-4 text-[#6b9fd4] font-bold tracking-[0.3em] uppercase text-xs">
                 Managing Trustee
               </p>
-              <p className="mt-6 text-stone-500 font-mono tracking-widest text-sm">
+              <p className="mt-6 text-[#8a9bb5] font-mono tracking-widest text-sm">
                 +91 950 510 015
               </p>
             </motion.div>
@@ -516,7 +516,7 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
       className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-8 pb-8"
     >
       {items.map((item, itemIdx) => (
-        <div key={itemIdx} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-stone-50 rounded-2xl p-6 md:p-8 border border-stone-200 shadow-sm relative overflow-hidden group">
+        <div key={itemIdx} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-[#FBFBFB] rounded-2xl p-6 md:p-8 border border-[#e0e7ef] shadow-sm relative overflow-hidden group">
           {/* Card Content */}
           <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden relative shadow-md">
             <img 
@@ -527,13 +527,13 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
             />
           </div>
           <div className="flex flex-col flex-1">
-            <div className="mb-4 text-xs font-bold tracking-[0.2em] text-amber-600 uppercase">
+            <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase">
               No. {String(itemIdx + 1).padStart(2, '0')}
             </div>
-            <h3 className="font-serif text-2xl lg:text-3xl text-stone-900 leading-snug mb-4 pr-4">
+            <h3 className="font-serif text-2xl lg:text-3xl text-[#1a2d47] leading-snug mb-4 pr-4">
               {item.title}
             </h3>
-            <p className="text-lg text-stone-500 leading-relaxed font-light">
+            <p className="text-lg text-[#5a7394] leading-relaxed font-light">
               {item.desc}
             </p>
           </div>

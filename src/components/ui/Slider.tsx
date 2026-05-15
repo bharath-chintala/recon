@@ -73,14 +73,14 @@ export function Slider({
           <button
             onClick={prev}
             aria-label="Previous slide"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md text-stone-800 hover:bg-white transition-all"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md text-[#1a2d47] hover:bg-white transition-all"
           >
             ‹
           </button>
           <button
             onClick={next}
             aria-label="Next slide"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md text-stone-800 hover:bg-white transition-all"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md text-[#1a2d47] hover:bg-white transition-all"
           >
             ›
           </button>
@@ -95,7 +95,7 @@ export function Slider({
               onClick={() => go(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
-                i === current ? 'w-6 bg-amber-500' : 'w-2 bg-white/50'
+                i === current ? 'w-6 bg-[#335C8B]' : 'w-2 bg-white/50'
               }`}
             />
           ))}

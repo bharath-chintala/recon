@@ -25,8 +25,8 @@ export function Card({
   const glassStyles = glass
     ? 'backdrop-blur-md bg-white/10 border border-white/20'
     : dark
-    ? 'bg-stone-900 border border-stone-800'
-    : 'bg-white border border-stone-100 shadow-sm'
+    ? 'bg-[#1a2d47] border border-[#243b5a]'
+    : 'bg-white border border-[#e0e7ef] shadow-sm'
   const hoverStyles = hover
     ? 'hover:-translate-y-1 hover:shadow-xl cursor-pointer'
     : ''

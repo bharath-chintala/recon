@@ -21,12 +21,12 @@ interface ButtonProps {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    'bg-amber-600 text-white hover:bg-amber-500 shadow-lg shadow-amber-600/25',
+    'bg-[#335C8B] text-white hover:bg-[#4a7ab5] shadow-lg shadow-[#335C8B]/25',
   secondary:
-    'bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-900/20',
-  ghost: 'bg-transparent text-stone-800 hover:bg-stone-100',
+    'bg-[#1a2d47] text-white hover:bg-[#243b5a] shadow-lg shadow-[#1a2d47]/20',
+  ghost: 'bg-transparent text-[#1a2d47] hover:bg-[#e8edf3]',
   outline:
-    'bg-transparent border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white',
+    'bg-transparent border border-[#335C8B] text-[#335C8B] hover:bg-[#335C8B] hover:text-white',
 }
 
 const sizeStyles: Record<Size, string> = {
@@ -48,7 +48,7 @@ export function Button({
   iconPosition = 'right',
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center font-semibold rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center font-semibold rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#335C8B] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   const classes = `${base} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
 
   const content = (

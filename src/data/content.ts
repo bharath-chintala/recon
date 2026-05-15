@@ -163,7 +163,7 @@ export const initiatives: Initiative[] = [
       'Travel that leaves a lasting inner imprint',
     ],
     image: '/images/hero.jpg',
-    color: '#d97706',
+    color: '#335C8B',
     stats: [
       { label: 'Destinations', value: '12+' },
       { label: 'Journeys', value: '50+' },
@@ -182,7 +182,7 @@ export const initiatives: Initiative[] = [
       'Thoughtfully designed itineraries for balance and transformation',
     ],
     image: '/images/temples.jpg',
-    color: '#059669',
+    color: '#2a6f8e',
     stats: [
       { label: 'Sites', value: '45+' },
       { label: 'Retreats', value: '30+' },
@@ -201,7 +201,7 @@ export const initiatives: Initiative[] = [
       'Moments of silence, prayer, and spiritual connection',
     ],
     image: '/images/festivals.jpg',
-    color: '#7c3aed',
+    color: '#4a6fa5',
     stats: [
       { label: 'Temples', value: '120+' },
       { label: 'Groups', value: '200+' },

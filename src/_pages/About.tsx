@@ -16,18 +16,18 @@ export default function About() {
   return (
     <main className="pt-20">
       {/* Page Hero */}
-      <section className="relative bg-stone-950 py-32 overflow-hidden">
+      <section className="relative bg-[#0b1526] py-32 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: "url('/images/temples.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/80 to-stone-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/80 to-[#0b1526]" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center">
           <motion.p
             variants={fadeInUp}
             initial="hidden"
             animate="visible"
-            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-amber-400"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]"
           >
             Who We Are
           </motion.p>
@@ -45,7 +45,7 @@ export default function About() {
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.2 }}
-            className="mt-6 max-w-xl mx-auto text-lg text-stone-400 uppercase tracking-wide"
+            className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5] uppercase tracking-wide"
           >
             Meaningful travel experiences focused on sacred journeys and spiritual exploration.
           </motion.p>
@@ -53,7 +53,7 @@ export default function About() {
       </section>
 
       {/* About Us */}
-      <section id="about-us" className="bg-stone-50 py-24">
+      <section id="about-us" className="bg-[#FBFBFB] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             <motion.div
@@ -62,11 +62,11 @@ export default function About() {
               whileInView="visible"
               viewport={viewportOnce}
             >
-              <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Our Philosophy</motion.p>
-              <motion.h2 variants={fadeInUp} className="mb-6 font-serif text-4xl font-bold text-stone-900 uppercase">
+              <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#335C8B]">Our Philosophy</motion.p>
+              <motion.h2 variants={fadeInUp} className="mb-6 font-serif text-4xl font-bold text-[#1a2d47] uppercase">
                 About Us
               </motion.h2>
-              <motion.p variants={fadeInUp} className="mb-5 text-lg leading-relaxed text-stone-600 tracking-wide">
+              <motion.p variants={fadeInUp} className="mb-5 text-lg leading-relaxed text-[#5a7394] tracking-wide">
                 At Recon International, we believe travel should transform. Guided by a passion for meaningful experiences, we design journeys that immerse you in sacred sites, cultural traditions, and moments of personal reflection. Every itinerary is crafted with care, offering authenticity, comfort, and a deeper connection to the world around you.
               </motion.p>
             </motion.div>
@@ -101,19 +101,19 @@ export default function About() {
               viewport={viewportOnce}
               className="lg:col-span-5"
             >
-              <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-amber-600">The Legacy</motion.p>
-              <motion.h2 variants={fadeInUp} className="mb-8 font-serif text-4xl font-bold text-stone-900 lg:text-5xl uppercase">
+              <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#335C8B]">The Legacy</motion.p>
+              <motion.h2 variants={fadeInUp} className="mb-8 font-serif text-4xl font-bold text-[#1a2d47] lg:text-5xl uppercase">
                 Our Story
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-xl leading-relaxed text-stone-600 font-medium tracking-wide">
-                Recon International Charitable Trust (ReKnow) is a globally respected nonprofit organization headquartered in Hyderabad, India, with a distinguished legacy of over <strong className="text-amber-600">30 years of leadership</strong> in cultural preservation, education, social development, international cultural exchange, and tourism promotion.
+              <motion.p variants={fadeInUp} className="text-xl leading-relaxed text-[#5a7394] font-medium tracking-wide">
+                Recon International Charitable Trust (ReKnow) is a globally respected nonprofit organization headquartered in Hyderabad, India, with a distinguished legacy of over <strong className="text-[#335C8B]">30 years of leadership</strong> in cultural preservation, education, social development, international cultural exchange, and tourism promotion.
               </motion.p>
 
-              <motion.div variants={fadeInUp} className="mt-12 border-l-4 border-amber-500 pl-6 py-2">
-                <p className="font-serif text-2xl italic text-stone-800 leading-snug">
+              <motion.div variants={fadeInUp} className="mt-12 border-l-4 border-[#335C8B] pl-6 py-2">
+                <p className="font-serif text-2xl italic text-[#1a2d47] leading-snug">
                   "Save Our Culture for the Next Generation."
                 </p>
-                <p className="mt-3 text-sm uppercase tracking-widest text-amber-600 font-bold">Our Enduring Vision</p>
+                <p className="mt-3 text-sm uppercase tracking-widest text-[#335C8B] font-bold">Our Enduring Vision</p>
               </motion.div>
             </motion.div>
 
@@ -125,7 +125,7 @@ export default function About() {
               viewport={viewportOnce}
               className="lg:col-span-7 flex flex-col justify-between"
             >
-              <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8 text-stone-600 text-justify text-sm leading-relaxed tracking-wide">
+              <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8 text-[#5a7394] text-justify text-sm leading-relaxed tracking-wide">
                 
                 {/* Cultural Pillar */}
                 <div className="space-y-6">
@@ -146,7 +146,7 @@ export default function About() {
                 {/* Global & Diplomatic Pillar */}
                 <div className="space-y-6">
                   <motion.p variants={fadeInUp}>
-                    Over the past three decades, Recon International has successfully conceptualized and delivered <strong className="text-stone-900">160+ national and international initiatives across 16 countries</strong>. Its global footprint spans Sri Lanka, Mauritius, the Middle East, Malaysia, Singapore, South Africa, Bhutan, Nepal, and Europe, among others.
+                    Over the past three decades, Recon International has successfully conceptualized and delivered <strong className="text-[#1a2d47]">160+ national and international initiatives across 16 countries</strong>. Its global footprint spans Sri Lanka, Mauritius, the Middle East, Malaysia, Singapore, South Africa, Bhutan, Nepal, and Europe, among others.
                   </motion.p>
                   <motion.p variants={fadeInUp}>
                     These initiatives have been implemented in collaboration with, and on behalf of, State and Central Government Tourism and Cultural Departments. Recon International positions culture as a strategic instrument of cultural diplomacy, international tourism exchange, and people-to-people engagement.
@@ -158,8 +158,8 @@ export default function About() {
               </div>
 
               {/* Concluding Statement */}
-              <motion.div variants={fadeInUp} className="mt-12 pt-8 border-t border-stone-200">
-                <p className="font-bold text-amber-700 italic text-lg leading-relaxed text-center">
+              <motion.div variants={fadeInUp} className="mt-12 pt-8 border-t border-[#e0e7ef]">
+                <p className="font-bold text-[#335C8B] italic text-lg leading-relaxed text-center">
                   Guided by integrity, professionalism, and excellence, Recon International continues to strengthen India's global cultural presence and soft power, creating lasting impact for future generations.
                 </p>
               </motion.div>
@@ -170,7 +170,7 @@ export default function About() {
       </section>
 
       {/* Trust Members */}
-      <section id="members" className="bg-stone-50 py-24">
+      <section id="members" className="bg-[#FBFBFB] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <motion.div
             variants={stagger}
@@ -179,8 +179,8 @@ export default function About() {
             viewport={viewportOnce}
             className="mb-16 text-center"
           >
-            <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Leadership</motion.p>
-            <motion.h2 variants={fadeInUp} className="font-serif text-4xl font-bold text-stone-900">Trust Members</motion.h2>
+            <motion.p variants={fadeInUp} className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#335C8B]">Leadership</motion.p>
+            <motion.h2 variants={fadeInUp} className="font-serif text-4xl font-bold text-[#1a2d47]">Trust Members</motion.h2>
           </motion.div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -191,17 +191,17 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col h-full rounded-2xl bg-white p-8 shadow-sm ring-1 ring-stone-100 hover:-translate-y-1 transition-transform"
+                className="flex flex-col h-full rounded-2xl bg-white p-8 shadow-sm ring-1 ring-[#e0e7ef] hover:-translate-y-1 transition-transform"
               >
-                <div className="relative mx-auto mb-6 h-24 w-24 overflow-hidden rounded-full ring-4 ring-amber-100">
+                <div className="relative mx-auto mb-6 h-24 w-24 overflow-hidden rounded-full ring-4 ring-[#dde6f0]">
                   <Image src={member.portrait} alt={member.name} fill className="object-cover" />
                 </div>
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-bold text-stone-900 uppercase tracking-wide leading-tight">{member.name}</h3>
-                  <p className="text-sm text-amber-600 font-bold mt-2 uppercase tracking-wider">{member.role}</p>
-                  <p className="text-xs text-stone-400 mt-1 uppercase tracking-widest">{member.country}</p>
+                  <h3 className="text-lg font-bold text-[#1a2d47] uppercase tracking-wide leading-tight">{member.name}</h3>
+                  <p className="text-sm text-[#335C8B] font-bold mt-2 uppercase tracking-wider">{member.role}</p>
+                  <p className="text-xs text-[#8a9bb5] mt-1 uppercase tracking-widest">{member.country}</p>
                 </div>
-                <p className="text-sm text-stone-600 leading-relaxed text-justify flex-grow">{member.bio}</p>
+                <p className="text-sm text-[#5a7394] leading-relaxed text-justify flex-grow">{member.bio}</p>
               </motion.div>
             ))}
           </div>

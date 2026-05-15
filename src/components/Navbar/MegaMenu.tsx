@@ -25,12 +25,12 @@ export function MegaMenu({ columns, isOpen }: MegaMenuProps) {
           transition={{ duration: 0.22, ease: 'easeOut' }}
           className={`absolute left-0 top-full mt-2 w-max ${
             columns.length === 1 ? 'min-w-[250px]' : 'min-w-[500px]'
-          } rounded-2xl border border-stone-100 bg-white shadow-2xl shadow-stone-900/10 z-50`}
+          } rounded-2xl border border-[#e0e7ef] bg-white shadow-2xl shadow-[#1a2d47]/10 z-50`}
         >
           <div className={`grid ${columns.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-0 p-6`}>
             {columns.map((col) => (
               <div key={col.heading} className="p-4">
-                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-amber-600">
+                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#335C8B]">
                   {col.heading}
                 </p>
                 <ul className="space-y-1">
@@ -38,13 +38,13 @@ export function MegaMenu({ columns, isOpen }: MegaMenuProps) {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="group flex flex-col rounded-lg px-3 py-2 transition-colors hover:bg-amber-50"
+                        className="group flex flex-col rounded-lg px-3 py-2 transition-colors hover:bg-[#e8edf3]"
                       >
-                        <span className="text-sm font-semibold text-stone-800 group-hover:text-amber-700">
+                        <span className="text-sm font-semibold text-[#1a2d47] group-hover:text-[#335C8B]">
                           {link.label}
                         </span>
                         {link.desc && (
-                          <span className="text-xs text-stone-500">
+                          <span className="text-xs text-[#8a9bb5]">
                             {link.desc}
                           </span>
                         )}

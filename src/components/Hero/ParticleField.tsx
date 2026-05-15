@@ -17,7 +17,7 @@ interface ParticleFieldProps {
   className?: string
 }
 
-const COLORS = ['#D4A853', '#C49240', '#E8C07B', '#F5DFA0', '#A07830']
+const COLORS = ['#335C8B', '#4a7ab5', '#6b9fd4', '#8bb8e8', '#a3caf0']
 
 export function ParticleField({
   count = 60,

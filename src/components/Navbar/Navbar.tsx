@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -51,15 +52,15 @@ export function Navbar() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
-  // Force light theme (black text) if not on home page or if scrolled
+  // Force light theme (dark text) if not on home page or if scrolled
   const isLightTheme = scrolled || pathname !== '/'
 
   return (
     <>
       <motion.header
-        className={`fixed inset-x-0 top-0 z-30 transition-all duration-300 ${
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           isLightTheme
-            ? 'bg-white/95 shadow-sm shadow-stone-900/5 backdrop-blur-md'
+            ? 'bg-[#FBFBFB]/95 shadow-sm shadow-[#1a2d47]/5 backdrop-blur-md'
             : 'bg-transparent'
         }`}
         initial={{ y: -80 }}
@@ -73,16 +74,29 @@ export function Navbar() {
             className="flex items-center gap-2.5 group"
             aria-label="Recon International — Home"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-600 text-white text-sm font-bold transition-transform group-hover:scale-105">
-              RI
+            <Image
+              src="/images/recon-logo.png"
+              alt="Recon Logo"
+              width={56}
+              height={56}
+              className="transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col leading-none">
+              <span
+                className={`text-[15px] font-extrabold uppercase tracking-wide transition-colors ${
+                  isLightTheme ? 'text-[#1a2d47]' : 'text-white'
+                }`}
+              >
+                recon
+              </span>
+              <span
+                className={`text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors ${
+                  isLightTheme ? 'text-[#335C8B]' : 'text-[#8bb8e8]'
+                }`}
+              >
+                International
+              </span>
             </div>
-            <span
-              className={`text-base font-bold tracking-tight transition-colors ${
-                isLightTheme ? 'text-stone-900' : 'text-white'
-              }`}
-            >
-              Recon International
-            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -103,10 +117,10 @@ export function Navbar() {
                     className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                       active
                         ? isLightTheme
-                          ? 'text-stone-900'
-                          : 'text-amber-400'
+                          ? 'text-[#1a2d47]'
+                          : 'text-[#8bb8e8]'
                         : isLightTheme
-                        ? 'text-stone-700 hover:text-stone-900'
+                        ? 'text-[#5a7394] hover:text-[#1a2d47]'
                         : 'text-white/80 hover:text-white'
                     }`}
                   >
@@ -124,7 +138,7 @@ export function Navbar() {
                     {active && (
                       <motion.span
                         layoutId="nav-underline"
-                        className="absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full bg-amber-500"
+                        className="absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full bg-[#335C8B]"
                       />
                     )}
                   </Link>
@@ -143,7 +157,7 @@ export function Navbar() {
               href="/contact"
               className={`hidden lg:inline-flex items-center rounded-full px-5 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5 ${
                 isLightTheme
-                  ? 'bg-stone-900 text-white hover:bg-stone-800 shadow-md shadow-stone-900/20'
+                  ? 'bg-[#1a2d47] text-white hover:bg-[#243b5a] shadow-md shadow-[#1a2d47]/20'
                   : 'bg-white/15 text-white border border-white/30 hover:bg-white/25 backdrop-blur-sm'
               }`}
             >
@@ -155,7 +169,7 @@ export function Navbar() {
               aria-label="Open menu"
               className={`lg:hidden flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
                 isLightTheme
-                  ? 'border-stone-200 text-stone-700 hover:border-stone-300'
+                  ? 'border-[#d0dae6] text-[#5a7394] hover:border-[#335C8B]'
                   : 'border-white/30 text-white hover:border-white/60'
               }`}
             >

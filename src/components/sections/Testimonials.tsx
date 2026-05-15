@@ -12,20 +12,20 @@ export function Testimonials() {
   useEffect(() => {
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % testimonials.length)
-    }, 3000)
+    }, 5000)
     return () => clearInterval(timer)
   }, [])
 
   return (
     <section
       id="testimonials"
-      className="relative bg-gradient-to-br from-stone-900 via-stone-950 to-stone-900 py-24 lg:py-36 overflow-hidden"
+      className="relative bg-gradient-to-br from-[#0f1d30] via-[#0b1526] to-[#0f1d30] py-24 lg:py-36 overflow-hidden"
     >
-      {/* Gold glow */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-amber-600/10 blur-3xl" />
+      {/* Blue glow */}
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] rounded-full bg-[#335C8B]/10 blur-3xl" />
 
       {/* Decorative quote mark */}
-      <div className="absolute top-16 left-12 text-9xl font-serif text-amber-500/10 select-none leading-none">
+      <div className="absolute top-16 left-12 text-9xl font-serif text-[#335C8B]/10 select-none leading-none">
         "
       </div>
 
@@ -40,7 +40,7 @@ export function Testimonials() {
         >
           <motion.p
             variants={fadeInUp}
-            className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-amber-400"
+            className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]"
           >
             What They Say
           </motion.p>
@@ -49,7 +49,7 @@ export function Testimonials() {
             className="font-serif text-4xl font-bold text-white lg:text-5xl"
           >
             Voices from Around{' '}
-            <span className="text-amber-400">the World</span>
+            <span className="text-[#8bb8e8]">the World</span>
           </motion.h2>
         </motion.div>
 
@@ -66,40 +66,23 @@ export function Testimonials() {
             {/* Stars */}
             <div className="mb-6 flex justify-center gap-1">
               {Array.from({ length: current.rating }).map((_, i) => (
-                <span key={i} className="text-amber-400 text-xl">
+                <span key={i} className="text-[#6b9fd4] text-xl">
                   ★
                 </span>
               ))}
             </div>
 
-            <blockquote className="mb-8 text-xl leading-relaxed text-stone-200 md:text-2xl font-light italic max-w-3xl mx-auto">
+            <blockquote className="mb-8 text-xl leading-relaxed text-[#c8d6e8] md:text-2xl font-light italic max-w-3xl mx-auto">
               "{current.quote}"
             </blockquote>
 
             <div className="flex flex-col items-center gap-1">
               <p className="text-base font-bold text-white">{current.name}</p>
-              <p className="text-sm text-amber-400">{current.role}</p>
-              <p className="text-xs text-stone-500">{current.country}</p>
+              <p className="text-sm text-[#8bb8e8]">{current.role}</p>
+              <p className="text-xs text-[#5a7394]">{current.country}</p>
             </div>
           </motion.div>
         </AnimatePresence>
-
-        {/* Author tabs */}
-        <div className="flex flex-wrap justify-center gap-3">
-          {testimonials.map((t, i) => (
-            <button
-              key={t.id}
-              onClick={() => setActive(i)}
-              className={`rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-200 ${
-                i === active
-                  ? 'border-amber-500 bg-amber-500/20 text-amber-400'
-                  : 'border-white/10 text-stone-400 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              {t.name.split(' ')[0]}
-            </button>
-          ))}
-        </div>
 
         {/* Progress dots */}
         <div className="mt-8 flex justify-center gap-2">
@@ -109,7 +92,7 @@ export function Testimonials() {
               onClick={() => setActive(i)}
               aria-label={`Testimonial ${i + 1}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === active ? 'w-8 bg-amber-500' : 'w-1.5 bg-white/20'
+                i === active ? 'w-8 bg-[#335C8B]' : 'w-1.5 bg-white/20'
               }`}
             />
           ))}

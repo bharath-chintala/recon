@@ -11,8 +11,8 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #1c1917;
+  --background: #FBFBFB;
+  --foreground: #1a2d47;
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
@@ -40,19 +40,19 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #1c1917;
+  background: #0f1d30;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4a853;
+  background: #335C8B;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c49240;
+  background: #4a7ab5;
 }
 
 /* ─── Selection ─────────────────────────────────────────────────────────────── */
 ::selection {
-  background: #d4a853;
+  background: #335C8B;
   color: #fff;
 }
 

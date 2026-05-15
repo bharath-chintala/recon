@@ -10,7 +10,7 @@ interface BadgeProps {
 }
 
 const colorMap: Record<BadgeColor, string> = {
-  gold: 'bg-amber-100 text-amber-800 ring-amber-200/60',
+  gold: 'bg-[#dde6f0] text-[#335C8B] ring-[#b8cde0]/60',
   blue: 'bg-sky-100 text-sky-800 ring-sky-200/60',
   green: 'bg-emerald-100 text-emerald-800 ring-emerald-200/60',
   red: 'bg-rose-100 text-rose-800 ring-rose-200/60',
@@ -19,7 +19,7 @@ const colorMap: Record<BadgeColor, string> = {
 }
 
 const dotMap: Record<BadgeColor, string> = {
-  gold: 'bg-amber-500',
+  gold: 'bg-[#335C8B]',
   blue: 'bg-sky-500',
   green: 'bg-emerald-500',
   red: 'bg-rose-500',
