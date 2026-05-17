@@ -162,7 +162,7 @@ export const initiatives: Initiative[] = [
       'Carefully curated retreats in serene destinations',
       'Travel that leaves a lasting inner imprint',
     ],
-    image: '/images/festivals.jpg',
+    image: '/images/init1.png',
     color: '#335C8B',
     stats: [
       { label: 'Destinations', value: '12+' },
@@ -181,7 +181,7 @@ export const initiatives: Initiative[] = [
       'Guided retreats focused on inner peace and self-discovery',
       'Thoughtfully designed itineraries for balance and transformation',
     ],
-    image: '/images/temples.jpg',
+    image: '/images/init2.png',
     color: '#2a6f8e',
     stats: [
       { label: 'Sites', value: '45+' },
@@ -200,7 +200,7 @@ export const initiatives: Initiative[] = [
       'Small-group journeys guided by experienced facilitators',
       'Moments of silence, prayer, and spiritual connection',
     ],
-    image: '/images/festivals.jpg',
+    image: '/images/init3.png',
     color: '#4a6fa5',
     stats: [
       { label: 'Temples', value: '120+' },
