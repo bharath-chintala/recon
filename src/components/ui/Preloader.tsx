@@ -88,7 +88,7 @@ export function Preloader() {
       'start'
     );
 
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [] });
 
   if (!isLoading) return null;
 
