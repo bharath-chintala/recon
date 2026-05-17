@@ -77,7 +77,6 @@ const GALLERY_ITEMS = [
   },
 ]
 
-const CATEGORIES = ['All', ...Array.from(new Set(GALLERY_ITEMS.map(item => item.category)))]
 
 /* ─── 3D Tilt Card (Cream Theme) ─── */
 function TiltCard({ item, index, onClick }: { item: typeof GALLERY_ITEMS[0]; index: number; onClick: () => void }) {
@@ -277,12 +276,7 @@ export default function GalleryPage() {
   const heroRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
-  const [activeFilter, setActiveFilter] = useState('All')
   const [lightboxItem, setLightboxItem] = useState<typeof GALLERY_ITEMS[0] | null>(null)
-
-  const filteredItems = activeFilter === 'All'
-    ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter(item => item.category === activeFilter)
 
   /* GSAP: Hero parallax + title reveal */
   useGSAP(() => {
@@ -354,25 +348,6 @@ export default function GalleryPage() {
         </motion.h1>
       </section>
 
-      {/* ─── FILTER BAR (Centered) ─── */}
-      <section className="sticky top-20 z-30 bg-[#FBFBFB]/95 backdrop-blur-xl border-b border-[#d0dae6] shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-4 sm:py-5 flex items-center justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveFilter(cat)}
-              className={`whitespace-nowrap px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-[0.12em] transition-all duration-300 border ${
-                activeFilter === cat
-                  ? 'bg-[#335C8B] text-white border-[#335C8B] shadow-lg shadow-[#335C8B]/20'
-                  : 'bg-transparent text-[#5a7394] border-[#d0dae6] hover:text-[#1a2d47] hover:border-[#335C8B]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </section>
-
       {/* ─── GALLERY GRID ─── */}
       <section className="py-10 sm:py-16 lg:py-24">
         <div ref={gridRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
@@ -380,7 +355,7 @@ export default function GalleryPage() {
             className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
             style={{ perspective: '1200px' }}
           >
-            {filteredItems.map((item, i) => (
+            {GALLERY_ITEMS.map((item, i) => (
               <div key={item.id} className="gallery-card">
                 <TiltCard
                   key={item.id}
@@ -391,13 +366,6 @@ export default function GalleryPage() {
               </div>
             ))}
           </div>
-
-          {/* Empty State */}
-          {filteredItems.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-32 text-[#5a7394]">
-              <p className="text-lg font-semibold">No items in this category yet.</p>
-            </div>
-          )}
         </div>
       </section>
 
