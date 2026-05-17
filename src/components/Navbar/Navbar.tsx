@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Events', href: '/events' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Initiatives', href: '/initiatives' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -36,6 +37,10 @@ export function Navbar() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
+    return null
+  }
 
   const { scrollY } = useScroll()
 
@@ -114,7 +119,7 @@ export function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-bold transition-colors ${
                       active
                         ? isLightTheme
                           ? 'text-[#1a2d47]'
@@ -153,16 +158,7 @@ export function Navbar() {
 
           {/* CTA + Hamburger */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/contact"
-              className={`hidden lg:inline-flex items-center rounded-full px-5 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5 ${
-                isLightTheme
-                  ? 'bg-[#1a2d47] text-white hover:bg-[#243b5a] shadow-md shadow-[#1a2d47]/20'
-                  : 'bg-white/15 text-white border border-white/30 hover:bg-white/25 backdrop-blur-sm'
-              }`}
-            >
-              Get Involved
-            </Link>
+
 
             <button
               onClick={() => setMobileOpen(true)}

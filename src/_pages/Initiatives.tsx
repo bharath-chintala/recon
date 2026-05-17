@@ -10,20 +10,19 @@ export default function InitiativesPage() {
   return (
     <main className="pt-20">
       {/* Page hero */}
-      <section className="relative bg-[#0b1526] py-32 overflow-hidden">
+      <section className="relative bg-[#0b1526] py-32 min-h-[60vh] flex flex-col justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-15"
-          style={{ backgroundImage: "url('/images/festivals.jpg')" }}
+          className="absolute inset-0 bg-cover bg-center opacity-100"
+          style={{ backgroundImage: "url('/images/init.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/90 to-[#0b1526]" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center">
-          <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]">
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center mt-12">
+          <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white">
             Our Programmes
           </motion.p>
           <motion.h1 variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }} className="font-serif text-5xl font-bold text-white md:text-6xl">
             Initiatives for Impact
           </motion.h1>
-          <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5]">
+          <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg font-bold text-white uppercase tracking-wide">
             Four flagship programmes that form the backbone of our global cultural diplomacy mission.
           </motion.p>
         </div>

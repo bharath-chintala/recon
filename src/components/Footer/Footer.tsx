@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const LINKS = {
   Organisation: [
@@ -23,6 +26,12 @@ const LINKS = {
 }
 
 export function Footer() {
+  const pathname = usePathname()
+
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
+    return null
+  }
+
   return (
     <footer className="bg-[#0b1526] text-[#f5f0e8]">
       {/* Top wave */}

@@ -3,7 +3,12 @@
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+import { supabase } from '@/lib/supabase'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const PROGRAM_DATA = [
   {
@@ -186,16 +191,52 @@ const PROGRAM_DATA = [
 ]
 
 export default function Events() {
-  const [filter, setFilter] = useState('All')
+  const [programData, setProgramData] = useState(PROGRAM_DATA)
+  const [filter, setFilter] = useState(PROGRAM_DATA[0].title)
   const [activeSectionId, setActiveSectionId] = useState(PROGRAM_DATA[0].title)
   const [hoveredImage, setHoveredImage] = useState<string | null>(null)
 
-  const filteredData = filter === 'All' ? PROGRAM_DATA : PROGRAM_DATA.filter((s) => s.title === filter)
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data } = await supabase.from('events').select('*').order('created_at', { ascending: true })
+      if (data && data.length > 0) {
+        const descriptionsMap: { [key: string]: string } = {
+          'Humanitarian & Social Impact Initiatives': 'The Trust has consistently demonstrated a deep commitment to Social Responsibility, particularly in supporting underprivileged and visually impaired communities:',
+          'Cultural Exchange & International Engagements': 'The Trust has a long-standing legacy of leading cultural delegations from Andhra Pradesh and Telangana to several international destinations in association with erstwhile Government of Andhra Pradesh and Government of Telangana:',
+          'Trade Facilitation Expertise': 'Recon International, Hyderabad has represented Indian interests at several Global trade forums and exhibitions, including:'
+        }
+
+        const groupedMap: { [key: string]: any[] } = {}
+        data.forEach(evt => {
+          const cat = evt.category || 'Key Cultural & Spiritual Initiatives'
+          if (!groupedMap[cat]) {
+            groupedMap[cat] = []
+          }
+          groupedMap[cat].push({
+            title: evt.title,
+            desc: evt.description,
+            image: evt.image || '/images/events.png'
+          })
+        })
+
+        const mappedCategories = Object.keys(groupedMap).map(catName => ({
+          title: catName,
+          description: descriptionsMap[catName] || '',
+          image: groupedMap[catName][0]?.image || '/images/events.png',
+          items: groupedMap[catName]
+        }))
+
+        setProgramData(mappedCategories)
+        setFilter(mappedCategories[0]?.title || '')
+      }
+    }
+    fetchEvents()
+  }, [])
+
+  const filteredData = programData.filter((s) => s.title === filter)
 
   // Determine active image based on filter, scroll position, and hover state
-  const activeImage = hoveredImage || (filter === 'All' 
-    ? PROGRAM_DATA.find(s => s.title === activeSectionId)?.image || PROGRAM_DATA[0].image
-    : filteredData[0]?.image)
+  const activeImage = hoveredImage || filteredData[0]?.image
 
   const handleFilterClick = (newFilter: string) => {
     setFilter(newFilter)
@@ -208,6 +249,62 @@ export default function Events() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
+
+  // Refs for GSAP
+  const introContainerRef = useRef<HTMLDivElement>(null)
+  const legacyContainerRef = useRef<HTMLDivElement>(null)
+  const legacyBgRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    // Advanced Editorial Intro Text Reveal
+    gsap.fromTo('.intro-text-reveal', 
+      { opacity: 0, y: 40, rotateX: 15 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        rotateX: 0, 
+        stagger: 0.15, 
+        duration: 1.2, 
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: introContainerRef.current,
+          start: 'top 80%',
+          toggleActions: 'play reverse play reverse'
+        }
+      }
+    )
+
+    // Legacy Section Parallax Background
+    gsap.to(legacyBgRef.current, {
+      yPercent: 30,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: legacyContainerRef.current,
+        start: 'top bottom', // when top of section hits bottom of viewport
+        end: 'bottom top',   // when bottom of section hits top of viewport
+        scrub: true,
+      }
+    })
+
+    // Legacy Text Reveal
+    const legacyElements = gsap.utils.toArray('.legacy-reveal')
+    legacyElements.forEach((el: any, i) => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.5,
+          ease: 'power4.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play reverse play reverse'
+          }
+        }
+      )
+    })
+  })
 
   // Scroll-linked dynamic scaling text setup
   const heroRef = useRef<HTMLDivElement>(null)
@@ -227,10 +324,9 @@ export default function Events() {
       <section ref={heroRef} className="relative h-[150vh] bg-[#0b1526]">
         <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-20">
           <motion.div
-            style={{ filter: blurBg, backgroundImage: "url('/images/festivals.jpg')" }}
-            className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
+            style={{ filter: blurBg, backgroundImage: "url('/images/events.png')" }}
+            className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/40 via-[#0b1526]/80 to-[#0b1526]" />
           
           <motion.div 
             style={{ scale: scaleText, opacity: opacityText, transformOrigin: "center center" }}
@@ -256,26 +352,15 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Intro Text (Overlaps the end of the sticky section) */}
-      <section className="relative z-20 bg-[#FBFBFB] pt-24 pb-16 px-6 lg:px-12 rounded-t-[3rem] -mt-12 shadow-2xl">
-        <div className="mx-auto max-w-4xl text-center">
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl text-[#1a2d47] leading-relaxed font-light-bold mb-8"
-          >
+      {/* Intro Text - GSAP Animated */}
+      <section ref={introContainerRef} className="relative z-20 bg-[#FBFBFB] pt-24 pb-16 px-6 lg:px-12 rounded-t-[3rem] -mt-12 shadow-2xl">
+        <div className="mx-auto max-w-4xl text-center" style={{ perspective: '1000px' }}>
+          <p className="intro-text-reveal text-2xl text-[#1a2d47] leading-relaxed font-medium mb-8">
             Recon International Charitable Trust, Hyderabad, has successfully conceptualized and delivered a diverse portfolio of initiatives, encompassing cultural programs, spiritual observances, international forums, and corporate summits.
-          </motion.p>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-[#5a7394] leading-relaxed font-light"
-          >
+          </p>
+          <p className="intro-text-reveal text-lg text-[#5a7394] leading-relaxed font-light">
             Since 1993, we have been actively engaged in international trade facilitation and the organisation of cultural programs and curated tour packages across global platforms, fostering cross-cultural exchange and international collaboration.
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -292,27 +377,15 @@ export default function Events() {
             viewport={{ once: true, margin: "-50px" }}
             className="flex items-center gap-8 overflow-x-auto no-scrollbar py-6"
           >
-            <motion.button
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-              }}
-              onClick={() => handleFilterClick('All')}
-              className={`whitespace-nowrap pb-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
-                filter === 'All'
-                  ? 'text-[#1a2d47] border-b-2 border-[#335C8B]'
-                  : 'text-[#8a9bb5] hover:text-[#1a2d47] border-b-2 border-transparent'
-              }`}
-            >
-              All Programs
-            </motion.button>
-            {PROGRAM_DATA.map((section) => (
+            {programData.map((section) => (
               <motion.button
                 key={section.title}
                 variants={{
                   hidden: { opacity: 0, x: -20 },
                   visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
                 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleFilterClick(section.title)}
                 className={`whitespace-nowrap pb-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
                   filter === section.title
@@ -334,22 +407,27 @@ export default function Events() {
             
             {/* LEFT: Sticky Image Column */}
             <div className="hidden lg:block lg:col-span-6 relative h-full">
-              <div className="sticky top-40 h-[75vh] w-full overflow-hidden rounded-2xl bg-[#d0dae6] shadow-2xl">
+              <div className="sticky top-40 h-[75vh] w-full overflow-hidden rounded-2xl bg-[#0b1526] shadow-2xl">
+                {/* Dramatic Framer Motion Curtain Reveal */}
                 <AnimatePresence mode="wait">
-                  <motion.img
+                  <motion.div
                     key={activeImage}
-                    src={activeImage}
-                    onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    alt="Section Image"
-                  />
+                    initial={{ clipPath: 'inset(100% 0 0 0)', filter: 'brightness(1.5) blur(10px)' }}
+                    animate={{ clipPath: 'inset(0% 0 0 0)', filter: 'brightness(1) blur(0px)' }}
+                    exit={{ clipPath: 'inset(0 0 100% 0)', filter: 'brightness(0.5) blur(10px)' }}
+                    transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+                    className="absolute inset-0 w-full h-full"
+                  >
+                    <img
+                      src={activeImage}
+                      onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      alt="Section Image"
+                    />
+                  </motion.div>
                 </AnimatePresence>
                 {/* Subtle gradient overlay to make it look premium */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526]/40 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526]/60 to-transparent pointer-events-none" />
               </div>
             </div>
 
@@ -358,10 +436,10 @@ export default function Events() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={filter}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-40 lg:space-y-64 pb-64"
                 >
                   {filteredData.map((section) => (
@@ -388,11 +466,11 @@ export default function Events() {
 
                       {/* Desktop Section Header (Pure Typography) */}
                       <div className="hidden lg:block mb-16">
-                        <h2 className="font-serif text-3xl lg:text-5xl font-light text-[#1a2d47] mb-6 leading-tight">
+                        <h2 className="font-serif text-4xl lg:text-5xl font-light text-[#1a2d47] mb-6 leading-tight">
                           {section.title}
                         </h2>
                         {section.description && (
-                          <p className="text-lg lg:text-xl text-[#5a7394] leading-relaxed font-light">
+                          <p className="text-xl text-[#5a7394] leading-relaxed font-light">
                             {section.description}
                           </p>
                         )}
@@ -408,18 +486,19 @@ export default function Events() {
                         {section.items.map((item, itemIdx) => (
                           <motion.div
                             key={itemIdx}
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            transition={{ delay: itemIdx * 0.05, duration: 0.5 }}
+                            initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                            viewport={{ once: true, margin: "-10%" }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            whileHover={{ x: 15, backgroundColor: 'rgba(232, 237, 243, 0.4)' }}
                             onMouseEnter={() => setHoveredImage(item.image)}
                             onMouseLeave={() => setHoveredImage(null)}
-                            className="group py-10 lg:py-16 border-b border-[#e0e7ef] hover:bg-[#e8edf3]/50 lg:hover:px-8 lg:-mx-8 transition-all duration-500 cursor-default rounded-lg flex flex-col"
+                            className="group py-12 lg:py-16 border-b border-[#e0e7ef] lg:hover:px-8 lg:-mx-8 transition-all duration-500 cursor-default rounded-2xl flex flex-col"
                           >
                             {/* Text Content */}
                             <div>
                               {/* Number */}
-                              <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase">
+                              <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase opacity-60 group-hover:opacity-100 transition-opacity duration-300">
                                 No. {String(itemIdx + 1).padStart(2, '0')}
                               </div>
                               
@@ -446,31 +525,30 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Legacy and Sign-off - Museum Style */}
-      <section className="bg-[#0b1526] py-32 lg:py-48 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(51,92,139,0.1)_0%,_transparent_60%)]" />
+      {/* Legacy and Sign-off - Museum Style (GSAP Animated) */}
+      <section ref={legacyContainerRef} className="bg-[#0b1526] py-32 lg:py-48 relative overflow-hidden">
+        {/* Parallax Background */}
+        <div 
+          ref={legacyBgRef}
+          className="absolute -top-[20%] left-0 w-full h-[140%] bg-[radial-gradient(circle_at_center,_rgba(51,92,139,0.15)_0%,_transparent_60%)]" 
+        />
+        
         <div className="mx-auto max-w-5xl px-6 lg:px-12 relative">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            variants={stagger}
-            className="text-center"
-          >
-            <motion.div variants={fadeInUp} className="flex justify-center mb-12">
-               <Image src="/images/mandala.svg" alt="mandala" width={64} height={64} className="opacity-40" />
-            </motion.div>
+          <div className="text-center">
+            <div className="legacy-reveal flex justify-center mb-12">
+               <Image src="/images/mandala.svg" alt="mandala" width={80} height={80} className="opacity-30" />
+            </div>
             
-            <motion.h2 variants={fadeInUp} className="mb-10 font-serif text-4xl font-light text-white md:text-6xl leading-tight">
+            <h2 className="legacy-reveal mb-10 font-serif text-4xl font-light text-white md:text-6xl leading-tight">
               Legacy of Excellence <br />
               <span className="italic text-[#8a9bb5]">& Cultural Bridge-building</span>
-            </motion.h2>
+            </h2>
             
-            <motion.p variants={fadeInUp} className="text-2xl text-[#a3b8d4] leading-relaxed font-light max-w-4xl mx-auto mb-20">
+            <p className="legacy-reveal text-2xl text-[#a3b8d4] leading-relaxed font-light max-w-4xl mx-auto mb-20">
               Recon International Charitable Trust, under the aegis of IIIRRC Trust, has continually bridged Tourism, Pilgrim, Spiritual Tradition, Cultural expression, and Global connectivity. With a proven track record in program execution, grassroots engagement, and international outreach, the Trust stands as a torchbearer of India’s Cultural Diplomacy and Spiritual ethos.
-            </motion.p>
+            </p>
             
-            <motion.div variants={fadeInUp} className="pt-16 border-t border-white/10 flex flex-col items-center max-w-sm mx-auto">
+            <div className="legacy-reveal pt-16 border-t border-white/10 flex flex-col items-center max-w-sm mx-auto">
               <p className="text-3xl font-serif font-light text-white tracking-wide">
                 K. Chandra Shekher Rao
               </p>
@@ -480,8 +558,8 @@ export default function Events() {
               <p className="mt-6 text-[#8a9bb5] font-mono tracking-widest text-sm">
                 +91 950 510 015
               </p>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -495,13 +573,11 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
     const interval = setInterval(() => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        // If we reach the end (with a 10px buffer), scroll back to start
         if (Math.ceil(scrollLeft + clientWidth) >= scrollWidth - 10) {
           scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          // Calculate the width of one card + gap (approx) to scroll by
           const cardWidth = scrollRef.current.firstElementChild?.clientWidth || clientWidth;
-          const gap = 32; // gap-8 is 32px
+          const gap = 32; 
           scrollRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
         }
       }
@@ -517,7 +593,6 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
     >
       {items.map((item, itemIdx) => (
         <div key={itemIdx} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-[#FBFBFB] rounded-2xl p-6 md:p-8 border border-[#e0e7ef] shadow-sm relative overflow-hidden group">
-          {/* Card Content */}
           <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden relative shadow-md">
             <img 
               src={item.image} 

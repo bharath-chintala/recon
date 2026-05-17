@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Playfair_Display } from 'next/font/google'
 import { Navbar } from '@/components/Navbar/Navbar'
 import { Footer } from '@/components/Footer/Footer'
+import { Preloader } from '@/components/ui/Preloader'
 import './globals.css'
 
 const geist = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
     <html lang="en" className={`${geist.variable} ${playfair.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col antialiased" suppressHydrationWarning>
         <SmoothScroll>
+          <Preloader />
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />

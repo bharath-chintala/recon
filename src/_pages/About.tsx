@@ -16,18 +16,17 @@ export default function About() {
   return (
     <main className="pt-20">
       {/* Page Hero */}
-      <section className="relative bg-[#0b1526] py-32 overflow-hidden">
+      <section className="relative bg-[#0b1526] py-32 min-h-[60vh] flex flex-col justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: "url('/images/temples.jpg')" }}
+          className="absolute inset-0 bg-cover bg-center opacity-100"
+          style={{ backgroundImage: "url('/images/about h.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1526]/80 to-[#0b1526]" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center">
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center mt-12">
           <motion.p
             variants={fadeInUp}
             initial="hidden"
             animate="visible"
-            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-black"
           >
             Who We Are
           </motion.p>
@@ -45,7 +44,7 @@ export default function About() {
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.2 }}
-            className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5] uppercase tracking-wide"
+            className="mt-6 max-w-xl mx-auto text-lg font-bold text-black uppercase tracking-wide"
           >
             Meaningful travel experiences focused on sacred journeys and spiritual exploration.
           </motion.p>
