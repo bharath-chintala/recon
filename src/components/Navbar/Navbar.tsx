@@ -37,12 +37,9 @@ export function Navbar() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
-
-  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
-    return null
-  }
-
   const { scrollY } = useScroll()
+
+  const shouldHide = pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')
 
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (y) => setScrolled(y > 30))
@@ -59,6 +56,8 @@ export function Navbar() {
 
   // Force light theme (dark text) if not on home page or if scrolled
   const isLightTheme = scrolled || pathname !== '/'
+
+  if (shouldHide) return null
 
   return (
     <>

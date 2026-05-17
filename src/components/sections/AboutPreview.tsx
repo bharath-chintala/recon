@@ -35,12 +35,12 @@ export function AboutPreview() {
     })
 
     // 1. Staggered reveal for the mosaic images
-    tl.fromTo('.about-img-container', 
+    tl.fromTo('.about-img-container',
       { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: 50 },
       { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, stagger: 0.15, duration: 1.2, ease: 'power4.out' },
       'start'
     )
-    
+
     // Scale down the inner image slightly to create a zoom-out reveal effect
     tl.fromTo('.about-img-inner',
       { scale: 1.3 },
@@ -70,17 +70,17 @@ export function AboutPreview() {
       className="relative bg-[#FBFBFB] py-24 lg:py-36 overflow-hidden"
     >
       {/* Decorative background blob animated with Framer Motion */}
-      <motion.div 
+      <motion.div
         className="pointer-events-none absolute -right-64 top-0 h-[600px] w-[600px] rounded-full bg-[#dde6f0] blur-3xl"
-        animate={{ 
+        animate={{
           scale: [1, 1.1, 1],
           rotate: [0, 90, 0],
           x: [0, -30, 0]
         }}
-        transition={{ 
-          repeat: Infinity, 
-          duration: 15, 
-          ease: "easeInOut" 
+        transition={{
+          repeat: Infinity,
+          duration: 15,
+          ease: "easeInOut"
         }}
       />
 
@@ -90,52 +90,52 @@ export function AboutPreview() {
           <div ref={imageWrapperRef} className="relative">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <motion.div 
+                <motion.div
                   className="about-img-container relative h-64 overflow-hidden rounded-2xl shadow-lg"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    src="/images/temples.jpg"
-                    alt="Ancient temple — Recon International heritage"
+                    src="/images/about2-aarti.png"
+                    alt="Ganga Aarti ceremony — Recon International"
                     fill
                     className="about-img-inner object-cover"
                   />
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="about-img-container relative h-40 overflow-hidden rounded-2xl shadow-lg"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    src="/images/festivals.jpg"
-                    alt="Cultural festival celebration"
+                    src="/images/about1.png"
+                    alt="Classical dance — Recon International heritage"
                     fill
                     className="about-img-inner object-cover"
                   />
                 </motion.div>
               </div>
               <div className="space-y-4 mt-8">
-                <motion.div 
+                <motion.div
                   className="about-img-container relative h-40 overflow-hidden rounded-2xl shadow-lg"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    src="/images/festivals.jpg"
-                    alt="Traditional folk art performance"
+                    src="/images/about 3.jpg"
+                    alt="Traditional folk arts and events"
                     fill
                     className="about-img-inner object-cover"
                   />
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="about-img-container relative h-64 overflow-hidden rounded-2xl shadow-lg"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
-                    src="/images/temples.jpg"
-                    alt="Heritage architecture"
+                    src="/images/about 4.jpg"
+                    alt="Sacred sites and architecture"
                     fill
                     className="about-img-inner object-cover"
                   />
@@ -144,7 +144,7 @@ export function AboutPreview() {
             </div>
 
             {/* Floating badge using Framer Motion */}
-            <motion.div 
+            <motion.div
               className="absolute -bottom-6 -right-6 hidden lg:flex items-center gap-3 rounded-2xl bg-[#335C8B] px-6 py-4 shadow-xl shadow-[#335C8B]/30"
               animate={{ y: [0, -15, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
@@ -179,7 +179,7 @@ export function AboutPreview() {
         </div>
 
         {/* Stats row */}
-        <div 
+        <div
           ref={statsRef}
           className="mt-20 grid grid-cols-2 gap-8 rounded-3xl bg-white p-10 shadow-sm ring-1 ring-[#e0e7ef] lg:grid-cols-4"
         >
