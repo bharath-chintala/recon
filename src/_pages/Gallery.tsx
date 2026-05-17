@@ -376,27 +376,21 @@ export default function GalleryPage() {
       {/* ─── GALLERY GRID ─── */}
       <section className="py-10 sm:py-16 lg:py-24">
         <div ref={gridRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeFilter}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
-              style={{ perspective: '1200px' }}
-            >
-              {filteredItems.map((item, i) => (
-                <div key={item.id} className="gallery-card">
-                  <TiltCard
-                    item={item}
-                    index={i}
-                    onClick={() => setLightboxItem(item)}
-                  />
-                </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <div
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
+            style={{ perspective: '1200px' }}
+          >
+            {filteredItems.map((item, i) => (
+              <div key={item.id} className="gallery-card">
+                <TiltCard
+                  key={item.id}
+                  item={item}
+                  index={i}
+                  onClick={() => setLightboxItem(item)}
+                />
+              </div>
+            ))}
+          </div>
 
           {/* Empty State */}
           {filteredItems.length === 0 && (
