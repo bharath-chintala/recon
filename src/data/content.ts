@@ -54,7 +54,7 @@ export const events: Event[] = [
     category: 'Conference',
     description:
       'A gathering of cultural leaders, policymakers, and heritage practitioners to shape the future of cross-border cultural diplomacy.',
-    image: '/images/hero.jpg',
+    image: '/images/festivals.jpg',
     featured: true,
   },
   {
@@ -162,7 +162,7 @@ export const initiatives: Initiative[] = [
       'Carefully curated retreats in serene destinations',
       'Travel that leaves a lasting inner imprint',
     ],
-    image: '/images/hero.jpg',
+    image: '/images/festivals.jpg',
     color: '#335C8B',
     stats: [
       { label: 'Destinations', value: '12+' },
