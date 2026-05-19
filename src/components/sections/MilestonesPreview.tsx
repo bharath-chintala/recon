@@ -1,43 +1,70 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
-import { Button } from '@/components/ui/Button'
 import Image from 'next/image'
 
 const MILESTONES = [
   {
     title: 'Carnival of Indian Culture',
     desc: 'Recon International Charitable Trust organized a 10-day celebration of "Carnival of Indian Culture" with 630 budding artists, under Ganga Pushkara...',
-    image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=2676&auto=format&fit=crop',
-    link: '/events'
+    image: '/images/Carnival of Indian Culture.png'
   },
   {
     title: 'Parakram Diwas',
     desc: 'Recon International Charitable Trust organized celebrations of "Parakram Diwas" under Azadi Ka Amrit Mahotsav, in memory of the great freedom fighter...',
-    image: 'https://images.unsplash.com/photo-1532509854226-a2d9d8e66f8e?q=80&w=2670&auto=format&fit=crop',
-    link: '/events'
+    image: '/images/parakaran.png'
   },
   {
     title: 'Sri Venkateshwara Kalyana Mahotsavam',
     desc: 'Recon International Charitable Trust organized the "Sri Venkateshwara Kalyana Mahotsavam" at Colombo, Sri Lanka, on 27th July 2024. Sri Santhosh...',
-    image: 'https://images.unsplash.com/photo-1623862211516-d6e4b85c2c77?q=80&w=2664&auto=format&fit=crop',
-    link: '/events'
+    image: '/images/venkateshwar.png'
   },
   {
     title: 'Food Festival and Telangana...',
     desc: 'Organized cultural programs, Food Festival and Telangana Traditional Products Exhibition in Mauritius, on behalf of YAT & C Department, State...',
-    image: 'https://images.unsplash.com/photo-1582236676342-302a9b4074ef?q=80&w=2574&auto=format&fit=crop',
-    link: '/events'
+    image: '/images/food festival.png'
   }
 ]
 
 export function MilestonesPreview() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+  const [activeIdx, setActiveIdx] = useState(0)
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+      setCanScrollLeft(scrollLeft > 10)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
+
+      const cardWidth = scrollRef.current.firstElementChild?.clientWidth || clientWidth
+      const gap = 32 // gap-8
+      const index = Math.round(scrollLeft / (cardWidth + gap))
+      setActiveIdx(index)
+    }
+  }
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const cardWidth = scrollRef.current.firstElementChild?.clientWidth || scrollRef.current.clientWidth
+      const gap = 32 // gap-8
+      const offset = direction === 'left' ? -(cardWidth + gap) : (cardWidth + gap)
+      scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' })
+    }
+  }
+
+  useEffect(() => {
+    handleScroll()
+  }, [])
+
   return (
-    <section className="relative bg-[#0f1d30] py-24 lg:py-48 overflow-hidden">
-      {/* Premium Background Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#335C8B]/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[#1a2d47]/5 blur-[150px] rounded-full pointer-events-none" />
+    <section className="relative bg-warm-ivory py-24 lg:py-36 overflow-hidden">
+      {/* Premium Background Ambient Glows */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-royal/5 blur-[150px] rounded-full pointer-events-none" />
       
       <div className="relative mx-auto max-w-7xl px-6 lg:px-12">
         <motion.div
@@ -45,31 +72,41 @@ export function MilestonesPreview() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mb-24 text-center"
+          className="mb-16 text-center md:text-left md:flex md:items-end md:justify-between"
         >
-          <motion.p
-            variants={fadeInUp}
-            className="mb-4 text-xs font-bold uppercase tracking-[0.4em] text-[#6b9fd4]"
-          >
-            A Legacy of Impact
-          </motion.p>
-          <motion.h2
-            variants={fadeInUp}
-            className="font-serif text-4xl font-light text-white lg:text-6xl mb-8 tracking-tight"
-          >
-            Our <span className="italic text-[#8bb8e8]">Milestones</span>
-          </motion.h2>
-          
-          <motion.p
-            variants={fadeInUp}
-            className="mx-auto max-w-3xl text-lg text-[#8a9bb5] leading-relaxed font-light"
-          >
-            Over three decades of dedication to social welfare, spiritual upliftment, and cultural preservation. 
-            Each milestone is a testament to our commitment to global community development.
-          </motion.p>
+          <div className="max-w-3xl">
+            <motion.div
+              variants={fadeInUp}
+              className="flex items-center gap-3 mb-4 justify-center md:justify-start"
+            >
+              <span className="h-0.5 w-6 bg-royal/30" />
+              <p className="font-cinzel text-xs font-semibold uppercase tracking-[0.3em] text-saffron">
+                A Legacy of Impact
+              </p>
+            </motion.div>
+            <motion.h2
+              variants={fadeInUp}
+              className="font-cinzel text-4xl font-light text-royal lg:text-5xl mb-6 tracking-tight"
+            >
+              Our Historical <span className="italic font-normal text-royal">Milestones</span>
+            </motion.h2>
+            
+            <motion.p
+              variants={fadeInUp}
+              className="text-lg text-royal/70 leading-relaxed font-light"
+            >
+              Over three decades of dedication to social welfare, spiritual upliftment, and cultural preservation. 
+              Each milestone represents a distinct chapter in our documentary story.
+            </motion.p>
+          </div>
         </motion.div>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        {/* Carousel Snapping Row Container - Light glassmorphic style */}
+        <div 
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar py-6 scroll-smooth px-2"
+        >
           {MILESTONES.map((milestone, i) => (
             <motion.div
               key={milestone.title}
@@ -78,41 +115,96 @@ export function MilestonesPreview() {
               whileInView="visible"
               viewport={viewportOnce}
               transition={{ delay: i * 0.1 }}
-              className="group flex flex-col bg-[#1a2d47]/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/5 hover:border-[#335C8B]/30 transition-all duration-700 shadow-2xl"
+              data-cinematic-reveal
+              className="w-[85vw] sm:w-[500px] md:w-[650px] snap-center flex-shrink-0 flex flex-col md:flex-row bg-white/75 backdrop-blur-md rounded-[2rem] overflow-hidden border border-royal/20 hover:border-saffron/30 hover:bg-white/95 hover:shadow-xl transition-all duration-700 shadow-md group"
             >
               {/* Image Section */}
-              <div className="relative aspect-[4/5] overflow-hidden">
+              <div className="relative w-full md:w-[42%] aspect-[16/10] md:aspect-auto min-h-[220px] md:min-h-full overflow-hidden">
                 <Image
                   src={milestone.image}
                   alt={milestone.title}
                   fill
-                  className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"
+                  className="object-cover transition-all duration-1000 group-hover:scale-105"
                 />
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                {/* Overlay Dark/Light Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-warm-ivory/95 via-transparent to-transparent opacity-85 group-hover:opacity-40 transition-opacity" />
               </div>
 
               {/* Content Section */}
-              <div className="flex flex-col flex-1 p-8">
-                <h3 className="mb-4 font-serif text-xl text-white leading-tight tracking-wide group-hover:text-[#8bb8e8] transition-colors duration-500">
-                  {milestone.title}
-                </h3>
-                <p className="mb-8 text-sm text-[#5a7394] leading-relaxed line-clamp-4 font-light">
-                  {milestone.desc}
-                </p>
+              <div className="flex flex-col flex-1 p-6 md:p-8 justify-between">
+                <div>
+                  <h3 className="mb-4 font-cinzel text-lg md:text-xl font-semibold text-royal leading-tight tracking-wide group-hover:text-saffron transition-colors duration-500">
+                    {milestone.title}
+                  </h3>
+                  <p className="mb-6 text-xs md:text-sm text-royal/70 leading-relaxed font-light line-clamp-5">
+                    {milestone.desc}
+                  </p>
+                </div>
                 
-                <div className="mt-auto pt-6 border-t border-white/5">
-                  <a
-                    href={milestone.link}
-                    className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.3em] text-[#6b9fd4] group/link"
-                  >
-                    <span>Continue Reading</span>
-                    <span className="transform translate-x-0 group-hover/link:translate-x-2 transition-transform duration-300">→</span>
-                  </a>
+                <div className="pt-6 border-t border-royal/15 flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-saffron">
+                    Heritage Milestone
+                  </span>
+                  <div className="h-1.5 w-1.5 bg-saffron/30 rounded-full" />
                 </div>
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Carousel Navigation & Indicators Controls */}
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-6xl mx-auto px-2">
+          {/* Indicators Capsule Dots */}
+          <div className="flex gap-2">
+            {MILESTONES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (scrollRef.current) {
+                    const cardWidth = scrollRef.current.firstElementChild?.clientWidth || scrollRef.current.clientWidth
+                    const gap = 32
+                    scrollRef.current.scrollTo({ left: idx * (cardWidth + gap), behavior: 'smooth' })
+                  }
+                }}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  activeIdx === idx ? 'w-8 bg-saffron' : 'w-2 bg-royal/20 hover:bg-royal/40'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Premium Floating Circular Arrows */}
+          <div className="flex gap-4">
+            <button
+              onClick={() => scroll('left')}
+              disabled={!canScrollLeft}
+              className={`p-4 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                canScrollLeft 
+                  ? 'bg-white/80 hover:bg-saffron/20 text-saffron border-royal/20 cursor-pointer hover:scale-105 shadow-sm' 
+                  : 'text-royal/25 border-royal/5 cursor-not-allowed'
+              }`}
+              aria-label="Previous slide"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => scroll('right')}
+              disabled={!canScrollRight}
+              className={`p-4 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                canScrollRight 
+                  ? 'bg-white/80 hover:bg-saffron/20 text-saffron border-royal/20 cursor-pointer hover:scale-105 shadow-sm' 
+                  : 'text-royal/25 border-royal/5 cursor-not-allowed'
+              }`}
+              aria-label="Next slide"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>

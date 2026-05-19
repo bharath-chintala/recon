@@ -9,40 +9,69 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const lenisRef = useRef<Lenis | null>(null)
+  const tickerRef = useRef<((time: number) => void) | null>(null)
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+
     const lenis = new Lenis({
-      duration: 1.5,
+      duration: 1.35,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
+      wheelMultiplier: 0.92,
+      touchMultiplier: 1.6,
+      infinite: false,
+      lerp: 0.09,
     })
 
     lenisRef.current = lenis
 
-    function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
+    ScrollTrigger.scrollerProxy(document.documentElement, {
+      scrollTop(value) {
+        if (arguments.length && value !== undefined) {
+          lenis.scrollTo(value, { immediate: true })
+        }
+        return lenis.scroll
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        }
+      },
+      pinType: document.documentElement.style.transform ? 'transform' : 'fixed',
+    })
 
-    requestAnimationFrame(raf)
+    ScrollTrigger.addEventListener('refresh', () => lenis.resize())
+    lenis.on('scroll', ScrollTrigger.update)
+
+    const onTicker = (time: number) => {
+      lenis.raf(time * 1000)
+    }
+    tickerRef.current = onTicker
+    gsap.ticker.add(onTicker)
+    gsap.ticker.lagSmoothing(0)
+
+    requestAnimationFrame(() => ScrollTrigger.refresh())
 
     return () => {
+      if (tickerRef.current) gsap.ticker.remove(tickerRef.current)
+      ScrollTrigger.scrollerProxy(document.documentElement, {})
       lenis.destroy()
+      lenisRef.current = null
     }
   }, [])
 
-  // Handle route changes: Reset scroll and refresh triggers
   useEffect(() => {
     if (lenisRef.current) {
       lenisRef.current.scrollTo(0, { immediate: true })
     }
-    
-    // Crucial for GSAP: Refresh triggers after route change
-    setTimeout(() => {
-      ScrollTrigger.refresh()
-    }, 100)
+    const id = setTimeout(() => ScrollTrigger.refresh(), 150)
+    return () => clearTimeout(id)
   }, [pathname])
 
   return <>{children}</>

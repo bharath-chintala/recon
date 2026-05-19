@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll } from 'framer-motion'
 import { MegaMenu } from './MegaMenu'
 import { MobileMenu } from './MobileMenu'
 
@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Events', href: '/events' },
-  { label: 'Gallery', href: '/gallery' },
   { label: 'Initiatives', href: '/initiatives' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -35,16 +34,28 @@ const ABOUT_MEGA = {
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [inHero, setInHero] = useState(true)
   const pathname = usePathname()
   const { scrollY } = useScroll()
 
   const shouldHide = pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')
 
   useEffect(() => {
-    const unsubscribe = scrollY.on('change', (y) => setScrolled(y > 30))
+    const checkHero = (y: number) => {
+      if (pathname === '/') {
+        // Hero wrapper is 500vh (400vh scroll + 100vh viewport)
+        setInHero(y < (window.innerHeight * 4.1))
+      } else {
+        setInHero(false)
+      }
+    }
+
+    // Initial check
+    checkHero(window.scrollY)
+
+    const unsubscribe = scrollY.on('change', checkHero)
     return unsubscribe
-  }, [scrollY])
+  }, [scrollY, pathname])
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -54,18 +65,18 @@ export function Navbar() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
-  // Force light theme (dark text) if not on home page or if scrolled
-  const isLightTheme = scrolled || pathname !== '/'
-
   if (shouldHide) return null
+
+  // It's transparent only if on the homepage AND still within the hero section
+  const isTransparent = pathname === '/' && inHero
 
   return (
     <>
       <motion.header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-          isLightTheme
-            ? 'bg-[#FBFBFB]/95 shadow-sm shadow-[#1a2d47]/5 backdrop-blur-md'
-            : 'bg-transparent'
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+          isTransparent
+            ? 'bg-transparent border-transparent'
+            : 'bg-warm-ivory/80 border-b border-royal/15 shadow-sm backdrop-blur-md'
         }`}
         initial={{ y: -80 }}
         animate={{ y: 0 }}
@@ -83,21 +94,19 @@ export function Navbar() {
               alt="Recon Logo"
               width={56}
               height={56}
-              className="transition-transform group-hover:scale-105"
+              className={`transition-all duration-300 group-hover:scale-105 ${
+                isTransparent ? 'brightness-0 invert' : ''
+              }`}
             />
             <div className="flex flex-col leading-none">
-              <span
-                className={`text-[15px] font-extrabold uppercase tracking-wide transition-colors ${
-                  isLightTheme ? 'text-[#1a2d47]' : 'text-white'
-                }`}
-              >
+              <span className={`text-[15px] font-extrabold uppercase tracking-wide transition-colors ${
+                isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
+              }`}>
                 recon
               </span>
-              <span
-                className={`text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors ${
-                  isLightTheme ? 'text-[#335C8B]' : 'text-[#8bb8e8]'
-                }`}
-              >
+              <span className={`text-[10px] font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${
+                isTransparent ? 'text-white/80' : 'text-royal'
+              }`}>
                 International
               </span>
             </div>
@@ -119,13 +128,13 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-bold transition-colors ${
-                      active
-                        ? isLightTheme
-                          ? 'text-[#1a2d47]'
-                          : 'text-[#8bb8e8]'
-                        : isLightTheme
-                        ? 'text-[#5a7394] hover:text-[#1a2d47]'
-                        : 'text-white/80 hover:text-white'
+                      isTransparent
+                        ? active
+                          ? 'text-white'
+                          : 'text-white/80 hover:text-white'
+                        : active
+                          ? 'text-[#17A3FF]'
+                          : 'text-royal/80 hover:text-[#17A3FF]'
                     }`}
                   >
                     {link.label}
@@ -142,7 +151,9 @@ export function Navbar() {
                     {active && (
                       <motion.span
                         layoutId="nav-underline"
-                        className="absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full bg-[#335C8B]"
+                        className={`absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full ${
+                          isTransparent ? 'bg-white' : 'bg-[#17A3FF]'
+                        }`}
                       />
                     )}
                   </Link>
@@ -157,15 +168,13 @@ export function Navbar() {
 
           {/* CTA + Hamburger */}
           <div className="flex items-center gap-3">
-
-
             <button
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
               className={`lg:hidden flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
-                isLightTheme
-                  ? 'border-[#d0dae6] text-[#5a7394] hover:border-[#335C8B]'
-                  : 'border-white/30 text-white hover:border-white/60'
+                isTransparent 
+                  ? 'border-white/30 text-white hover:border-white hover:bg-white/10'
+                  : 'border-royal/20 text-royal hover:border-[#17A3FF] hover:text-[#17A3FF]'
               }`}
             >
               <svg
@@ -196,3 +205,4 @@ export function Navbar() {
 }
 
 export default Navbar
+

@@ -86,7 +86,7 @@ export function MobileMenu({ links, isOpen, onClose }: MobileMenuProps) {
               <button
                 onClick={onClose}
                 aria-label="Close menu"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white hover:border-[#335C8B] hover:text-[#8bb8e8] transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white hover:border-[#17A3FF] hover:text-[#17A3FF] transition-colors"
               >
                 ✕
               </button>
@@ -105,7 +105,7 @@ export function MobileMenu({ links, isOpen, onClose }: MobileMenuProps) {
                   <Link
                     href={link.href}
                     onClick={onClose}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-lg font-semibold text-white/80 transition-colors hover:bg-white/5 hover:text-[#8bb8e8]"
+                    className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-lg font-semibold text-white/80 transition-colors hover:bg-white/5 hover:text-[#17A3FF]"
                   >
                     <span className="h-px flex-1 bg-white/10" />
                     {link.label}
@@ -119,7 +119,7 @@ export function MobileMenu({ links, isOpen, onClose }: MobileMenuProps) {
               <Link
                 href="/contact"
                 onClick={onClose}
-                className="block w-full rounded-full bg-[#335C8B] py-3.5 text-center text-sm font-bold text-white hover:bg-[#4a7ab5] transition-colors"
+                className="block w-full rounded-full bg-[#17A3FF] py-3.5 text-center text-sm font-bold text-white hover:bg-[#17A3FF]/90 transition-colors"
               >
                 Get In Touch
               </Link>

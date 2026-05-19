@@ -148,6 +148,26 @@ export const blurIn: Variants = {
   },
 }
 
+/** Slow sacred blur reveal — homepage cinematic typography */
+export const cinematicBlurReveal: Variants = {
+  hidden: {
+    opacity: 0,
+    filter: 'blur(14px)',
+    y: 36,
+    letterSpacing: '0.06em',
+  },
+  visible: {
+    opacity: 1,
+    filter: 'blur(0px)',
+    y: 0,
+    letterSpacing: '0em',
+    transition: {
+      duration: 1.5,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+}
+
 // ─── Draw Line ──────────────────────────────────────────────────────────────
 
 export const drawLine: Variants = {
@@ -175,4 +195,4 @@ export const tapScale = {
 
 // ─── Viewport Defaults ──────────────────────────────────────────────────────
 
-export const viewportOnce = { once: true, margin: '-80px' }
+export const viewportOnce = { once: false, margin: '-100px' }

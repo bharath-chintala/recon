@@ -40,7 +40,6 @@ export const metadata: Metadata = {
 }
 
 import { SmoothScroll } from '@/components/ui/SmoothScroll'
-
 export default function RootLayout({
   children,
 }: Readonly<{

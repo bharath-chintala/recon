@@ -33,68 +33,83 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-[#0b1526] text-[#f5f0e8]">
-      {/* Top wave */}
-      <div className="w-full overflow-hidden leading-none">
-        <svg
-          viewBox="0 0 1200 60"
-          preserveAspectRatio="none"
-          className="block h-12 w-full"
-          aria-hidden
-        >
-          <path
-            d="M0,30 C300,60 900,0 1200,30 L1200,0 L0,0 Z"
-            fill="#0a1420"
-          />
+    <footer className="relative bg-[#000435] border-t border-white/10 overflow-hidden">
+      {/* Calm cinematic fog fade-in */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-warm-ivory/10 to-transparent opacity-40"
+        aria-hidden
+      />
+      <div className="cinematic-fg-particle pointer-events-none absolute left-[20%] top-[30%] h-1 w-1 rounded-full bg-amber-200/15" aria-hidden />
+      <div
+        className="cinematic-fg-particle pointer-events-none absolute right-[25%] bottom-[40%] h-0.5 w-0.5 rounded-full bg-white/10 [animation-delay:3s]"
+        aria-hidden
+      />
+
+      {/* Delicate Royal Separation Line */}
+      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Decorative Traditional Circular Silhouette in Footer Corner */}
+      <div className="absolute bottom-4 left-4 w-48 h-48 opacity-[0.02] pointer-events-none select-none">
+        <svg viewBox="0 0 100 100" fill="currentColor" className="text-white w-full h-full">
+          <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" fill="none" />
         </svg>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-12">
+      <div className="mx-auto max-w-7xl px-6 pb-12 pt-20 lg:px-12 relative z-10">
         <div className="grid gap-12 grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
+          
+          {/* Brand & Mission Statement */}
           <div className="col-span-2 lg:col-span-1">
             <Link
               href="/"
-              className="mb-4 inline-flex items-center gap-2.5 group"
+              className="mb-6 inline-flex items-center gap-3 group"
             >
               <Image
                 src="/images/recon-logo.png"
                 alt="Recon Logo"
-                width={56}
-                height={56}
+                width={52}
+                height={52}
+                className="transition-transform duration-500 group-hover:scale-105 filter brightness-100"
               />
               <div className="flex flex-col leading-none">
-                <span className="text-[15px] font-extrabold uppercase tracking-wide text-white">
+                <span className="font-cinzel text-base font-extrabold uppercase tracking-wide text-white">
                   recon
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8bb8e8]">
+                <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.2em] text-saffron mt-0.5">
                   International
                 </span>
               </div>
             </Link>
-            <p className="text-sm leading-relaxed text-[#d4c8b4] max-w-xs mt-4">
+            
+            <p className="text-xs md:text-sm leading-relaxed text-white/60 max-w-xs mt-4 font-light text-justify">
               A global trust dedicated to cultural diplomacy, heritage
               preservation, and people-to-people connections across 60+ nations.
             </p>
-            {/* Social links */}
-            <div className="mt-6 flex gap-3">
-              {['𝕏', 'in', 'f', '▶'].map((icon) => (
+            
+            {/* Animated Dark/Light Glassmorphic Social Icons */}
+            <div className="mt-8 flex gap-3">
+              {[
+                { name: '𝕏', icon: '𝕏' },
+                { name: 'LinkedIn', icon: 'in' },
+                { name: 'Facebook', icon: 'f' },
+                { name: 'YouTube', icon: '▶' }
+              ].map((soc) => (
                 <a
-                  key={icon}
+                  key={soc.name}
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-xs text-[#e8e0d4] hover:border-[#335C8B] hover:text-white transition-colors"
-                  aria-label={`Social: ${icon}`}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-white/10 text-xs text-white/80 hover:bg-[#17A3FF] hover:text-white hover:border-[#17A3FF] hover:scale-105 hover:shadow-md transition-all duration-300"
+                  aria-label={`Social Link: ${soc.name}`}
                 >
-                  {icon}
+                  {soc.icon}
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links */}
+          {/* Links Section */}
           {Object.entries(LINKS).map(([heading, links]) => (
             <div key={heading}>
-              <p className="mb-5 text-xs font-bold uppercase tracking-widest text-[#f5f0e8]">
+              <p className="mb-6 font-cinzel text-xs font-bold uppercase tracking-widest text-white border-b border-white/10 pb-2">
                 {heading}
               </p>
               <ul className="space-y-3">
@@ -102,7 +117,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#d4c8b4] hover:text-white transition-colors"
+                      className="text-xs md:text-sm text-white/60 hover:text-[#17A3FF] hover:translate-x-1 inline-block transition-all duration-300 font-light"
                     >
                       {link.label}
                     </Link>
@@ -113,9 +128,9 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 md:flex-row">
-          <p className="text-xs text-[#a89b87]">
+        {/* Bottom copyright and legal bar */}
+        <div className="mt-20 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+          <p className="text-[10px] md:text-xs text-white/40 font-light">
             © {new Date().getFullYear()} Recon International Trust. All rights
             reserved.
           </p>
@@ -125,7 +140,7 @@ export function Footer() {
                 <Link
                   key={item}
                   href="#"
-                  className="text-xs text-[#a89b87] hover:text-[#f5f0e8] transition-colors"
+                  className="text-[10px] md:text-xs text-white/40 hover:text-[#17A3FF] transition-colors duration-300 font-light"
                 >
                   {item}
                 </Link>
@@ -138,4 +153,4 @@ export function Footer() {
   )
 }
 
-export default Footer
+export default Footer;
