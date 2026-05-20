@@ -196,7 +196,7 @@ export function AboutPreview() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-base text-royal/70 font-light leading-relaxed mb-8 text-justify"
             >
-              Recon International bridges classical roots with global audiences. Over the past 30 years, our trust has successfully conceptualized and delivered 160+ national and international initiatives across 16 countries. Through art preservation, spiritual journeys, and targeted humanitarian impact, we keep living heritage alive for subsequent generations.
+              Recon International bridges classical roots with global audiences. Over the past 30 years, our trust has successfully conceptualized and delivered 160+ National and International initiatives across 16 countries. Through art preservation, spiritual journeys, and targeted humanitarian impact, we keep living heritage alive for subsequent generations.
             </motion.p>
 
             <motion.div

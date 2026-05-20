@@ -10,14 +10,19 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // ─── Frame Config ─────────────────────────────────────────────────────────────
 const TOTAL_FRAMES  = 50
 const FRAME_BASE    = '/images/frames2/ezgif-frame-'
+const HERO_BG       = '#030816' // matches hero overlays — prevents flash through canvas
 // 600vh = very slow, meditative cinematic pacing
 const SCROLL_HEIGHT = '500vh'
+
+function isFrameReady(img: HTMLImageElement | undefined): img is HTMLImageElement {
+  return !!img?.complete && img.naturalWidth > 0
+}
 
 function padFrame(n: number) {
   return String(n).padStart(3, '0')
 }
 function getFrameSrc(i: number) {
-  return `${FRAME_BASE}${padFrame(i + 1)}.png`
+  return `${FRAME_BASE}${padFrame(i + 1)}.webp`
 }
 
 // ─── Easing helpers ───────────────────────────────────────────────────────────
@@ -29,10 +34,6 @@ function easeInQuad(t: number) {
 }
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3)
-}
-/** Smoother frame index interpolation */
-function easeFrameBlend(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 function clamp(v: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, v))
@@ -80,7 +81,6 @@ export function HeroSection() {
 
   // ── State refs ──────────────────────────────────────────────────────────────
   const imagesRef      = useRef<HTMLImageElement[]>([])
-  const rawFrameRef    = useRef(0)        // float frame position (for crossfade)
   const scrollProg     = useRef(0)        // 0-1 raw GSAP progress
   const smoothProg     = useRef(0)        // lerped version used in render
   const rafRef         = useRef(0)
@@ -90,6 +90,7 @@ export function HeroSection() {
   const lastTsRef      = useRef(0)
   const dprRef         = useRef(1)
   const loadedRef      = useRef(0)
+  const framesReadyRef = useRef(false)
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
 
   // ── Pre-cache canvas contexts (avoid repeated getContext calls) ─────────────
@@ -98,20 +99,37 @@ export function HeroSection() {
   const fogCtxRef      = useRef<CanvasRenderingContext2D | null>(null)
   const raysCtxRef     = useRef<CanvasRenderingContext2D | null>(null)
 
-  // ─── Preload frames (decode-ready) ───────────────────────────────────────────
+  // ─── Preload frames (fully decoded before scroll) ─────────────────────────────
   const preloadFrames = useCallback(() => {
     loadedRef.current = 0
-    imagesRef.current = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
+    framesReadyRef.current = false
+
+    const images = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
       const img = new Image()
       img.decoding = 'async'
-      img.onload = () => {
-        loadedRef.current += 1
-      }
-      img.onerror = () => {
-        loadedRef.current += 1
-      }
       img.src = getFrameSrc(i)
       return img
+    })
+    imagesRef.current = images
+
+    void Promise.all(
+      images.map(async (img) => {
+        try {
+          if (img.decode) await img.decode()
+          if (!img.complete) {
+            await new Promise<void>((resolve, reject) => {
+              img.onload = () => resolve()
+              img.onerror = () => reject()
+            })
+          }
+        } catch {
+          /* keep going if a single frame fails */
+        } finally {
+          loadedRef.current += 1
+        }
+      }),
+    ).finally(() => {
+      framesReadyRef.current = true
     })
   }, [])
 
@@ -174,10 +192,11 @@ export function HeroSection() {
     const w = canvas.width / dprRef.current
     const h = canvas.height / dprRef.current
 
-    const easedFrame = easeFrameBlend(rawFrame / Math.max(TOTAL_FRAMES - 1, 1)) * (TOTAL_FRAMES - 1)
-    const idxA  = Math.floor(easedFrame)
+    // Linear frame index from scroll — matches wheel / scrub motion 1:1
+    const framePos = clamp(rawFrame, 0, TOTAL_FRAMES - 1)
+    const idxA  = Math.floor(framePos)
     const idxB  = Math.min(idxA + 1, TOTAL_FRAMES - 1)
-    const blend = easedFrame - idxA
+    const blend = framePos - idxA
 
     const imgA = imagesRef.current[idxA]
     const imgB = imagesRef.current[idxB]
@@ -188,18 +207,27 @@ export function HeroSection() {
     // Subtle vertical parallax: images drift up slightly as camera "orbits"
     const panY = prog * -h * 0.04
 
-    ctx.clearRect(0, 0, w, h)
+    const aReady = isFrameReady(imgA)
+    const bReady = isFrameReady(imgB)
 
-    if (imgA?.complete && imgA.naturalWidth > 0) {
+    // Never clear to transparent — that flashes the page background during crossfade
+    if (!aReady && !bReady) return
+
+    ctx.fillStyle = HERO_BG
+    ctx.fillRect(0, 0, w, h)
+
+    // Draw A at full opacity, then B on top — avoids see-through when blend < 1
+    if (aReady) {
       ctx.globalAlpha = 1
       drawImgCover(ctx, imgA, w, h, zoom, panY)
     }
 
-    if (blend > 0.005 && imgB?.complete && imgB.naturalWidth > 0) {
-      ctx.globalAlpha = blend
+    if (idxA !== idxB && bReady) {
+      ctx.globalAlpha = aReady ? blend : 1
       drawImgCover(ctx, imgB, w, h, zoom, panY)
-      ctx.globalAlpha = 1
     }
+
+    ctx.globalAlpha = 1
   }, [drawImgCover])
 
   // ─── Draw fog layers ──────────────────────────────────────────────────────
@@ -351,13 +379,14 @@ export function HeroSection() {
       glowRef.current.style.transform  = `scale(${1 + prog * 0.4})`
     }
 
-    // ── Cinematic overlay: starts deep → lifts as light builds ──
+    // ── Cinematic overlay: starts lighter → lifts more as light builds ──
     if (overlayRef.current) {
-      const topA = Math.max(0.65 - prog * 0.52, 0.08)
-      const midA = Math.max(0.28 - prog * 0.18, 0.04)
-      const botA = 0.45 + prog * 0.22
+      const topA = Math.max(0.42 - prog * 0.38, 0.04)
+      const midA = Math.max(0.18 - prog * 0.12, 0.02)
+      const botA = 0.30 + prog * 0.18
+      // Using smooth eased stops to eliminate horizontal contrast lines
       overlayRef.current.style.background =
-        `linear-gradient(to bottom, rgba(3,8,22,${topA}) 0%, rgba(3,8,22,${midA}) 45%, rgba(0,0,0,${botA}) 100%)`
+        `linear-gradient(to bottom, rgba(3,8,22,${topA}) 0%, rgba(3,8,22,${topA * 0.6 + midA * 0.4}) 25%, rgba(3,8,22,${midA}) 50%, rgba(1.5,4,11,${midA * 0.5 + botA * 0.5}) 75%, rgba(0,0,0,${botA}) 100%)`
     }
 
     // ── Hero copy: fades out in first 25% of scroll ──
@@ -378,9 +407,9 @@ export function HeroSection() {
     }
 
     if (vignetteRef.current) {
-      const v = 0.78 + prog * 0.08
+      const v = 0.55 + prog * 0.06
       vignetteRef.current.style.background =
-        `radial-gradient(ellipse 88% 82% at 50% 50%, transparent 32%, rgba(0,0,8,${v}) 100%)`
+        `radial-gradient(ellipse 92% 88% at 50% 50%, transparent 40%, rgba(0,0,8,${v}) 100%)`
     }
 
     if (scrollIndicatorRef.current) {
@@ -396,9 +425,18 @@ export function HeroSection() {
     lastTsRef.current = ts
     timeRef.current += dt
 
-    // Silky lerp — cinematic inertia
-    smoothProg.current += (scrollProg.current - smoothProg.current) * 0.14
+    // Smooth lerp toward scroll target
+    const follow = 1 - Math.exp(-3 * dt)
+    const diff = scrollProg.current - smoothProg.current
+    
+    // Dead-zone snap: if we're extremely close, lock to avoid infinite micro-jitter
+    if (Math.abs(diff) < 0.0003) {
+      smoothProg.current = scrollProg.current
+    } else {
+      smoothProg.current += diff * follow
+    }
 
+    // Both frames AND overlays use the same smoothed progress — no raw jumps
     const prog     = smoothProg.current
     const rawFrame = prog * (TOTAL_FRAMES - 1)
 
@@ -424,10 +462,16 @@ export function HeroSection() {
       c.height = h * dprRef.current
       c.style.width = `${w}px`
       c.style.height = `${h}px`
-      const ctx = c.getContext('2d', { alpha: true })
+      const alpha = ref !== frameCanvasRef
+      const ctx = c.getContext('2d', { alpha })
       if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
     })
-    frameCtxRef.current    = frameCanvasRef.current?.getContext('2d') ?? null
+    const frameCtx = frameCanvasRef.current?.getContext('2d', { alpha: false })
+    if (frameCtx) {
+      frameCtx.imageSmoothingEnabled = true
+      frameCtx.imageSmoothingQuality = 'high'
+    }
+    frameCtxRef.current = frameCtx ?? null
     particleCtxRef.current = particleCanvasRef.current?.getContext('2d') ?? null
     fogCtxRef.current      = fogCanvasRef.current?.getContext('2d') ?? null
     raysCtxRef.current     = raysCanvasRef.current?.getContext('2d') ?? null
@@ -454,10 +498,11 @@ export function HeroSection() {
     const heroScroll = ScrollTrigger.create({
       trigger:       wrapper,
       start:         'top top',
-      end:           '+=400%',       // 400vh — matches total 500vh wrapper height
-      scrub:         1.2,            // responsive but still has cinematic momentum
+      end:           '+=400%',
+      scrub:         5,              // ultra-smooth — maximum glide, no jank
       pin:           stickyRef.current,
       anticipatePin: 1,
+      fastScrollEnd: true,
       onUpdate: (self) => {
         scrollProg.current = self.progress
       },
@@ -484,13 +529,18 @@ export function HeroSection() {
       <div
         ref={stickyRef}
         className="sticky top-0 w-full overflow-hidden"
-        style={{ height: '100vh' }}
+        style={{
+          height: '100vh',
+          background: HERO_BG,
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+        }}
       >
         {/* ── L0: Frame sequence ── */}
         <canvas
           ref={frameCanvasRef}
           className="absolute inset-0 w-full h-full"
-          style={{ zIndex: 0 }}
+          style={{ zIndex: 0, filter: 'brightness(1.22) contrast(1.04)' }}
           aria-hidden
         />
 
@@ -527,17 +577,16 @@ export function HeroSection() {
           className="absolute inset-0 pointer-events-none"
           style={{
             zIndex: 3,
-            background: 'linear-gradient(to bottom, rgba(3,8,22,0.65) 0%, rgba(3,8,22,0.28) 45%, rgba(0,0,0,0.45) 100%)',
+            background: 'linear-gradient(to bottom, rgba(3,8,22,0.65) 0%, rgba(3,8,22,0.5) 25%, rgba(3,8,22,0.28) 50%, rgba(1.5,4,11,0.365) 75%, rgba(0,0,0,0.45) 100%)',
           }}
         />
 
         {/* ── L4: Bottom smoke gradient (foreground atmosphere) ── */}
         <div
-          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
             zIndex: 4,
-            height: '45%',
-            background: 'linear-gradient(to top, rgba(2,5,15,0.65) 0%, transparent 100%)',
+            background: 'linear-gradient(to top, rgba(2,5,15,0.40) 0%, rgba(2,5,15,0.10) 18%, transparent 38%)',
           }}
         />
 
@@ -549,29 +598,17 @@ export function HeroSection() {
           aria-hidden
         />
 
-        {/* ── L6: Film grain ── */}
-        <div
-          className="absolute inset-0 pointer-events-none select-none"
-          style={{
-            zIndex: 6,
-            opacity: 0.038,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-            backgroundSize: '110px 110px',
-          }}
-        />
-
-        {/* ── L7: Vignette ── */}
+        {/* ── L6: Vignette ── */}
         <div
           ref={vignetteRef}
           className="absolute inset-0 pointer-events-none"
           style={{
             zIndex: 7,
-            background: 'radial-gradient(ellipse 90% 85% at 50% 50%, transparent 35%, rgba(0,0,5,0.82) 100%)',
+            background: 'radial-gradient(ellipse 92% 88% at 50% 50%, transparent 40%, rgba(0,0,5,0.55) 100%)',
           }}
         />
 
-        {/* ── L8: Cinematic text reveal ── */}
+        {/* ── L7: Cinematic text reveal ── */}
         <div
           ref={textWrapRef}
           className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
@@ -633,7 +670,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* ── L9: Initial hero copy ── */}
+        {/* ── L8: Initial hero copy ── */}
         <div
           ref={heroCopyRef}
           className="absolute inset-0 z-10 mx-auto flex h-full w-full max-w-7xl items-end px-6 pb-20 lg:px-12"
@@ -674,7 +711,7 @@ export function HeroSection() {
                 Discover Our Mission
               </Button>
               <Button
-                href="/events"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-upcoming-events'))}
                 variant="outline"
                 size="lg"
                 className="px-8 py-6 text-lg border-white/50 text-white hover:bg-white/10 hover:border-white"
@@ -685,7 +722,7 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* ── L10: Scroll indicator ── */}
+        {/* ── L9: Scroll indicator ── */}
         <div
           ref={scrollIndicatorRef}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-opacity duration-500"

@@ -235,12 +235,23 @@ export default function Dashboard() {
       {/* Header */}
       <header className="border-b border-white/10 bg-white/5 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image src="/images/recon-logo.png" alt="Logo" width={40} height={40} />
-            <div>
-              <h1 className="font-bold text-sm uppercase tracking-widest text-white">Recon Admin</h1>
-              <p className="text-[10px] text-[#8bb8e8] uppercase tracking-wider">Visual CMS Editor</p>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <Image src="/images/recon-logo.png" alt="Logo" width={40} height={40} />
+              <div>
+                <h1 className="font-bold text-sm uppercase tracking-widest text-white">Recon Admin</h1>
+                <p className="text-[10px] text-[#8bb8e8] uppercase tracking-wider">Visual CMS Editor</p>
+              </div>
             </div>
+            {/* Top Navigation */}
+            <nav className="hidden md:flex items-center gap-2 pl-6 ml-6 border-l border-white/10">
+              <a href="/dashboard" className="text-sm font-semibold text-white bg-white/10 px-3 py-1.5 rounded-full transition-colors">
+                Past Events
+              </a>
+              <a href="/dashboard/upcoming" className="text-sm font-semibold text-[#8a9bb5] hover:text-white px-3 py-1.5 rounded-full transition-colors">
+                Upcoming Events
+              </a>
+            </nav>
           </div>
           
           {/* Controls */}

@@ -33,6 +33,7 @@
 }
 
 html {
+  font-size: 110% !important;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -73,6 +74,11 @@ body {
   --cinematic-depth: 0;
   --cinematic-saffron: rgba(218, 170, 55, 1);
   --cinematic-himalayan: rgba(40, 90, 180, 0.35);
+}
+
+/* Tiled SVG noise shows a visible grid through semi-transparent hero layers — hide on home */
+.cinematic-home .cinematic-grain {
+  display: none;
 }
 
 .cinematic-grain {

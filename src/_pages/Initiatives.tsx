@@ -77,7 +77,7 @@ export default function InitiativesPage() {
                   <h2 className="mb-5 font-serif text-4xl font-bold text-[#1a2d47]">
                     {initiative.title}
                   </h2>
-                  <p className="mb-8 text-lg leading-relaxed text-[#5a7394]">
+                  <p className="mb-8 text-lg leading-relaxed text-[#5a7394] text-justify">
                     {initiative.description}
                   </p>
 
@@ -119,7 +119,7 @@ export default function InitiativesPage() {
             Partner With Us
           </motion.h2>
           <motion.p variants={fadeInUp} className="text-[#c8d6e8] text-lg mb-8">
-            We welcome governments, foundations, and cultural organisations who share our vision of a world united through culture.
+            We welcome Governments, Foundations, and Cultural Organisations who share our vision of a world united through culture.
           </motion.p>
           <motion.div variants={fadeInUp}>
             <Button href="/contact" variant="secondary" size="lg">

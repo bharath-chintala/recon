@@ -141,7 +141,7 @@ const PROGRAM_DATA = [
       },
       {
         title: 'Mathematics Quiz (2018)',
-        desc: 'Held across five government schools in Hyderabad to celebrate Sri Ramanujan’s 131st birth anniversary.',
+        desc: 'Held across five Government Schools in Hyderabad to celebrate Sri Ramanujan’s 131st birth anniversary.',
         image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2670&auto=format&fit=crop',
       },
       {
@@ -232,6 +232,44 @@ export default function Events() {
     }
     fetchEvents()
   }, [])
+
+  useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = window.location.hash
+      if (!hash) return
+      
+      const targetSlug = hash.replace('#', '')
+      
+      for (const section of programData) {
+        const hasItem = section.items.some(
+          item => item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === targetSlug
+        )
+        if (hasItem) {
+          setFilter(section.title)
+          
+          setTimeout(() => {
+            const isMobile = window.innerWidth < 1024
+            const elementId = isMobile ? `mobile-${targetSlug}` : targetSlug
+            const element = document.getElementById(elementId)
+            if (element) {
+              const y = element.getBoundingClientRect().top + window.scrollY - 150
+              window.scrollTo({ top: y, behavior: 'smooth' })
+            }
+          }, 200)
+          break
+        }
+      }
+    }
+
+    if (programData.length > 0) {
+      const t = setTimeout(handleHashScroll, 300)
+      window.addEventListener('hashchange', handleHashScroll)
+      return () => {
+        clearTimeout(t)
+        window.removeEventListener('hashchange', handleHashScroll)
+      }
+    }
+  }, [programData])
 
   const filteredData = programData.filter((s) => s.title === filter)
 
@@ -364,38 +402,55 @@ export default function Events() {
         </div>
       </section>
 
-      {/* Sleek Minimalist Filter */}
-      <section className="relative z-20 bg-[#FBFBFB] border-b border-[#d0dae6] sticky top-20 shadow-sm transition-all duration-300">
+      {/* Premium Pill-Chip Filter Bar */}
+      <section className="relative z-20 bg-[#FBFBFB] sticky top-20 shadow-[0_2px_24px_rgba(26,45,71,0.07)] transition-all duration-300">
+        {/* Gradient fade edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#FBFBFB] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FBFBFB] to-transparent z-10 pointer-events-none" />
+
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <motion.div 
+          <motion.div
             variants={{
               hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+              visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
             }}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="flex items-center gap-8 overflow-x-auto no-scrollbar py-6"
+            className="flex items-center gap-3 overflow-x-auto no-scrollbar py-4"
           >
-            {programData.map((section) => (
-              <motion.button
-                key={section.title}
-                variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleFilterClick(section.title)}
-                className={`whitespace-nowrap pb-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${
-                  filter === section.title
-                    ? 'text-[#1a2d47] border-b-2 border-[#335C8B]'
-                    : 'text-[#8a9bb5] hover:text-[#1a2d47] border-b-2 border-transparent'
-                }`}
-              >
-                {section.title}
-              </motion.button>
-            ))}
+            {programData.map((section, i) => {
+              const isActive = filter === section.title
+              return (
+                <motion.button
+                  key={section.title}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => handleFilterClick(section.title)}
+                  className={`relative whitespace-nowrap flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold tracking-[0.04em] transition-all duration-300 border ${
+                    isActive
+                      ? 'bg-[#1a2d47] text-white border-[#1a2d47] shadow-md'
+                      : 'bg-white text-[#5a7394] border-[#d0dae6] hover:border-[#335C8B] hover:text-[#1a2d47] hover:bg-[#f0f4f8]'
+                  }`}
+                >
+                  {/* Dot indicator */}
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors duration-300 ${isActive ? 'bg-[#c8a96e]' : 'bg-[#d0dae6]'}`} />
+                  {section.title}
+                  {/* Active shimmer line */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeFilterPill"
+                      className="absolute inset-0 rounded-full ring-1 ring-[#335C8B]/30"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                </motion.button>
+              )
+            })}
           </motion.div>
         </div>
       </section>
@@ -486,6 +541,7 @@ export default function Events() {
                         {section.items.map((item, itemIdx) => (
                           <motion.div
                             key={itemIdx}
+                            id={item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
                             initial={{ opacity: 0, y: 30, scale: 0.98 }}
                             whileInView={{ opacity: 1, y: 0, scale: 1 }}
                             viewport={{ once: true, margin: "-10%" }}
@@ -497,18 +553,13 @@ export default function Events() {
                           >
                             {/* Text Content */}
                             <div>
-                              {/* Number */}
-                              <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-                                No. {String(itemIdx + 1).padStart(2, '0')}
-                              </div>
-                              
                               {/* Title */}
                               <h3 className="font-serif text-2xl lg:text-3xl text-[#1a2d47] leading-snug mb-4 group-hover:text-[#335C8B] transition-colors duration-500 pr-4">
                                 {item.title}
                               </h3>
                               
                               {/* Description */}
-                              <p className="text-lg text-[#5a7394] leading-relaxed font-light">
+                              <p className="text-lg text-[#5a7394] leading-relaxed font-light text-justify">
                                 {item.desc}
                               </p>
                             </div>
@@ -592,7 +643,7 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
       className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-8 pb-8"
     >
       {items.map((item, itemIdx) => (
-        <div key={itemIdx} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-[#FBFBFB] rounded-2xl p-6 md:p-8 border border-[#e0e7ef] shadow-sm relative overflow-hidden group">
+        <div key={itemIdx} id={`mobile-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-[#FBFBFB] rounded-2xl p-6 md:p-8 border border-[#e0e7ef] shadow-sm relative overflow-hidden group">
           <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden relative shadow-md">
             <img 
               src={item.image} 
@@ -602,13 +653,10 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
             />
           </div>
           <div className="flex flex-col flex-1">
-            <div className="mb-4 text-xs font-bold tracking-[0.2em] text-[#335C8B] uppercase">
-              No. {String(itemIdx + 1).padStart(2, '0')}
-            </div>
             <h3 className="font-serif text-2xl lg:text-3xl text-[#1a2d47] leading-snug mb-4 pr-4">
               {item.title}
             </h3>
-            <p className="text-lg text-[#5a7394] leading-relaxed font-light">
+            <p className="text-lg text-[#5a7394] leading-relaxed font-light text-justify">
               {item.desc}
             </p>
           </div>

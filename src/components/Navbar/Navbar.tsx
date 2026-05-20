@@ -24,7 +24,7 @@ const ABOUT_MEGA = {
       heading: 'Organisation',
       links: [
         { label: 'Our Mission', href: '/about#mission', desc: 'What drives us' },
-        { label: 'Our History', href: '/about#history', desc: '25 years of service' },
+        { label: 'Our History', href: '/about#history', desc: '30 years of service' },
         { label: 'Trust Members', href: '/about#members', desc: 'Leadership & governance' },
       ],
     },
@@ -73,11 +73,10 @@ export function Navbar() {
   return (
     <>
       <motion.header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          isTransparent
-            ? 'bg-transparent border-transparent'
-            : 'bg-warm-ivory/80 border-b border-royal/15 shadow-sm backdrop-blur-md'
-        }`}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${isTransparent
+          ? 'bg-transparent border-transparent'
+          : 'bg-warm-ivory/80 border-b border-royal/15 shadow-sm backdrop-blur-md'
+          }`}
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: EASE }}
@@ -92,23 +91,24 @@ export function Navbar() {
             <Image
               src="/images/recon-logo.png"
               alt="Recon Logo"
-              width={56}
-              height={56}
-              className={`transition-all duration-300 group-hover:scale-105 ${
-                isTransparent ? 'brightness-0 invert' : ''
-              }`}
+              width={70}
+              height={70}
+              className={`transition-all duration-300 group-hover:scale-105 ${isTransparent ? 'brightness-0 invert' : ''
+                }`}
             />
             <div className="flex flex-col leading-none">
-              <span className={`text-[15px] font-extrabold uppercase tracking-wide transition-colors ${
-                isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
-              }`}>
+              <span className={`text-[17px] font-extrabold uppercase tracking-wide transition-colors ${isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
+                }`}>
                 recon
               </span>
-              <span className={`text-[10px] font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${
-                isTransparent ? 'text-white/80' : 'text-royal'
-              }`}>
+              <span className={`text-[12px] font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${isTransparent ? 'text-white/80' : 'text-royal'
+                }`}>
                 International
               </span>
+              <h5 className={`text-[9px] font-semibold uppercase tracking-[0.12em] mt-1 transition-colors ${isTransparent ? 'text-white/70' : 'text-royal/70'
+                }`}>
+                Charitable Trust
+              </h5>
             </div>
           </Link>
 
@@ -127,15 +127,14 @@ export function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-bold transition-colors ${
-                      isTransparent
-                        ? active
-                          ? 'text-white'
-                          : 'text-white/80 hover:text-white'
-                        : active
-                          ? 'text-[#17A3FF]'
-                          : 'text-royal/80 hover:text-[#17A3FF]'
-                    }`}
+                    className={`relative inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-bold transition-colors ${isTransparent
+                      ? active
+                        ? 'text-white'
+                        : 'text-white/80 hover:text-white'
+                      : active
+                        ? 'text-[#17A3FF]'
+                        : 'text-royal/80 hover:text-[#17A3FF]'
+                      }`}
                   >
                     {link.label}
                     {isAbout && (
@@ -151,9 +150,8 @@ export function Navbar() {
                     {active && (
                       <motion.span
                         layoutId="nav-underline"
-                        className={`absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full ${
-                          isTransparent ? 'bg-white' : 'bg-[#17A3FF]'
-                        }`}
+                        className={`absolute -bottom-0.5 left-3 right-3 h-0.5 rounded-full ${isTransparent ? 'bg-white' : 'bg-[#17A3FF]'
+                          }`}
                       />
                     )}
                   </Link>
@@ -171,11 +169,10 @@ export function Navbar() {
             <button
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
-              className={`lg:hidden flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
-                isTransparent 
-                  ? 'border-white/30 text-white hover:border-white hover:bg-white/10'
-                  : 'border-royal/20 text-royal hover:border-[#17A3FF] hover:text-[#17A3FF]'
-              }`}
+              className={`lg:hidden flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${isTransparent
+                ? 'border-white/30 text-white hover:border-white hover:bg-white/10'
+                : 'border-royal/20 text-royal hover:border-[#17A3FF] hover:text-[#17A3FF]'
+                }`}
             >
               <svg
                 className="h-5 w-5"

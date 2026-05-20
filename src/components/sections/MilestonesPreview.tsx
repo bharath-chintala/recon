@@ -4,27 +4,32 @@ import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const MILESTONES = [
   {
     title: 'Carnival of Indian Culture',
     desc: 'Recon International Charitable Trust organized a 10-day celebration of "Carnival of Indian Culture" with 630 budding artists, under Ganga Pushkara...',
-    image: '/images/Carnival of Indian Culture.png'
+    image: '/images/Carnival of Indian Culture.png',
+    link: '/events#carnival-of-indian-culture-ganga-pushkar-mahotsav-haridwar'
   },
   {
     title: 'Parakram Diwas',
     desc: 'Recon International Charitable Trust organized celebrations of "Parakram Diwas" under Azadi Ka Amrit Mahotsav, in memory of the great freedom fighter...',
-    image: '/images/parakaran.png'
+    image: '/images/parakaran.png',
+    link: '/events#parakram-divas-celebrations-azadi-ka-amrit-mahotsav-new-delhi'
   },
   {
     title: 'Sri Venkateshwara Kalyana Mahotsavam',
     desc: 'Recon International Charitable Trust organized the "Sri Venkateshwara Kalyana Mahotsavam" at Colombo, Sri Lanka, on 27th July 2024. Sri Santhosh...',
-    image: '/images/venkateshwar.png'
+    image: '/images/venkateshwar.png',
+    link: '/events#sri-venkateshwara-kalyana-mahotsav-colombo-sri-lanka'
   },
   {
     title: 'Food Festival and Telangana...',
     desc: 'Organized cultural programs, Food Festival and Telangana Traditional Products Exhibition in Mauritius, on behalf of YAT & C Department, State...',
-    image: '/images/food festival.png'
+    image: '/images/food festival.png',
+    link: '/events#food-festivals-and-exhibitions'
   }
 ]
 
@@ -108,47 +113,52 @@ export function MilestonesPreview() {
           className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar py-6 scroll-smooth px-2"
         >
           {MILESTONES.map((milestone, i) => (
-            <motion.div
+            <Link
               key={milestone.title}
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              transition={{ delay: i * 0.1 }}
-              data-cinematic-reveal
-              className="w-[85vw] sm:w-[500px] md:w-[650px] snap-center flex-shrink-0 flex flex-col md:flex-row bg-white/75 backdrop-blur-md rounded-[2rem] overflow-hidden border border-royal/20 hover:border-saffron/30 hover:bg-white/95 hover:shadow-xl transition-all duration-700 shadow-md group"
+              href={milestone.link}
+              className="w-[85vw] sm:w-[500px] md:w-[650px] snap-center flex-shrink-0 cursor-pointer block"
             >
-              {/* Image Section */}
-              <div className="relative w-full md:w-[42%] aspect-[16/10] md:aspect-auto min-h-[220px] md:min-h-full overflow-hidden">
-                <Image
-                  src={milestone.image}
-                  alt={milestone.title}
-                  fill
-                  className="object-cover transition-all duration-1000 group-hover:scale-105"
-                />
-                {/* Overlay Dark/Light Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-warm-ivory/95 via-transparent to-transparent opacity-85 group-hover:opacity-40 transition-opacity" />
-              </div>
+              <motion.div
+                variants={fadeInUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={viewportOnce}
+                transition={{ delay: i * 0.1 }}
+                data-cinematic-reveal
+                className="w-full flex flex-col md:flex-row bg-white/75 backdrop-blur-md rounded-[2rem] overflow-hidden border border-royal/20 hover:border-saffron/30 hover:bg-white/95 hover:shadow-xl transition-all duration-700 shadow-md group h-full"
+              >
+                {/* Image Section */}
+                <div className="relative w-full md:w-[42%] aspect-[16/10] md:aspect-auto min-h-[220px] md:min-h-full overflow-hidden">
+                  <Image
+                    src={milestone.image}
+                    alt={milestone.title}
+                    fill
+                    className="object-cover transition-all duration-1000 group-hover:scale-105"
+                  />
+                  {/* Overlay Dark/Light Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-warm-ivory/95 via-transparent to-transparent opacity-85 group-hover:opacity-40 transition-opacity" />
+                </div>
 
-              {/* Content Section */}
-              <div className="flex flex-col flex-1 p-6 md:p-8 justify-between">
-                <div>
-                  <h3 className="mb-4 font-cinzel text-lg md:text-xl font-semibold text-royal leading-tight tracking-wide group-hover:text-saffron transition-colors duration-500">
-                    {milestone.title}
-                  </h3>
-                  <p className="mb-6 text-xs md:text-sm text-royal/70 leading-relaxed font-light line-clamp-5">
-                    {milestone.desc}
-                  </p>
+                {/* Content Section */}
+                <div className="flex flex-col flex-1 p-6 md:p-8 justify-between">
+                  <div>
+                    <h3 className="mb-4 font-cinzel text-lg md:text-xl font-semibold text-royal leading-tight tracking-wide group-hover:text-saffron transition-colors duration-500">
+                      {milestone.title}
+                    </h3>
+                    <p className="mb-6 text-xs md:text-sm text-royal/70 leading-relaxed font-light line-clamp-5 text-justify">
+                      {milestone.desc}
+                    </p>
+                  </div>
+                  
+                  <div className="pt-6 border-t border-royal/15 flex items-center justify-between">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-saffron">
+                      Heritage Milestone
+                    </span>
+                    <div className="h-1.5 w-1.5 bg-saffron/30 rounded-full" />
+                  </div>
                 </div>
-                
-                <div className="pt-6 border-t border-royal/15 flex items-center justify-between">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-saffron">
-                    Heritage Milestone
-                  </span>
-                  <div className="h-1.5 w-1.5 bg-saffron/30 rounded-full" />
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           ))}
         </div>
 

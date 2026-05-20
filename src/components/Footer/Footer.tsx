@@ -67,17 +67,20 @@ export function Footer() {
               <Image
                 src="/images/recon-logo.png"
                 alt="Recon Logo"
-                width={52}
-                height={52}
+                width={64}
+                height={64}
                 className="transition-transform duration-500 group-hover:scale-105 filter brightness-100"
               />
               <div className="flex flex-col leading-none">
-                <span className="font-cinzel text-base font-extrabold uppercase tracking-wide text-white">
+                <span className="font-cinzel text-[18px] font-extrabold uppercase tracking-wide text-white">
                   recon
                 </span>
-                <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.2em] text-saffron mt-0.5">
+                <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.2em] text-white mt-0.5">
                   International
                 </span>
+                <h5 className="font-cinzel text-[8.5px] font-semibold uppercase tracking-[0.12em] text-white/80 mt-1">
+                  Charitable Trust
+                </h5>
               </div>
             </Link>
             

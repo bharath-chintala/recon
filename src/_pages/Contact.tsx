@@ -46,7 +46,7 @@ export default function Contact() {
             Get In Touch
           </motion.h1>
           <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5]">
-            Whether you're a government, foundation, cultural institution, or individual — we'd love to hear from you.
+            Whether you're a Government, Foundation, Cultural Institution, or individual — we'd love to hear from you.
           </motion.p>
         </div>
       </section>
@@ -74,7 +74,7 @@ export default function Contact() {
                   { icon: '📍', label: 'Headquarters', value: '#103, Mount Nasir Apartments,\nBeside Ravindrabharathi,\nSaifabad, Hyderabad,\nTelangana - 500004' },
                   { icon: '📧', label: 'Email', value: 'hello@reconinternational.org' },
                   { icon: '📞', label: 'Phone', value: '+91 11 2345 6789' },
-                  { icon: '🕐', label: 'Office Hours', value: 'Mon–Fri, 9am–6pm IST' },
+                  { icon: '🕐', label: 'Office Hours', value: 'Mon–Fri, 10am– 4pm IST' },
                 ].map((item) => (
                   <div key={item.label} className="flex gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#dde6f0] text-lg">
@@ -202,7 +202,7 @@ export default function Contact() {
                   </div>
 
                   <Button type="submit" variant="primary" size="lg" className="w-full">
-                    Send Message →
+                    Send →
                   </Button>
                 </form>
               )}
@@ -246,7 +246,7 @@ export default function Contact() {
                 a: 'With over 30 years of leadership, we have conceptualized and delivered high-impact cultural programmes, international forums, and tourism initiatives worldwide.',
               },
               {
-                q: 'Does Recon International work with governments?',
+                q: 'Does Recon International work with Governments?',
                 a: 'Yes, we frequently collaborate with State and Central Government Tourism and Cultural Departments to deliver strategic initiatives and spiritual observances.',
               },
               {
@@ -275,7 +275,7 @@ export default function Contact() {
                       ↓
                     </span>
                   </div>
-                  
+
                   {/* Hover reveal content */}
                   <div className="grid grid-rows-[0fr] transition-all duration-500 ease-in-out group-hover:grid-rows-[1fr]">
                     <div className="overflow-hidden">

@@ -11,10 +11,12 @@ import {
   CtaSection,
 } from '@/components/sections'
 import { CinematicWorld, CinematicSection, SectionBridge } from '@/components/cinematic'
+import { UpcomingEventsPopup } from '@/components/ui/UpcomingEventsPopup'
 
 export default function Home() {
   return (
     <main className="cinematic-home relative overflow-x-hidden">
+      <UpcomingEventsPopup />
       <CinematicWorld>
         <HeroSection />
 

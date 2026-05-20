@@ -27,6 +27,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     })
 
     lenisRef.current = lenis
+    if (typeof window !== 'undefined') {
+      ;(window as any).lenis = lenis
+    }
 
     ScrollTrigger.scrollerProxy(document.documentElement, {
       scrollTop(value) {
@@ -63,6 +66,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       ScrollTrigger.scrollerProxy(document.documentElement, {})
       lenis.destroy()
       lenisRef.current = null
+      if (typeof window !== 'undefined') {
+        delete (window as any).lenis
+      }
     }
   }, [])
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
@@ -121,6 +122,44 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
 
 export function GalleryPreview() {
   const [selectedImage, setSelectedImage] = useState<typeof GALLERY_IMAGES[0] | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    return () => {
+      document.body.style.overflow = ''
+      if (typeof window !== 'undefined') {
+        ;(window as any).lenis?.start()
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden'
+      if (typeof window !== 'undefined') {
+        ;(window as any).lenis?.stop()
+      }
+    } else {
+      document.body.style.overflow = ''
+      if (typeof window !== 'undefined') {
+        ;(window as any).lenis?.start()
+      }
+    }
+  }, [selectedImage])
+
+  useEffect(() => {
+    if (!selectedImage) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedImage(null)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedImage])
 
   return (
     <section className="relative bg-soft-cream py-24 lg:py-36 overflow-hidden">
@@ -211,56 +250,63 @@ export function GalleryPreview() {
       </div>
 
       {/* Self-contained Lightbox Modal */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedImage(null)}
-            className="fixed inset-0 bg-warm-ivory/95 backdrop-blur-xl z-50 flex items-center justify-center p-4 md:p-8"
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-6 right-6 p-3 rounded-full bg-white/80 border border-royal/20 text-royal hover:text-[rgb(218, 170, 55)] hover:scale-105 transition-all duration-300 shadow-md z-50"
-              aria-label="Close Lightbox"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Modal Image Box */}
+      {mounted && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedImage && (
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-4xl max-h-[80vh] aspect-[16/10] md:aspect-[16/9] rounded-3xl overflow-hidden border border-royal/25 shadow-xl bg-white/75"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={() => setSelectedImage(null)}
+              className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 md:p-8"
             >
-              <Image
-                src={selectedImage.src}
-                alt={selectedImage.alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1200px) 100vw, 1200px"
-              />
-              
-              {/* Bottom Info Bar inside lightbox */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-warm-ivory/95 via-warm-ivory/80 to-transparent p-6 md:p-8 flex flex-col justify-end text-royal">
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[rgb(218, 170, 55)] mb-1.5">
-                  {selectedImage.category}
-                </span>
-                <h3 className="font-cinzel text-base md:text-lg font-light tracking-wide text-royal">
-                  {selectedImage.title}
-                </h3>
-              </div>
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-6 right-6 p-3 rounded-full bg-white/10 border border-white/20 text-white hover:text-[#daaa37] hover:scale-105 transition-all duration-300 shadow-md z-[10000] cursor-pointer"
+                aria-label="Close Lightbox"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Modal Image Box */}
+              <motion.div
+                initial={{ scale: 0.97, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.97, opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative flex flex-col items-center justify-center max-w-[95vw] max-h-[90vh]"
+              >
+                <div className="relative w-[95vw] max-w-4xl h-[70vh] md:h-[75vh]">
+                  <Image
+                    src={selectedImage.src}
+                    alt={selectedImage.alt}
+                    fill
+                    className="object-contain"
+                    priority
+                    sizes="(max-width: 1200px) 100vw, 1200px"
+                  />
+                </div>
+                
+                {/* Info Bar below image */}
+                <div className="text-center mt-4">
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.25em] text-[#daaa37] mb-1.5 block">
+                    {selectedImage.category}
+                  </span>
+                  <h3 className="font-cinzel text-base md:text-lg font-light tracking-wide text-white/90">
+                    {selectedImage.title}
+                  </h3>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </section>
   )
 }

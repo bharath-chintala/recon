@@ -71,16 +71,19 @@ export function MobileMenu({ links, isOpen, onClose }: MobileMenuProps) {
                 <Image
                   src="/images/recon-logo.png"
                   alt="Recon Logo"
-                  width={48}
-                  height={48}
+                  width={58}
+                  height={58}
                 />
                 <div className="flex flex-col leading-none">
-                  <span className="text-[14px] font-extrabold uppercase tracking-wide text-white">
+                  <span className="text-[16px] font-extrabold uppercase tracking-wide text-white">
                     recon
                   </span>
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8bb8e8]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8bb8e8] mt-0.5">
                     International
                   </span>
+                  <h5 className="text-[8.5px] font-semibold uppercase tracking-[0.1em] text-[#8bb8e8]/70 mt-1">
+                    Charitable Trust
+                  </h5>
                 </div>
               </div>
               <button

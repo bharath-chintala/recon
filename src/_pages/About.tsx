@@ -52,7 +52,7 @@ export default function About() {
       </section>
 
       {/* About Us */}
-      <section id="about-us" className="bg-[#FBFBFB] py-24">
+      <section id="mission" className="bg-[#FBFBFB] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             <motion.div
@@ -65,16 +65,34 @@ export default function About() {
               <motion.h2 variants={fadeInUp} className="mb-6 font-serif text-4xl font-bold text-[#1a2d47] uppercase">
                 About Us
               </motion.h2>
-              <motion.p variants={fadeInUp} className="mb-5 text-lg leading-relaxed text-[#5a7394] tracking-wide">
+              <motion.p variants={fadeInUp} className="mb-5 text-lg leading-relaxed text-[#5a7394] tracking-wide text-justify">
                 At Recon International, we believe travel should transform. Guided by a passion for meaningful experiences, we design journeys that immerse you in sacred sites, cultural traditions, and moments of personal reflection. Every itinerary is crafted with care, offering authenticity, comfort, and a deeper connection to the world around you.
               </motion.p>
             </motion.div>
             <motion.div
-              variants={slideInRight}
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  x: 60,
+                  rotate: 5,
+                  scale: 0.95
+                },
+                visible: {
+                  opacity: 1,
+                  x: 0,
+                  rotate: -3,
+                  scale: 1,
+                  transition: {
+                    duration: 1.4,
+                    ease: [0.16, 1, 0.3, 1]
+                  }
+                }
+              }}
               initial="hidden"
               whileInView="visible"
+              whileHover={{ rotate: 1, scale: 1.02 }}
               viewport={viewportOnce}
-              className="relative h-96 overflow-hidden rounded-3xl"
+              className="relative h-96 overflow-hidden rounded-3xl shadow-lg border border-[#dde6f0] cursor-pointer"
             >
               <Image
                 src="/images/temples.jpg"
@@ -88,7 +106,7 @@ export default function About() {
       </section>
 
       {/* Our Story */}
-      <section id="story" className="bg-white py-24 lg:py-36">
+      <section id="history" className="bg-white py-24 lg:py-36">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <div className="grid lg:grid-cols-12 gap-16">
             
@@ -104,8 +122,8 @@ export default function About() {
               <motion.h2 variants={fadeInUp} className="mb-8 font-serif text-4xl font-bold text-[#1a2d47] lg:text-5xl uppercase">
                 Our Story
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-xl leading-relaxed text-[#5a7394] font-medium tracking-wide">
-                Recon International Charitable Trust (ReKnow) is a globally respected nonprofit organization headquartered in Hyderabad, India, with a distinguished legacy of over <strong className="text-[#335C8B]">30 years of leadership</strong> in cultural preservation, education, social development, international cultural exchange, and tourism promotion.
+              <motion.p variants={fadeInUp} className="text-xl leading-relaxed text-[#5a7394] font-medium tracking-wide text-justify">
+                Recon International Charitable Trust (ReKnow) is a globally respected nonprofit organization headquartered in Hyderabad, India, with a distinguished legacy of over <strong className="text-[#335C8B]">30 years of leadership</strong> in cultural preservation, education, social development, International Cultural Exchange, and tourism promotion.
               </motion.p>
 
               <motion.div variants={fadeInUp} className="mt-12 border-l-4 border-[#335C8B] pl-6 py-2">
@@ -135,7 +153,7 @@ export default function About() {
                     The Trust creates structured and sustainable opportunities for dance teachers, cultural mentors, and their disciples, ensuring the continuity and global relevance of India's classical and folk traditions.
                   </motion.p>
                   <motion.p variants={fadeInUp}>
-                    Through professionally curated national and international platforms, Recon International bridges tradition with innovation and heritage with contemporary global audiences.
+                    Through professionally curated National and International platforms, Recon International bridges tradition with innovation and heritage with contemporary global audiences.
                   </motion.p>
                   <motion.p variants={fadeInUp}>
                     Adopting a holistic and globally aligned approach, Recon International integrates culture, education, tourism exchange, and social responsibility into every initiative.
@@ -145,10 +163,10 @@ export default function About() {
                 {/* Global & Diplomatic Pillar */}
                 <div className="space-y-6">
                   <motion.p variants={fadeInUp}>
-                    Over the past three decades, Recon International has successfully conceptualized and delivered <strong className="text-[#1a2d47]">160+ national and international initiatives across 16 countries</strong>. Its global footprint spans Sri Lanka, Mauritius, the Middle East, Malaysia, Singapore, South Africa, Bhutan, Nepal, and Europe, among others.
+                    Over the past three decades, Recon International has successfully conceptualized and delivered <strong className="text-[#1a2d47]">160+ National and International initiatives across 16 countries</strong>. Its global footprint spans Sri Lanka, Mauritius, the Middle East, Malaysia, Singapore, South Africa, Bhutan, Nepal, and Europe, among others.
                   </motion.p>
                   <motion.p variants={fadeInUp}>
-                    These initiatives have been implemented in collaboration with, and on behalf of, State and Central Government Tourism and Cultural Departments. Recon International positions culture as a strategic instrument of cultural diplomacy, international tourism exchange, and people-to-people engagement.
+                    These initiatives have been implemented in collaboration with, and on behalf of, State and Central Government Tourism and Cultural Departments. Recon International positions culture as a strategic instrument of cultural diplomacy, International Tourism Exchange, and people-to-people engagement.
                   </motion.p>
                   <motion.p variants={fadeInUp}>
                     Through festivals, performances, cultural delegations, and curated showcases, the Trust actively promotes India's tourism destinations and heritage narratives worldwide. Beyond cultural representation, Recon International advances education and social empowerment through CSR initiatives and academic support for economically disadvantaged students.

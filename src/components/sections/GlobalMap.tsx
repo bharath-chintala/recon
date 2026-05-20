@@ -68,7 +68,7 @@ export function GlobalMap() {
             variants={fadeInUp}
             className="mt-4 text-lg text-royal/70 max-w-2xl mx-auto leading-relaxed font-light"
           >
-            160+ national and international initiatives across 16 countries. 
+            160+ National and International initiatives across 16 countries. 
             Our network bridges cultures from South Asia to the heart of Europe.
           </motion.p>
         </motion.div>
@@ -174,9 +174,9 @@ export function GlobalMap() {
                   {/* Refined Glassmorphic Tooltip (Dark Theme) */}
                   <div className="absolute bottom-full left-1/2 mb-2 md:mb-5 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30 transform translate-y-2 group-hover:translate-y-0">
                     <div className="rounded-2xl border border-white/15 bg-[#000435]/95 backdrop-blur-xl px-4 py-3 shadow-2xl min-w-[120px] md:min-w-[170px] text-center ring-1 ring-white/10">
-                      <p className="font-cinzel text-[10px] md:text-xs font-bold text-white mb-1 uppercase tracking-widest">{region.label}</p>
+                      <p className="font-cinzel text-[10px] md:text-xs font-bold text-soft-cream mb-1 uppercase tracking-widest">{region.label}</p>
                       <div className="h-[1px] w-6 bg-white/20 mx-auto mb-1.5" />
-                      <p className="text-[9px] md:text-[10px] font-bold text-saffron tracking-widest">
+                      <p className="text-[9px] md:text-[10px] font-bold text-soft-cream/80 tracking-widest">
                         {region.count} INITIATIVES
                       </p>
                     </div>
