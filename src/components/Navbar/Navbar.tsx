@@ -43,8 +43,8 @@ export function Navbar() {
   useEffect(() => {
     const checkHero = (y: number) => {
       if (pathname === '/') {
-        // Hero wrapper is 500vh (400vh scroll + 100vh viewport)
-        setInHero(y < (window.innerHeight * 4.1))
+        // Hero wrapper is 250vh, so we transition around 2.2vh
+        setInHero(y < (window.innerHeight * 2.2))
       } else {
         setInHero(false)
       }
