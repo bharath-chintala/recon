@@ -12,7 +12,7 @@ const TOTAL_FRAMES  = 50
 const FRAME_BASE    = '/images/frames2/ezgif-frame-'
 const HERO_BG       = '#030816' // matches hero overlays — prevents flash through canvas
 // 600vh = very slow, meditative cinematic pacing
-const SCROLL_HEIGHT = '500vh'
+const SCROLL_HEIGHT = '250vh'
 
 function isFrameReady(img: HTMLImageElement | undefined): img is HTMLImageElement {
   return !!img?.complete && img.naturalWidth > 0
@@ -498,7 +498,7 @@ export function HeroSection() {
     const heroScroll = ScrollTrigger.create({
       trigger:       wrapper,
       start:         'top top',
-      end:           '+=400%',
+      end:           '+=150%',
       scrub:         5,              // ultra-smooth — maximum glide, no jank
       pin:           stickyRef.current,
       anticipatePin: 1,
@@ -621,10 +621,12 @@ export function HeroSection() {
           }}
         >
           <p
-            className="mb-5 text-[11px] font-semibold uppercase"
+            className="mb-5 text-[12px] font-bold uppercase"
             style={{
-              color: 'rgba(218,182,90,0.78)',
-              letterSpacing: '0.58em',
+              color: '#000000',
+              letterSpacing: '0.6em',
+              textShadow: '0 0 20px rgba(255,255,255,0.6), 0 0 40px rgba(255,255,255,0.3)',
+              transform: 'scale(1.05)'
             }}
           >
             Sacred Journey

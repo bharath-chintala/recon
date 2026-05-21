@@ -6,31 +6,31 @@ const SEED_DATA = [
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Hari Hara Kalyana Purvaka Shri Satyanarayana Swamy Anushtan Mahotsav (5–15 February 2025)',
     description: 'A grand 11-day spiritual and cultural celebration organized at Naimisharanya in collaboration with Naimisharanya Tirth Dham Vikas Parishad, with the support of the Department of Tourism & Culture, Government of Uttar Pradesh.',
-    image: 'https://images.unsplash.com/photo-1605374465597-94eec9e9f6be?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/satyanarayana.png'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Sri Venkateshwara Kalyana Mahotsav, Colombo, Sri Lanka',
     description: 'A high-profile spiritual event graced by Shri Santhosh Jha, Indian High Commissioner to Sri Lanka.',
-    image: 'https://images.unsplash.com/photo-1623862211516-d6e4b85c2c77?q=80&w=2664&auto=format&fit=crop'
+    image: '/images/venkateshwara.png'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Sri Venkateshwara Kalyana Mahotsav, Puchong, Malaysia',
     description: 'A vibrant cultural celebration featuring a delegation of women artists from Telangana, strengthening Telugu cultural roots abroad.',
-    image: 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?q=80&w=2536&auto=format&fit=crop'
+    image: '/images/venkateshwara.png'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Carnival of Indian Culture – Ganga Pushkar Mahotsav, Haridwar',
     description: 'A 10-day event featuring over 630 emerging artists, celebrating India’s diverse traditional arts.',
-    image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=2676&auto=format&fit=crop'
+    image: '/images/ganga puskara.png'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Parakram Divas Celebrations – Azadi Ka Amrit Mahotsav, New Delhi',
     description: 'A four-day commemoration at Ambedkar Auditorium, AP Bhawan, honouring India’s freedom fighters, with special tribute to Netaji Subhash Chandra Bose, in association with the Ministry of Culture, Government of India.',
-    image: 'https://images.unsplash.com/photo-1532509854226-a2d9d8e66f8e?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/parakarana divas.png'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
@@ -66,7 +66,7 @@ const SEED_DATA = [
     category: 'Cultural Exchange & International Engagements',
     title: 'Bathukamma Festival in Kuala Lumpur (2016)',
     description: 'In collaboration with the Malaysia Telangana Association (MYTA).',
-    image: 'https://images.unsplash.com/photo-1582236676342-302a9b4074ef?q=80&w=2574&auto=format&fit=crop'
+    image: '/images/telangana.png'
   },
   {
     category: 'Cultural Exchange & International Engagements',

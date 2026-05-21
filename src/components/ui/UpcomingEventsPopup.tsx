@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { fetchWithCoalescing, getCachedData, setCachedData } from '@/lib/cache'
 
 interface UpcomingEvent {
   id: string
@@ -28,30 +29,44 @@ export function UpcomingEventsPopup() {
 
   // Fetch events from Supabase
   useEffect(() => {
-    const fetchEvents = async () => {
-      const { data } = await supabase
-        .from('upcoming_events')
-        .select('*')
-        .order('created_at', { ascending: true })
-        .limit(4)
-      
+    const loadEvents = async () => {
+      const cacheKey = 'upcoming_events_popup'
+      const cached = getCachedData<UpcomingEvent[]>(cacheKey)
+      if (cached) {
+        setEvents(cached)
+        return
+      }
+
+      const fetcher = async () => {
+        const { data } = await supabase
+          .from('upcoming_events')
+          .select('*')
+          .order('created_at', { ascending: true })
+          .limit(4)
+        return data || []
+      }
+
+      const data = await fetchWithCoalescing(cacheKey, fetcher)
       if (data && data.length > 0) {
+        setCachedData(cacheKey, data)
         setEvents(data)
       }
     }
-    fetchEvents()
+    loadEvents()
   }, [])
 
   useEffect(() => {
     setMounted(true)
-    // Auto-show after 4 seconds, only once per session
-    const alreadyShown = sessionStorage.getItem('eventsPopupShown')
-    if (!alreadyShown) {
-      const t = setTimeout(() => {
-        setOpen(true)
-        sessionStorage.setItem('eventsPopupShown', '1')
-      }, 4000)
-      return () => clearTimeout(t)
+    
+    // Auto-show at 15s, 30s, and 45s
+    const t1 = setTimeout(() => setOpen(true), 15000)
+    const t2 = setTimeout(() => setOpen(true), 30000)
+    const t3 = setTimeout(() => setOpen(true), 45000)
+    
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
     }
   }, [])
 
@@ -163,7 +178,7 @@ export function UpcomingEventsPopup() {
                       {/* Image Banner */}
                       {ev.image && (
                         <div className="w-full h-40 rounded-xl overflow-hidden mb-6 shadow-sm border border-[#e8eef5]">
-                          <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
+                          <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                         </div>
                       )}
 

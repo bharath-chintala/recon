@@ -7,6 +7,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { supabase } from '@/lib/supabase'
+import { fetchWithCoalescing, getCachedData, setCachedData } from '@/lib/cache'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -19,27 +20,27 @@ const PROGRAM_DATA = [
       {
         title: 'Hari Hara Kalyana Purvaka Shri Satyanarayana Swamy Anushtan Mahotsav (5–15 February 2025)',
         desc: 'A grand 11-day spiritual and cultural celebration organized at Naimisharanya in collaboration with Naimisharanya Tirth Dham Vikas Parishad, with the support of the Department of Tourism & Culture, Government of Uttar Pradesh.',
-        image: 'https://images.unsplash.com/photo-1605374465597-94eec9e9f6be?q=80&w=2670&auto=format&fit=crop',
+        image: '/images/satyanarayana.png',
       },
       {
         title: 'Sri Venkateshwara Kalyana Mahotsav, Colombo, Sri Lanka',
         desc: 'A high-profile spiritual event graced by Shri Santhosh Jha, Indian High Commissioner to Sri Lanka.',
-        image: 'https://images.unsplash.com/photo-1623862211516-d6e4b85c2c77?q=80&w=2664&auto=format&fit=crop',
+        image: '/images/venkateshwara.png',
       },
       {
         title: 'Sri Venkateshwara Kalyana Mahotsav, Puchong, Malaysia',
         desc: 'A vibrant cultural celebration featuring a delegation of women artists from Telangana, strengthening Telugu cultural roots abroad.',
-        image: 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?q=80&w=2536&auto=format&fit=crop',
+        image: '/images/venkateshwara.png',
       },
       {
         title: 'Carnival of Indian Culture – Ganga Pushkar Mahotsav, Haridwar',
         desc: 'A 10-day event featuring over 630 emerging artists, celebrating India’s diverse traditional arts.',
-        image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=2676&auto=format&fit=crop',
+        image: '/images/ganga puskara.png',
       },
       {
         title: 'Parakram Divas Celebrations – Azadi Ka Amrit Mahotsav, New Delhi',
         desc: 'A four-day commemoration at Ambedkar Auditorium, AP Bhawan, honouring India’s freedom fighters, with special tribute to Netaji Subhash Chandra Bose, in association with the Ministry of Culture, Government of India.',
-        image: 'https://images.unsplash.com/photo-1532509854226-a2d9d8e66f8e?q=80&w=2670&auto=format&fit=crop',
+        image: '/images/parakarana divas.png',
       },
       {
         title: 'Cultural Festivities of Varanasi',
@@ -83,7 +84,7 @@ const PROGRAM_DATA = [
       {
         title: 'Bathukamma Festival in Kuala Lumpur (2016)',
         desc: 'In collaboration with the Malaysia Telangana Association (MYTA).',
-        image: 'https://images.unsplash.com/photo-1582236676342-302a9b4074ef?q=80&w=2574&auto=format&fit=crop',
+        image: '/images/telangana.png',
       },
       {
         title: 'Ugadi Celebrations (2016)',
@@ -197,9 +198,30 @@ export default function Events() {
   const [hoveredImage, setHoveredImage] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const { data } = await supabase.from('events').select('*').order('created_at', { ascending: true })
+    const loadEvents = async () => {
+      const cacheKey = 'events_page_data'
+      const cached = getCachedData<any[]>(cacheKey)
+      if (cached) {
+        processEvents(cached)
+        return
+      }
+
+      const fetcher = async () => {
+        const { data } = await supabase
+          .from('events')
+          .select('id, title, category, image, description, created_at')
+          .order('created_at', { ascending: true })
+        return data || []
+      }
+
+      const data = await fetchWithCoalescing(cacheKey, fetcher)
       if (data && data.length > 0) {
+        setCachedData(cacheKey, data)
+        processEvents(data)
+      }
+    }
+
+    const processEvents = (data: any[]) => {
         const descriptionsMap: { [key: string]: string } = {
           'Humanitarian & Social Impact Initiatives': 'The Trust has consistently demonstrated a deep commitment to Social Responsibility, particularly in supporting underprivileged and visually impaired communities:',
           'Cultural Exchange & International Engagements': 'The Trust has a long-standing legacy of leading cultural delegations from Andhra Pradesh and Telangana to several international destinations in association with erstwhile Government of Andhra Pradesh and Government of Telangana:',
@@ -212,10 +234,29 @@ export default function Events() {
           if (!groupedMap[cat]) {
             groupedMap[cat] = []
           }
+          
+          // Use local image if available in PROGRAM_DATA for matching titles
+          let localImage = null;
+          PROGRAM_DATA.forEach(p => {
+            p.items.forEach(item => {
+              if (item.title === evt.title) {
+                localImage = item.image;
+              }
+            })
+          });
+
+          // Precompute thumbnail
+          let imageUrl = localImage || evt.image || '/images/events.png';
+          let thumbUrl = imageUrl;
+          if (imageUrl.includes('.webp') && !imageUrl.includes('-thumb.webp')) {
+            thumbUrl = imageUrl.replace('.webp', '-thumb.webp');
+          }
+
           groupedMap[cat].push({
             title: evt.title,
             desc: evt.description,
-            image: evt.image || '/images/events.png'
+            image: imageUrl,
+            thumb: thumbUrl
           })
         })
 
@@ -228,9 +269,8 @@ export default function Events() {
 
         setProgramData(mappedCategories)
         setFilter(mappedCategories[0]?.title || '')
-      }
     }
-    fetchEvents()
+    loadEvents()
   }, [])
 
   useEffect(() => {
@@ -478,6 +518,8 @@ export default function Events() {
                       onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }}
                       className="absolute inset-0 w-full h-full object-cover"
                       alt="Section Image"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -506,7 +548,7 @@ export default function Events() {
                     >
                       {/* Mobile/Tablet Section Header (Image with Overlay) */}
                       <div className="block lg:hidden mb-12 w-full h-[50vh] md:h-[60vh] rounded-2xl overflow-hidden relative shadow-lg">
-                         <img src={section.image} onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }} alt={section.title} className="w-full h-full object-cover" />
+                         <img src={section.image} onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }} alt={section.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1526]/80 via-[#0f1d30]/30 to-transparent pointer-events-none flex flex-col justify-end p-8 md:p-12">
                             <h2 className="font-serif text-4xl md:text-5xl text-white mb-4 leading-tight">
                               {section.title}
@@ -646,10 +688,12 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
         <div key={itemIdx} id={`mobile-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="w-[85vw] md:w-[70vw] snap-center flex-shrink-0 flex flex-col bg-[#FBFBFB] rounded-2xl p-6 md:p-8 border border-[#e0e7ef] shadow-sm relative overflow-hidden group">
           <div className="w-full aspect-[4/3] md:aspect-[16/9] mb-8 rounded-xl overflow-hidden relative shadow-md">
             <img 
-              src={item.image} 
+              src={item.thumb || item.image} 
               onError={(e) => { e.currentTarget.src = '/images/festivals.jpg' }} 
               alt={item.title} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="flex flex-col flex-1">

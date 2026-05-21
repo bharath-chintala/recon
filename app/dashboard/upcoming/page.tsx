@@ -108,39 +108,42 @@ export default function UpcomingEventsDashboard() {
 
     setCompressing(true)
     try {
-      const options = {
-        maxSizeMB: 0.2, // Pristine premium visual quality target: under 200KB!
-        maxWidthOrHeight: 1600, // Max resolution 1600px for ultra-sharp Retina/High-Res screens
+      const baseName = `upcoming-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+      const fullPath = `${baseName}.webp`
+      const thumbPath = `${baseName}-thumb.webp`
+
+      // Full WebP Image
+      const fullFile = await imageCompression(file, {
+        maxSizeMB: 0.15,
+        maxWidthOrHeight: 1200,
         useWebWorker: true,
+        initialQuality: 0.8,
+        fileType: 'image/webp'
+      })
+
+      // Thumbnail WebP Image
+      const thumbFile = await imageCompression(file, {
+        maxSizeMB: 0.04,
+        maxWidthOrHeight: 400,
+        useWebWorker: true,
+        initialQuality: 0.6,
+        fileType: 'image/webp'
+      })
+
+      const uploadOpts = {
+        cacheControl: 'public, max-age=31536000, immutable',
+        contentType: 'image/webp',
+        upsert: true
       }
-      
-      const compressedFile = await imageCompression(file, options)
 
-      // Upload file directly to Supabase storage bucket 'event-images'
-      const fileExt = file.name.split('.').pop() || 'jpg'
-      const fileName = `upcoming-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-      const filePath = fileName
+      await supabase.storage.from('event-images').upload(fullPath, fullFile, uploadOpts)
+      await supabase.storage.from('event-images').upload(thumbPath, thumbFile, uploadOpts)
 
-      const { data, error } = await supabase.storage
-        .from('event-images')
-        .upload(filePath, compressedFile, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (error) {
-        throw new Error(error.message)
-      }
-
-      // Get public CDN URL for the uploaded image
-      const { data: { publicUrl } } = supabase.storage
-        .from('event-images')
-        .getPublicUrl(filePath)
-
+      const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(fullPath)
       setImage(publicUrl)
       setCompressing(false)
     } catch (err: any) {
-      console.error('Image upload & compression error:', err)
+      console.error('Image upload error:', err)
       alert(`Failed to upload image: ${err.message || err}`)
       setCompressing(false)
     }
@@ -215,24 +218,25 @@ export default function UpcomingEventsDashboard() {
 
     if (editingEvent) {
       await supabase.from('upcoming_events').update(payload).eq('id', editingEvent.id)
+      setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
     } else {
       if (events.length >= 4) {
         alert("Maximum 4 upcoming events allowed.")
         setSaving(false)
         return
       }
-      await supabase.from('upcoming_events').insert([payload])
+      const { data } = await supabase.from('upcoming_events').insert([payload]).select().single()
+      if (data) setEvents(prev => [...prev, data])
     }
 
     setSaving(false)
     closeModal()
-    fetchEvents()
   }
 
   const deleteEvent = async (id: string) => {
     if (confirm('Are you sure you want to delete this event?')) {
       await supabase.from('upcoming_events').delete().eq('id', id)
-      fetchEvents()
+      setEvents(prev => prev.filter(evt => evt.id !== id))
       setActiveIdx(0)
     }
   }
@@ -271,10 +275,19 @@ export default function UpcomingEventsDashboard() {
     }
   }
 
+  // Debounced search
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300)
+    return () => clearTimeout(handler)
+  }, [searchTerm])
+
   // Get filtered events for Table View
   const filteredTableEvents = events.filter(evt => {
-    const matchesSearch = evt.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (evt.description || '').toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = evt.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || 
+                          (evt.description || '').toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     return matchesSearch
   })
 

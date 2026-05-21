@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Pencil, Trash2, LogOut, X, Loader2, LayoutGrid, Eye, Upload } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import imageCompression from 'browser-image-compression'
+import { fetchWithCoalescing, getCachedData, setCachedData } from '@/lib/cache'
 
 interface Event {
   id: string
@@ -59,53 +60,84 @@ export default function Dashboard() {
 
     setCompressing(true)
     try {
-      const options = {
-        maxSizeMB: 0.2, // Pristine premium visual quality target: under 200KB!
-        maxWidthOrHeight: 1600, // Max resolution 1600px for ultra-sharp Retina/High-Res screens
+      const baseName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+      const fullPath = `${baseName}.webp`
+      const thumbPath = `${baseName}-thumb.webp`
+
+      // Generate Full WebP Image
+      const fullFile = await imageCompression(file, {
+        maxSizeMB: 0.15,
+        maxWidthOrHeight: 1200,
         useWebWorker: true,
+        initialQuality: 0.8,
+        fileType: 'image/webp'
+      })
+
+      // Generate Thumbnail WebP Image
+      const thumbFile = await imageCompression(file, {
+        maxSizeMB: 0.04,
+        maxWidthOrHeight: 400,
+        useWebWorker: true,
+        initialQuality: 0.6,
+        fileType: 'image/webp'
+      })
+
+      const uploadOpts = {
+        cacheControl: 'public, max-age=31536000, immutable',
+        contentType: 'image/webp',
+        upsert: true
       }
-      
-      const compressedFile = await imageCompression(file, options)
 
-      // Upload file directly to Supabase storage bucket 'event-images'
-      const fileExt = file.name.split('.').pop() || 'jpg'
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-      const filePath = fileName
+      await supabase.storage.from('event-images').upload(fullPath, fullFile, uploadOpts)
+      await supabase.storage.from('event-images').upload(thumbPath, thumbFile, uploadOpts)
 
-      const { data, error } = await supabase.storage
-        .from('event-images')
-        .upload(filePath, compressedFile, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (error) {
-        throw new Error(error.message)
-      }
-
-      // Get public CDN URL for the uploaded image
-      const { data: { publicUrl } } = supabase.storage
-        .from('event-images')
-        .getPublicUrl(filePath)
-
+      const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(fullPath)
       setImage(publicUrl)
       setCompressing(false)
     } catch (err: any) {
-      console.error('Image upload & compression error:', err)
+      console.error('Image upload error:', err)
       alert(`Failed to upload image: ${err.message || err}`)
       setCompressing(false)
     }
   }
 
-  const fetchEvents = async () => {
-    setLoading(true)
+  const [page, setPage] = useState(0)
+  const EVENTS_PER_PAGE = 10
+  const [hasMore, setHasMore] = useState(true)
+
+  const fetchEvents = async (pageNum = 0, append = false) => {
+    if (!append) setLoading(true)
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .order('created_at', { ascending: true }) // Ascending so oldest shows first or as added
-    if (data) setEvents(data)
-    setLoading(false)
+      .order('created_at', { ascending: true })
+      .range(pageNum * EVENTS_PER_PAGE, (pageNum + 1) * EVENTS_PER_PAGE - 1)
+      
+    if (data) {
+      if (append) {
+        setEvents(prev => [...prev, ...data])
+      } else {
+        setEvents(data)
+      }
+      setHasMore(data.length === EVENTS_PER_PAGE)
+    }
+    if (!append) setLoading(false)
   }
+
+  const loadMore = () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    fetchEvents(nextPage, true)
+  }
+
+  // Debounced search
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300)
+    return () => clearTimeout(handler)
+  }, [searchTerm])
 
   useEffect(() => {
     fetchEvents()
@@ -163,19 +195,20 @@ export default function Dashboard() {
 
     if (editingEvent) {
       await supabase.from('events').update(payload).eq('id', editingEvent.id)
+      setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
     } else {
-      await supabase.from('events').insert([payload])
+      const { data } = await supabase.from('events').insert([payload]).select().single()
+      if (data) setEvents(prev => [...prev, data])
     }
 
     setSaving(false)
     closeModal()
-    fetchEvents()
   }
 
   const deleteEvent = async (id: string) => {
     if (confirm('Are you sure you want to delete this event?')) {
       await supabase.from('events').delete().eq('id', id)
-      fetchEvents()
+      setEvents(prev => prev.filter(evt => evt.id !== id))
     }
   }
 
@@ -221,8 +254,8 @@ export default function Dashboard() {
   // Get filtered events for Table View
   const filteredTableEvents = events.filter(evt => {
     const matchesCategory = tableCategoryFilter === 'All' || evt.category === tableCategoryFilter
-    const matchesSearch = evt.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          (evt.description || '').toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = evt.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || 
+                          (evt.description || '').toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
@@ -416,6 +449,17 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          
+          {hasMore && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={loadMore}
+                className="bg-white/5 border border-white/10 hover:bg-white/10 text-[#8bb8e8] px-6 py-2.5 rounded-full text-sm font-bold transition-all"
+              >
+                Load More Events
+              </button>
+            </div>
+          )}
         </main>
       ) : (
         /* ================== VISUAL LIVE PREVIEW CMS ================== */
