@@ -1,8 +1,9 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { lerp } from '@/lib/cinematic'
 
 interface SectionBridgeProps {
@@ -16,12 +17,13 @@ interface SectionBridgeProps {
 export function SectionBridge({ warmth = 0.35 }: SectionBridgeProps) {
   const ref = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  // useGSAP handles automatic cleanup of ScrollTriggers and contexts
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
     const el = ref.current
     if (!el) return
 
-    const st = gsap.fromTo(
+    gsap.fromTo(
       el,
       { opacity: 0.45, filter: 'blur(10px)' },
       {
@@ -36,12 +38,7 @@ export function SectionBridge({ warmth = 0.35 }: SectionBridgeProps) {
         },
       },
     )
-
-    return () => {
-      st.scrollTrigger?.kill()
-      st.kill()
-    }
-  }, [])
+  }, { scope: ref })
 
   const coolR = Math.floor(lerp(3, 18, warmth))
   const coolG = Math.floor(lerp(8, 12, warmth))

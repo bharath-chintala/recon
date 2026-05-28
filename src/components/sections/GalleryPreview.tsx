@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -8,46 +8,102 @@ import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
 
 const GALLERY_IMAGES = [
   {
-    src: '/images/about2-aarti.png',
-    alt: 'Ganga Aarti Ceremony',
-    title: 'Aarti Devotion',
-    subtitle: 'Ganga Ceremony',
+    src: '/images/Varanasi event/DSC07180.webp',
+    alt: 'Varanasi Event Ganga Aarti',
+    title: 'Varanasi Event',
+    subtitle: 'Ganga Celebrations',
     category: 'Spiritual Heritage',
+    images: [
+      '/images/Varanasi event/DSC07180.webp',
+      '/images/Varanasi event/DSC07216.webp',
+      '/images/Varanasi event/DSC07300.webp',
+      '/images/Varanasi event/DSC08436.webp',
+      '/images/Varanasi event/DSC08593.webp',
+    ]
   },
   {
-    src: '/images/init2.png',
+    src: '/images/Mauritius/DSC_6964.webp',
     alt: 'Cultural Exhibitions & Forums',
     title: 'Mauritius',
     subtitle: 'Global Diplomacy',
     category: 'Diplomacy',
+    images: [
+      '/images/Mauritius/DSC_6929.webp',
+      '/images/Mauritius/DSC_6938.webp',
+      '/images/Mauritius/DSC_6950.webp',
+      '/images/Mauritius/DSC_6964.webp',
+      '/images/Mauritius/President_Mauritius.webp',
+    ]
   },
   {
-    src: '/images/about1.png',
+    src: '/images/Cultural dances/DSC_8111.webp',
     alt: 'Indian Classical Dance Troupe',
     title: 'Classical Dance',
     subtitle: 'Cultural Delegation',
     category: 'Preservation',
+    images: [
+      '/images/Cultural dances/DSC_8111.webp',
+      '/images/Cultural dances/DSC_8192.webp',
+      '/images/Cultural dances/DSC_8195.webp',
+      '/images/about1.webp',
+      '/images/telangana.webp',
+    ]
   },
   {
-    src: '/images/init1.png',
+    src: '/images/Haridwar event 2023/DSC_1241.webp',
     alt: 'Awaken Through Travel Journeys',
     title: 'Pilgrimage',
     subtitle: 'Sacred Travel Paths',
     category: 'Sacred Travel',
+    images: [
+      '/images/Haridwar event 2023/DSC_1093.webp',
+      '/images/Haridwar event 2023/DSC_1241.webp',
+      '/images/Haridwar event 2023/DSC_1379.webp',
+      '/images/Haridwar event 2023/DSC_3597.webp',
+      '/images/Haridwar event 2023/DSC_3799.webp',
+    ]
   },
   {
-    src: '/images/events.png',
+    src: '/images/Parakram Diwas/pa1.webp',
     alt: 'Azadi Ka Amrit Mahotsav',
     title: 'Parakram',
     subtitle: 'National Celebrations',
     category: 'National Forums',
+    images: [
+      '/images/Parakram Diwas/pa1.webp',
+      '/images/Parakram Diwas/pa2.webp',
+      '/images/Parakram Diwas/pa3.webp',
+      '/images/Parakram Diwas/pa4.webp',
+      '/images/Parakram Diwas/pa6.webp',
+    ]
   },
   {
-    src: '/images/temples.jpg',
+    src: '/images/Temples/ANU06073.webp',
     alt: 'Vedic Temple Traditions',
     title: 'Vedic Temples',
     subtitle: 'Sacred Architecture',
     category: 'Architecture',
+    images: [
+      '/images/Temples/ANU05999.webp',
+      '/images/Temples/ANU06073.webp',
+      '/images/Temples/ANU06113.webp',
+      '/images/Temples/ANU06268.webp',
+      '/images/Temples/ANU06943.webp',
+    ]
+  },
+  {
+    src: '/images/AP event 2007/DSC_6974.webp',
+    alt: 'AP Event 2007',
+    title: 'AP Event 2007',
+    subtitle: 'State Forum Celebrations',
+    category: 'State Forums',
+    images: [
+      '/images/AP event 2007/DSC01021.webp',
+      '/images/AP event 2007/DSC01043.webp',
+      '/images/AP event 2007/DSC01048.webp',
+      '/images/AP event 2007/DSC01089.webp',
+      '/images/AP event 2007/DSC_6974.webp',
+    ]
   }
 ]
 
@@ -91,29 +147,26 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
       </div>
 
       {/* Floating Sacred Celestial Mandala Wheel */}
-      <div className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:bg-white group-hover:text-[rgb(218, 170, 55)] group-hover:border-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out">
+      <div className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:bg-white group-hover:text-[rgb(218,170,55)] group-hover:border-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out">
         <svg className="w-5 h-5 transform group-hover:rotate-180 transition-transform duration-[800ms] ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {/* Central Bindu/Sphere */}
-          <circle cx="12" cy="12" r="2" className="fill-white/80 group-hover:fill-[rgb(218, 170, 55)] transition-colors duration-300" />
-          {/* Concentric Celestial Orbit Dashes */}
-          <circle cx="12" cy="12" r="8" strokeDasharray="3 3" strokeWidth="1" className="stroke-white/40 group-hover:stroke-[rgb(218, 170, 55)]/40 transition-colors duration-300" />
-          {/* Symmetrical Cardinal Petals/Rays */}
+          <circle cx="12" cy="12" r="2" className="fill-white/80 group-hover:fill-[rgb(218,170,55)] transition-colors duration-300" />
+          <circle cx="12" cy="12" r="8" strokeDasharray="3 3" strokeWidth="1" className="stroke-white/40 group-hover:stroke-[rgb(218,170,55)]/40 transition-colors duration-300" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M12 2v3m0 14v3M2 12h3m14 0h3M4.93 4.93l2.12 2.12m9.9 9.9l2.12 2.12M4.93 19.07l2.12-2.12m9.9-9.9l2.12-2.12" />
         </svg>
       </div>
 
       {/* Text Content with upward shift and line reveal on hover */}
       <div className="absolute bottom-6 left-6 right-6 z-20 text-white select-none transition-all duration-[600ms] ease-out group-hover:translate-y-[-4px]">
-        <h3 className="font-cinzel text-lg md:text-xl font-bold tracking-wide leading-tight text-white mb-0.5 group-hover:text-[rgb(218, 170, 55)] transition-colors duration-300">
+        <h3 className="font-cinzel text-lg md:text-xl font-bold tracking-wide leading-tight text-white mb-0.5 group-hover:text-[rgb(218,170,55)] transition-colors duration-300">
           {img.title}
         </h3>
         
         {/* Subtle decorative sky blue divider that expands on hover */}
-        <div className="w-0 group-hover:w-16 h-[2px] bg-[rgb(218, 170, 55)] my-2 transition-all duration-[600ms] rounded-full" />
+        <div className="w-0 group-hover:w-16 h-[2px] bg-[rgb(218,170,55)] my-2 transition-all duration-[600ms] rounded-full" />
         
         <p className="text-[10px] text-white/70 font-medium uppercase tracking-wider flex items-center gap-1">
           {img.subtitle}
-          <span className="opacity-0 group-hover:opacity-100 transform translate-x-[-6px] group-hover:translate-x-0 transition-all duration-[500ms] text-[rgb(218, 170, 55)]">→</span>
+          <span className="opacity-0 group-hover:opacity-100 transform translate-x-[-6px] group-hover:translate-x-0 transition-all duration-[500ms] text-[rgb(218,170,55)]">→</span>
         </p>
       </div>
     </motion.div>
@@ -122,6 +175,7 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
 
 export function GalleryPreview() {
   const [selectedImage, setSelectedImage] = useState<typeof GALLERY_IMAGES[0] | null>(null)
+  const [carouselIdx, setCarouselIdx] = useState(0)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -136,6 +190,7 @@ export function GalleryPreview() {
 
   useEffect(() => {
     if (selectedImage) {
+      setCarouselIdx(0)
       document.body.style.overflow = 'hidden'
       if (typeof window !== 'undefined') {
         ;(window as any).lenis?.stop()
@@ -146,6 +201,15 @@ export function GalleryPreview() {
         ;(window as any).lenis?.start()
       }
     }
+  }, [selectedImage])
+
+  // Autoplay carousel every 3 seconds when a card is clicked
+  useEffect(() => {
+    if (!selectedImage) return
+    const intervalId = setInterval(() => {
+      setCarouselIdx((prev) => (prev + 1) % selectedImage.images.length)
+    }, 3000)
+    return () => clearInterval(intervalId)
   }, [selectedImage])
 
   useEffect(() => {
@@ -162,7 +226,7 @@ export function GalleryPreview() {
   }, [selectedImage])
 
   return (
-    <section className="relative bg-soft-cream py-24 lg:py-36 overflow-hidden">
+    <section className="relative bg-soft-cream py-14 lg:py-20 overflow-hidden">
       {/* Ambient Saffron/Royal backdrops */}
       <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/4 w-[450px] h-[450px] bg-royal/5 blur-[100px] rounded-full pointer-events-none" />
@@ -196,19 +260,19 @@ export function GalleryPreview() {
           </motion.h2>
         </div>
 
-        {/* Premium Claymorphic Bento Grid matching uploaded layout */}
+        {/* Premium Claymorphic Bento Grid - Symmetrical 504px Height Layout */}
         <motion.div 
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 max-w-6xl mx-auto"
         >
           {/* LEFT COLUMN: Ganga Aarti and Mauritius */}
-          <div className="col-span-12 md:col-span-3 flex flex-col gap-6">
-            {[GALLERY_IMAGES[0], GALLERY_IMAGES[1]].map((img, idx) => (
+          <div className="col-span-1 md:col-span-1 lg:col-span-3 flex flex-col gap-6">
+            {[GALLERY_IMAGES[0], GALLERY_IMAGES[1]].map((img) => (
               <GalleryCard
-                key={idx}
+                key={img.src}
                 img={img}
                 className="h-[250px] md:h-[240px]"
                 onClick={() => setSelectedImage(img)}
@@ -216,17 +280,20 @@ export function GalleryPreview() {
             ))}
           </div>
 
-          {/* MIDDLE COLUMN: Classical Dance (Spans Full Height) */}
-          <div className="col-span-12 md:col-span-3">
-            <GalleryCard
-              img={GALLERY_IMAGES[2]}
-              className="h-[380px] md:h-[504px]"
-              onClick={() => setSelectedImage(GALLERY_IMAGES[2])}
-            />
+          {/* MIDDLE COLUMN: Classical Dance and AP Event 2007 (Perfectly Stacked) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-3 flex flex-col gap-6">
+            {[GALLERY_IMAGES[2], GALLERY_IMAGES[6]].map((img) => (
+              <GalleryCard
+                key={img.src}
+                img={img}
+                className="h-[250px] md:h-[240px]"
+                onClick={() => setSelectedImage(img)}
+              />
+            ))}
           </div>
 
-          {/* RIGHT COLUMN: Pilgrimage, Parakram, and Temples */}
-          <div className="col-span-12 md:col-span-6 flex flex-col gap-6">
+          {/* RIGHT COLUMN: Pilgrimage, Parakram, and Vedic Temples */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-6 flex flex-col gap-6">
             {/* Pilgrimage Card (Wide horizontal top card) */}
             <GalleryCard
               img={GALLERY_IMAGES[3]}
@@ -234,11 +301,11 @@ export function GalleryPreview() {
               onClick={() => setSelectedImage(GALLERY_IMAGES[3])}
             />
 
-            {/* Bottom splits: Parakram and Temples side-by-side */}
+            {/* Bottom splits: Parakram and Vedic Temples side-by-side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[GALLERY_IMAGES[4], GALLERY_IMAGES[5]].map((img, idx) => (
+              {[GALLERY_IMAGES[4], GALLERY_IMAGES[5]].map((img) => (
                 <GalleryCard
-                  key={idx}
+                  key={img.src}
                   img={img}
                   className="h-[250px] md:h-[240px]"
                   onClick={() => setSelectedImage(img)}
@@ -249,7 +316,7 @@ export function GalleryPreview() {
         </motion.div>
       </div>
 
-      {/* Self-contained Lightbox Modal */}
+      {/* Self-contained Lightbox Modal with Auto-playing Carousel */}
       {mounted && typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
           {selectedImage && (
@@ -259,7 +326,7 @@ export function GalleryPreview() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={() => setSelectedImage(null)}
-              className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 md:p-8"
+              className="fixed inset-0 bg-[#020617]/95 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 md:p-8"
             >
               {/* Close Button */}
               <button
@@ -278,28 +345,58 @@ export function GalleryPreview() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.97, opacity: 0 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 className="relative flex flex-col items-center justify-center max-w-[95vw] max-h-[90vh]"
               >
-                <div className="relative w-[95vw] max-w-4xl h-[70vh] md:h-[75vh]">
-                  <Image
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
-                    fill
-                    className="object-contain"
-                    priority
-                    sizes="(max-width: 1200px) 100vw, 1200px"
-                  />
+                {/* 3-Second Cross-fading Image Box */}
+                <div className="relative w-[95vw] max-w-4xl h-[60vh] md:h-[65vh] overflow-hidden rounded-3xl bg-black/40 border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.5)]">
+                  {selectedImage.images.map((imgSrc, idx) => (
+                    <div
+                      key={imgSrc}
+                      className={`absolute inset-0 transition-opacity duration-[1000ms] ease-in-out ${
+                        idx === carouselIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                      }`}
+                    >
+                      <Image
+                        src={imgSrc}
+                        alt={`${selectedImage.title} Image ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                        priority={idx === 0}
+                        sizes="(max-width: 1200px) 100vw, 1200px"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress Indicators & Manual Controls */}
+                <div className="flex justify-center gap-2.5 mt-6 z-20">
+                  {selectedImage.images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCarouselIdx(idx)
+                      }}
+                      className={`h-2 rounded-full transition-all duration-[400ms] cursor-pointer ${
+                        idx === carouselIdx ? 'w-6 bg-[#daaa37]' : 'w-2 bg-white/30 hover:bg-white/60'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
                 </div>
                 
                 {/* Info Bar below image */}
-                <div className="text-center mt-4">
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.25em] text-[#daaa37] mb-1.5 block">
-                    {selectedImage.category}
+                <div className="text-center mt-5">
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.25em] text-[#daaa37] mb-1 block animate-pulse">
+                    {selectedImage.category} (Image {carouselIdx + 1} of {selectedImage.images.length})
                   </span>
                   <h3 className="font-cinzel text-base md:text-lg font-light tracking-wide text-white/90">
                     {selectedImage.title}
                   </h3>
+                  <p className="text-[10px] text-white/50 uppercase tracking-wider mt-1">
+                    {selectedImage.subtitle}
+                  </p>
                 </div>
               </motion.div>
             </motion.div>

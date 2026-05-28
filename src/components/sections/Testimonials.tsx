@@ -20,7 +20,7 @@ export function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="relative bg-warm-ivory py-24 lg:py-36 overflow-hidden"
+      className="relative bg-warm-ivory py-14 lg:py-20 overflow-hidden"
     >
       {/* Immersive ambient glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-saffron/5 via-royal/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
@@ -119,9 +119,9 @@ export function Testimonials() {
 
           {/* Progress dots inside the glassmorphic card */}
           <div className="mt-8 flex justify-center gap-2 relative z-10">
-            {testimonials.map((_, i) => (
+            {testimonials.map((t, i) => (
               <button
-                key={i}
+                key={t.name + t.country}
                 onClick={() => setActive(i)}
                 aria-label={`Testimonial ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-500 ${

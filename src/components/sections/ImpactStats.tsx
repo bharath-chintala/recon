@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { motion, useInView, animate } from 'framer-motion'
+import { motion, useInView, useSpring, useTransform } from 'framer-motion'
 import { viewportOnce } from '@/animations/variants'
 
 const STATS = [
@@ -14,22 +14,22 @@ const STATS = [
 function AnimatedCounter({ value }: { value: number }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: false, margin: '-50px' })
+  const spring = useSpring(0, {
+    bounce: 0,
+    duration: 2500, // equivalent to 2.5s duration
+  })
+  
+  const displayValue = useTransform(spring, (current: number) => Math.round(current).toLocaleString())
 
   useEffect(() => {
-    if (inView && ref.current) {
-      const node = ref.current
-      const controls = animate(0, value, {
-        duration: 2.5,
-        ease: [0.16, 1, 0.3, 1], // cinematic smooth ease-out
-        onUpdate(latest) {
-          node.textContent = Math.round(latest).toLocaleString()
-        },
-      })
-      return () => controls.stop()
+    if (inView) {
+      spring.set(value)
+    } else {
+      spring.set(0) // Reset when out of view, to match { once: false }
     }
-  }, [inView, value])
+  }, [inView, value, spring])
 
-  return <span ref={ref}>0</span>
+  return <motion.span ref={ref}>{displayValue}</motion.span>
 }
 
 export function ImpactStats() {
@@ -38,7 +38,7 @@ export function ImpactStats() {
   return (
     <section
       ref={containerRef}
-      className="relative bg-soft-cream py-24 lg:py-36 overflow-hidden"
+      className="relative bg-soft-cream py-14 lg:py-20 overflow-hidden"
     >
       {/* Immersive floating ambient saffron spotlights */}
       <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
@@ -73,7 +73,7 @@ export function ImpactStats() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
           {STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -90,7 +90,7 @@ export function ImpactStats() {
               <div className="mx-auto w-12 h-1 bg-gradient-to-r from-royal/20 via-saffron/30 to-royal/20 mb-6 rounded-full group-hover:w-20 transition-all duration-500" />
 
               {/* Large Luxury Counter */}
-              <div className="font-cinzel text-5xl lg:text-6xl font-light text-royal mb-4 tracking-tight flex items-center justify-center">
+              <div className="font-cinzel text-4xl md:text-5xl xl:text-6xl font-light text-royal mb-4 tracking-tight flex items-center justify-center">
                 <AnimatedCounter value={stat.target} />
                 <span className="text-saffron font-semibold">{stat.suffix}</span>
               </div>

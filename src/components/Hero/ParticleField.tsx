@@ -44,6 +44,7 @@ export function ParticleField({
   }, [particles])
 
   useEffect(() => {
+    let mounted = true
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -59,6 +60,7 @@ export function ParticleField({
     observer.observe(canvas)
 
     const draw = () => {
+      if (!mounted) return
       const { width, height } = canvas
       ctx.clearRect(0, 0, width, height)
 
@@ -84,6 +86,7 @@ export function ParticleField({
     animRef.current = requestAnimationFrame(draw)
 
     return () => {
+      mounted = false
       cancelAnimationFrame(animRef.current)
       observer.disconnect()
     }

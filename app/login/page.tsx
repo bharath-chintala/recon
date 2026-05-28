@@ -51,7 +51,7 @@ export default function LoginPage() {
         className="w-full max-w-md p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl relative z-10"
       >
         <div className="flex flex-col items-center mb-10">
-          <Image src="/images/recon-logo.png" alt="Recon Logo" width={64} height={64} className="mb-4" />
+          <Image src="/images/recon-logo.webp" alt="Recon Logo" width={64} height={64} className="mb-4" />
           <h1 className="text-2xl font-serif font-bold text-white uppercase tracking-wide">Admin Access</h1>
           <p className="text-sm text-[#8a9bb5] mt-2">Secure Dashboard Login</p>
         </div>

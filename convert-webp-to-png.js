@@ -12,14 +12,14 @@ async function processDirectory() {
       const fullPath = path.join(directory, file);
       const outputPath = path.join(
         directory,
-        `${path.parse(file).name}.png`
+        `${path.parse(file).name}.webp`
       );
 
       console.log(`Converting: ${fullPath} -> ${outputPath}`);
 
       try {
         await sharp(fullPath)
-          .png()
+          .webp()
           .toFile(outputPath);
 
         fs.unlinkSync(fullPath);

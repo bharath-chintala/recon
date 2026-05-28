@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { GlobalAtmosphere } from './GlobalAtmosphere'
 
 interface CinematicWorldProps {
@@ -11,19 +12,26 @@ interface CinematicWorldProps {
 
 /**
  * Homepage cinematic shell — global atmosphere, scroll energy, GPU hints.
+ *
+ * Fix: replaced `document.body` ScrollTrigger trigger with an explicit
+ * ref on the root element. Using document.body as a global selector can
+ * cause "removeChild" errors during Next.js page transitions when GSAP
+ * holds a reference to a node that has been unmounted from the DOM.
  */
 export function CinematicWorld({ children }: CinematicWorldProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const energyRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
     const root = rootRef.current
     const energy = energyRef.current
     if (!root || !energy) return
 
-    const st = ScrollTrigger.create({
-      trigger: document.body,
+    ScrollTrigger.create({
+      // Scoped to the cinematic world container — avoids document.body global reference
+      // which breaks during Next.js page transitions (removeChild errors)
+      trigger: root,
       start: 'top top',
       end: 'bottom bottom',
       scrub: 2.5,
@@ -36,9 +44,7 @@ export function CinematicWorld({ children }: CinematicWorldProps) {
     })
 
     ScrollTrigger.refresh()
-
-    return () => st.kill()
-  }, [])
+  }, { scope: rootRef })
 
   return (
     <div

@@ -1,12 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { viewportOnce } from '@/animations/variants'
 
 export function CtaSection() {
   return (
-    <section className="relative bg-warm-ivory py-28 lg:py-40 overflow-hidden">
+    <section className="relative bg-warm-ivory py-16 lg:py-24 overflow-hidden">
       {/* Decorative luxury ambient backdrops */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-royal/5 blur-[100px] rounded-full pointer-events-none" />
@@ -90,17 +91,18 @@ export function CtaSection() {
                 href="/contact"
                 variant="primary"
                 size="lg"
-                className="rounded-full shadow-xl shadow-saffron/10 hover:shadow-saffron/20 hover:scale-105 transition-all duration-300 px-10 py-5 bg-saffron hover:bg-royal text-white hover:text-white border-none font-bold tracking-widest"
+                className="rounded-full shadow-xl shadow-saffron/10 hover:shadow-saffron/20 hover:scale-105 transition-all duration-300 px-10 py-5 bg-saffron hover:bg-royal text-white hover:text-white border-none font-bold tracking-widest group"
               >
-                SUPPORT OUR MISSION →
+                <span>SUPPORT OUR MISSION</span>
+                <span className="transition-transform duration-300 group-hover:translate-x-1 ml-2">→</span>
               </Button>
               
-              <a
+              <Link
                 href="/about"
                 className="inline-flex items-center justify-center font-cinzel text-xs font-bold uppercase tracking-widest text-royal hover:text-saffron transition-colors duration-300 border-b border-royal/40 hover:border-saffron pb-1"
               >
                 READ THE COVENANT
-              </a>
+              </Link>
             </motion.div>
           </div>
         </motion.div>

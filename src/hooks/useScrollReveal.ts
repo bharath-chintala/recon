@@ -7,7 +7,13 @@
 //   <motion.div ref={ref} variants={fadeInUp} initial="hidden" animate={isInView ? "visible" : "hidden"} />
 
 import { useRef } from 'react'
-import { useInView, UseInViewOptions } from 'framer-motion'
+import { useInView } from 'framer-motion'
+
+export interface UseInViewOptions {
+  once?: boolean
+  margin?: string
+  amount?: 'some' | 'all' | number
+}
 
 export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   options: UseInViewOptions = {}

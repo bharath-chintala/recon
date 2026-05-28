@@ -1,8 +1,9 @@
 'use client'
 
-import { useRef, useEffect, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { CINEMATIC_DURATION, CINEMATIC_EASE_OUT, CINEMATIC_STAGGER } from '@/lib/cinematic'
 
 interface CinematicSectionProps {
@@ -22,84 +23,80 @@ export function CinematicSection({
   const bgRef = useRef<HTMLDivElement>(null)
   const fgRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
     const root = rootRef.current
     const bg = bgRef.current
     const fg = fgRef.current
     if (!root) return
 
-    const ctx = gsap.context(() => {
-      if (bg) {
-        gsap.to(bg, {
-          y: -40 * depth,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 2.2,
-          },
-        })
-      }
-      if (fg) {
-        gsap.to(fg, {
-          y: 24 * depth,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.4,
-          },
-        })
-      }
+    if (bg) {
+      gsap.to(bg, {
+        y: -40 * depth,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: root,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 2.2,
+        },
+      })
+    }
+    if (fg) {
+      gsap.to(fg, {
+        y: 24 * depth,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: root,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.4,
+        },
+      })
+    }
 
-      const cinematicText = root.querySelectorAll('[data-cinematic-text]')
-      if (cinematicText.length) {
-        gsap.set(cinematicText, { opacity: 0, y: 36, filter: 'blur(12px)', letterSpacing: '0.08em' })
-        gsap.to(cinematicText, {
+    const cinematicText = root.querySelectorAll('[data-cinematic-text]')
+    if (cinematicText.length) {
+      gsap.set(cinematicText, { opacity: 0, y: 36, filter: 'blur(12px)', letterSpacing: '0.08em' })
+      gsap.to(cinematicText, {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        letterSpacing: '0em',
+        duration: CINEMATIC_DURATION,
+        ease: CINEMATIC_EASE_OUT,
+        stagger: CINEMATIC_STAGGER,
+        scrollTrigger: {
+          trigger: root,
+          start: 'top 78%',
+          toggleActions: 'play none none none',
+        },
+      })
+    }
+
+    // Opt-in only — avoids hiding Framer-managed cards (testimonials, CTA, gallery)
+    const cards = root.querySelectorAll('[data-cinematic-reveal]')
+    if (cards.length) {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 24, scale: 0.985, filter: 'blur(5px)' },
+        {
           opacity: 1,
           y: 0,
+          scale: 1,
           filter: 'blur(0px)',
-          letterSpacing: '0em',
-          duration: CINEMATIC_DURATION,
+          duration: 1.15,
           ease: CINEMATIC_EASE_OUT,
-          stagger: CINEMATIC_STAGGER,
+          stagger: 0.07,
           scrollTrigger: {
             trigger: root,
-            start: 'top 78%',
+            start: 'top 72%',
             toggleActions: 'play none none none',
           },
-        })
-      }
-
-      // Opt-in only — avoids hiding Framer-managed cards (testimonials, CTA, gallery)
-      const cards = root.querySelectorAll('[data-cinematic-reveal]')
-      if (cards.length) {
-        gsap.fromTo(
-          cards,
-          { opacity: 0, y: 24, scale: 0.985, filter: 'blur(5px)' },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            filter: 'blur(0px)',
-            duration: 1.15,
-            ease: CINEMATIC_EASE_OUT,
-            stagger: 0.07,
-            scrollTrigger: {
-              trigger: root,
-              start: 'top 72%',
-              toggleActions: 'play none none none',
-            },
-          },
-        )
-      }
-    }, root)
-
-    return () => ctx.revert()
-  }, [depth])
+        },
+      )
+    }
+  }, { dependencies: [depth], scope: rootRef })
 
   const warmGlow = `rgba(218,170,55,${0.04 + warmth * 0.06})`
   const coolGlow = `rgba(40,90,180,${0.03 + (1 - warmth) * 0.04})`

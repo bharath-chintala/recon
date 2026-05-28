@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion, useInView, useSpring, useTransform } from 'framer-motion'
 
 interface CounterProps {
   target: number
@@ -12,9 +12,7 @@ interface CounterProps {
   label?: string
 }
 
-function easeOutQuart(t: number) {
-  return 1 - Math.pow(1 - t, 4)
-}
+
 
 export function Counter({
   target,
@@ -24,45 +22,36 @@ export function Counter({
   className = '',
   label,
 }: CounterProps) {
-  const [count, setCount] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-60px' })
-  const startedRef = useRef(false)
+  
+  const spring = useSpring(0, {
+    bounce: 0,
+    duration: duration,
+  })
+
+  const displayValue = useTransform(spring, (current: number) => Math.round(current).toLocaleString())
 
   useEffect(() => {
-    if (!isInView || startedRef.current) return
-    startedRef.current = true
-
-    const startTime = performance.now()
-
-    const tick = (now: number) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const easedProgress = easeOutQuart(progress)
-      setCount(Math.round(easedProgress * target))
-
-      if (progress < 1) {
-        requestAnimationFrame(tick)
-      }
+    if (isInView) {
+      spring.set(target)
     }
-
-    requestAnimationFrame(tick)
-  }, [isInView, target, duration])
+  }, [isInView, target, spring])
 
   return (
     <div ref={ref} className={`text-center ${className}`}>
       <motion.span
-        className="block text-4xl font-bold text-[#335C8B] tabular-nums"
+        className="block text-2xl sm:text-3xl md:text-4xl font-bold text-[#335C8B] tabular-nums"
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.5 }}
       >
         {prefix}
-        {count.toLocaleString()}
+        <motion.span>{displayValue}</motion.span>
         {suffix}
       </motion.span>
       {label && (
-        <span className="mt-1 block text-sm text-[#5a7394] font-medium">
+        <span className="mt-1 block text-xs sm:text-sm text-[#5a7394] font-medium">
           {label}
         </span>
       )}

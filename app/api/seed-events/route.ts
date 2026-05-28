@@ -6,31 +6,31 @@ const SEED_DATA = [
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Hari Hara Kalyana Purvaka Shri Satyanarayana Swamy Anushtan Mahotsav (5–15 February 2025)',
     description: 'A grand 11-day spiritual and cultural celebration organized at Naimisharanya in collaboration with Naimisharanya Tirth Dham Vikas Parishad, with the support of the Department of Tourism & Culture, Government of Uttar Pradesh.',
-    image: '/images/satyanarayana.png'
+    image: '/images/satyanarayana.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Sri Venkateshwara Kalyana Mahotsav, Colombo, Sri Lanka',
     description: 'A high-profile spiritual event graced by Shri Santhosh Jha, Indian High Commissioner to Sri Lanka.',
-    image: '/images/venkateshwara.png'
+    image: '/images/venkateshwar.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Sri Venkateshwara Kalyana Mahotsav, Puchong, Malaysia',
     description: 'A vibrant cultural celebration featuring a delegation of women artists from Telangana, strengthening Telugu cultural roots abroad.',
-    image: '/images/venkateshwara.png'
+    image: '/images/venkateshwara.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Carnival of Indian Culture – Ganga Pushkar Mahotsav, Haridwar',
     description: 'A 10-day event featuring over 630 emerging artists, celebrating India’s diverse traditional arts.',
-    image: '/images/ganga puskara.png'
+    image: '/images/ganga puskara.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Parakram Divas Celebrations – Azadi Ka Amrit Mahotsav, New Delhi',
     description: 'A four-day commemoration at Ambedkar Auditorium, AP Bhawan, honouring India’s freedom fighters, with special tribute to Netaji Subhash Chandra Bose, in association with the Ministry of Culture, Government of India.',
-    image: '/images/parakarana divas.png'
+    image: '/images/parakarana divas.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
@@ -66,7 +66,7 @@ const SEED_DATA = [
     category: 'Cultural Exchange & International Engagements',
     title: 'Bathukamma Festival in Kuala Lumpur (2016)',
     description: 'In collaboration with the Malaysia Telangana Association (MYTA).',
-    image: '/images/telangana.png'
+    image: '/images/telangana.webp'
   },
   {
     category: 'Cultural Exchange & International Engagements',

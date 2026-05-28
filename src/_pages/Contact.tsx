@@ -36,13 +36,13 @@ export default function Contact() {
   return (
     <main className="pt-20">
       {/* Page hero */}
-      <section className="relative bg-[#0b1526] py-32 overflow-hidden">
+      <section className="relative bg-[#0b1526] py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0f1d30] to-[#0b1526]" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-12 text-center">
           <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#8bb8e8]">
             Reach Out
           </motion.p>
-          <motion.h1 variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }} className="font-serif text-5xl font-bold text-white md:text-6xl">
+          <motion.h1 variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }} className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white">
             Get In Touch
           </motion.h1>
           <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5]">
@@ -52,9 +52,9 @@ export default function Contact() {
       </section>
 
       {/* Contact section */}
-      <section className="bg-[#FBFBFB] py-24">
+      <section className="bg-[#FBFBFB] py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <div className="grid gap-16 lg:grid-cols-2">
+          <div className="grid gap-10 lg:gap-16 lg:grid-cols-2">
             {/* Info panel */}
             <motion.div
               variants={slideInLeft}
@@ -201,8 +201,14 @@ export default function Contact() {
                     />
                   </div>
 
-                  <Button type="submit" variant="primary" size="lg" className="w-full">
-                    Send →
+                  <Button 
+                    type="submit" 
+                    variant="primary" 
+                    size="lg" 
+                    className="w-full group"
+                  >
+                    <span>Send</span>
+                    <span className="transition-transform duration-300 group-hover:translate-x-1 ml-2">→</span>
                   </Button>
                 </form>
               )}
@@ -211,7 +217,7 @@ export default function Contact() {
         </div>
       </section>
       {/* FAQ Section */}
-      <section className="bg-white py-24 border-t border-[#e0e7ef]">
+      <section className="bg-white py-16 md:py-24 border-t border-[#e0e7ef]">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <div className="mb-16 text-center">
             <motion.p
@@ -259,7 +265,7 @@ export default function Contact() {
               },
             ].map((faq, i) => (
               <motion.div
-                key={i}
+                key={faq.q}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}

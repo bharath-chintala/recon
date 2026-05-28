@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback } from 'react'
+import { useGSAP } from '@gsap/react'
 import { remap, smoothstep } from '@/lib/cinematic'
 
 interface Dust {
@@ -77,7 +78,7 @@ export function GlobalAtmosphere() {
     }
   }, [])
 
-  useEffect(() => {
+  useGSAP(() => {
     init()
     resize()
 
@@ -166,7 +167,7 @@ export function GlobalAtmosphere() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', resize)
     }
-  }, [init, resize])
+  }, { scope: canvasRef, dependencies: [init, resize] })
 
   return (
     <canvas

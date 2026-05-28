@@ -4,7 +4,7 @@ import sharp from 'sharp';
 
 const inputDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
 
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg'];
+const IMAGE_EXTENSIONS = ['.webp', '.webp', '.webp'];
 const CODE_FILE_EXTENSIONS = [
   '.js', '.jsx', '.ts', '.tsx',
   '.json', '.html', '.css', '.scss', '.md'
@@ -50,9 +50,9 @@ async function processDirectory(directory) {
       let content = fs.readFileSync(fullPath, 'utf8');
 
       const updatedContent = content
-        .replace(/\.png/g, '.webp')
-        .replace(/\.jpg/g, '.webp')
-        .replace(/\.jpeg/g, '.webp');
+        .replace(/\.webp/g, '.webp')
+        .replace(/\.webp/g, '.webp')
+        .replace(/\.webp/g, '.webp');
 
       if (content !== updatedContent) {
         fs.writeFileSync(fullPath, updatedContent, 'utf8');

@@ -1,16 +1,17 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useLayoutEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { fadeInUp, blurIn, stagger } from '@/animations/variants'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 
 // ─── Frame Config ─────────────────────────────────────────────────────────────
-const TOTAL_FRAMES  = 50
-const FRAME_BASE    = '/images/frames2/ezgif-frame-'
-const HERO_BG       = '#030816' // matches hero overlays — prevents flash through canvas
+const TOTAL_FRAMES = 50
+const FRAME_BASE = '/images/frames2/ezgif-frame-'
+const HERO_BG = '#030816' // matches hero overlays — prevents flash through canvas
 // 600vh = very slow, meditative cinematic pacing
 const SCROLL_HEIGHT = '250vh'
 
@@ -65,39 +66,40 @@ interface FogLayer {
 
 // ─── HeroSection ─────────────────────────────────────────────────────────────
 export function HeroSection() {
+  console.count('HeroSection Render')
 
   // ── DOM refs ────────────────────────────────────────────────────────────────
-  const wrapperRef         = useRef<HTMLDivElement>(null)
-  const stickyRef          = useRef<HTMLDivElement>(null)
-  const frameCanvasRef     = useRef<HTMLCanvasElement>(null)
-  const particleCanvasRef  = useRef<HTMLCanvasElement>(null)
-  const fogCanvasRef       = useRef<HTMLCanvasElement>(null)
-  const raysCanvasRef      = useRef<HTMLCanvasElement>(null)
-  const glowRef            = useRef<HTMLDivElement>(null)
-  const overlayRef         = useRef<HTMLDivElement>(null)
-  const vignetteRef        = useRef<HTMLDivElement>(null)
-  const textWrapRef        = useRef<HTMLDivElement>(null)
-  const heroCopyRef        = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const frameCanvasRef = useRef<HTMLCanvasElement>(null)
+  const particleCanvasRef = useRef<HTMLCanvasElement>(null)
+  const fogCanvasRef = useRef<HTMLCanvasElement>(null)
+  const raysCanvasRef = useRef<HTMLCanvasElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const vignetteRef = useRef<HTMLDivElement>(null)
+  const textWrapRef = useRef<HTMLDivElement>(null)
+  const heroCopyRef = useRef<HTMLDivElement>(null)
 
   // ── State refs ──────────────────────────────────────────────────────────────
-  const imagesRef      = useRef<HTMLImageElement[]>([])
-  const scrollProg     = useRef(0)        // 0-1 raw GSAP progress
-  const smoothProg     = useRef(0)        // lerped version used in render
-  const rafRef         = useRef(0)
-  const dustRef        = useRef<DustParticle[]>([])
-  const fogLayersRef   = useRef<FogLayer[]>([])
-  const timeRef        = useRef(0)        // elapsed seconds for autonomous animation
-  const lastTsRef      = useRef(0)
-  const dprRef         = useRef(1)
-  const loadedRef      = useRef(0)
+  const imagesRef = useRef<HTMLImageElement[]>([])
+  const scrollProg = useRef(0)        // 0-1 raw GSAP progress
+  const smoothProg = useRef(0)        // lerped version used in render
+  const rafRef = useRef(0)
+  const dustRef = useRef<DustParticle[]>([])
+  const fogLayersRef = useRef<FogLayer[]>([])
+  const timeRef = useRef(0)        // elapsed seconds for autonomous animation
+  const lastTsRef = useRef(0)
+  const dprRef = useRef(1)
+  const loadedRef = useRef(0)
   const framesReadyRef = useRef(false)
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
 
   // ── Pre-cache canvas contexts (avoid repeated getContext calls) ─────────────
-  const frameCtxRef    = useRef<CanvasRenderingContext2D | null>(null)
+  const frameCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   const particleCtxRef = useRef<CanvasRenderingContext2D | null>(null)
-  const fogCtxRef      = useRef<CanvasRenderingContext2D | null>(null)
-  const raysCtxRef     = useRef<CanvasRenderingContext2D | null>(null)
+  const fogCtxRef = useRef<CanvasRenderingContext2D | null>(null)
+  const raysCtxRef = useRef<CanvasRenderingContext2D | null>(null)
 
   // ─── Preload frames (fully decoded before scroll) ─────────────────────────────
   const preloadFrames = useCallback(() => {
@@ -136,27 +138,27 @@ export function HeroSection() {
   // ─── Init particles ──────────────────────────────────────────────────────────
   const initParticles = useCallback(() => {
     dustRef.current = Array.from({ length: 90 }, () => ({
-      x:         Math.random(),
-      y:         Math.random(),
-      vx:        (Math.random() - 0.5) * 0.00009,
-      vy:        -(Math.random() * 0.00018 + 0.00003),
-      radius:    Math.random() * 1.8 + 0.4,
+      x: Math.random(),
+      y: Math.random(),
+      vx: (Math.random() - 0.5) * 0.00009,
+      vy: -(Math.random() * 0.00018 + 0.00003),
+      radius: Math.random() * 1.8 + 0.4,
       baseAlpha: Math.random() * 0.18 + 0.03,
-      hue:       Math.random() * 35 - 5,
-      phase:     Math.random() * Math.PI * 2,
+      hue: Math.random() * 35 - 5,
+      phase: Math.random() * Math.PI * 2,
     }))
   }, [])
 
   // ─── Init fog layers ─────────────────────────────────────────────────────────
   const initFog = useCallback(() => {
     fogLayersRef.current = Array.from({ length: 6 }, (_, i) => ({
-      x:     Math.random(),
-      y:     0.55 + (i / 6) * 0.35,
-      w:     0.35 + Math.random() * 0.4,
-      h:     0.08 + Math.random() * 0.12,
+      x: Math.random(),
+      y: 0.55 + (i / 6) * 0.35,
+      w: 0.35 + Math.random() * 0.4,
+      h: 0.08 + Math.random() * 0.12,
       alpha: 0.04 + Math.random() * 0.06,
       speed: (Math.random() - 0.5) * 0.00008,
-      hue:   200 + Math.random() * 30,   // cool Himalayan blue-grey
+      hue: 200 + Math.random() * 30,   // cool Himalayan blue-grey
     }))
   }, [])
 
@@ -170,7 +172,7 @@ export function HeroSection() {
     panY: number,    // vertical pan offset in px (parallax)
   ) => {
     const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight)
-    const dw = img.naturalWidth  * scale
+    const dw = img.naturalWidth * scale
     const dh = img.naturalHeight * scale
     const dx = (w - dw) / 2
     const dy = (h - dh) / 2 + panY
@@ -194,8 +196,8 @@ export function HeroSection() {
 
     // Linear frame index from scroll — matches wheel / scrub motion 1:1
     const framePos = clamp(rawFrame, 0, TOTAL_FRAMES - 1)
-    const idxA  = Math.floor(framePos)
-    const idxB  = Math.min(idxA + 1, TOTAL_FRAMES - 1)
+    const idxA = Math.floor(framePos)
+    const idxB = Math.min(idxA + 1, TOTAL_FRAMES - 1)
     const blend = framePos - idxA
 
     const imgA = imagesRef.current[idxA]
@@ -256,9 +258,9 @@ export function HeroSection() {
         f.x * w, f.y * h, f.w * w,
       )
       const a = f.alpha * fogMult
-      grd.addColorStop(0,   `hsla(${f.hue},35%,75%,${a})`)
+      grd.addColorStop(0, `hsla(${f.hue},35%,75%,${a})`)
       grd.addColorStop(0.5, `hsla(${f.hue},25%,65%,${a * 0.45})`)
-      grd.addColorStop(1,   `hsla(${f.hue},20%,60%,0)`)
+      grd.addColorStop(1, `hsla(${f.hue},20%,60%,0)`)
 
       ctx.beginPath()
       ctx.ellipse(f.x * w, f.y * h, f.w * w, f.h * h, 0, 0, Math.PI * 2)
@@ -296,20 +298,20 @@ export function HeroSection() {
       // Edge wrap
       if (p.y < -0.05) p.y = 1.05
       if (p.x < -0.05) p.x = 1.05
-      if (p.x >  1.05) p.x = -0.05
+      if (p.x > 1.05) p.x = -0.05
 
-      const alphaMult  = 1 + easeOutCubic(pProg) * 3.2
+      const alphaMult = 1 + easeOutCubic(pProg) * 3.2
       const finalAlpha = Math.min(p.baseAlpha * alphaMult, 0.85)
-      const size       = p.radius * (1 + pProg * 1.4)
-      const hue        = 38 + p.hue + pProg * 12   // shifts more golden at end
+      const size = p.radius * (1 + pProg * 1.4)
+      const hue = 38 + p.hue + pProg * 12   // shifts more golden at end
 
       const grd = ctx.createRadialGradient(
         p.x * w, p.y * h, 0,
         p.x * w, p.y * h, size * 4,
       )
-      grd.addColorStop(0,   `hsla(${hue},90%,75%,${finalAlpha})`)
+      grd.addColorStop(0, `hsla(${hue},90%,75%,${finalAlpha})`)
       grd.addColorStop(0.4, `hsla(${hue},80%,65%,${finalAlpha * 0.35})`)
-      grd.addColorStop(1,   `hsla(${hue},70%,55%,0)`)
+      grd.addColorStop(1, `hsla(${hue},70%,55%,0)`)
 
       ctx.beginPath()
       ctx.arc(p.x * w, p.y * h, size * 4, 0, Math.PI * 2)
@@ -364,19 +366,19 @@ export function HeroSection() {
 
     // ── Glow: blue mountain aura → warm saffron divine light ──
     if (glowRef.current) {
-      const t  = smoothstep(prog)
+      const t = smoothstep(prog)
       // Phase 1 (0-0.4): cool Himalayan blue aura
       // Phase 2 (0.4-1): warm saffron/gold divine glow
       const phase = remap(prog, 0.35, 0.75, 0, 1)
-      const r = Math.floor(40  + phase * 215)
-      const g = Math.floor(90  + phase * 95)
+      const r = Math.floor(40 + phase * 215)
+      const g = Math.floor(90 + phase * 95)
       const b = Math.floor(200 - phase * 160)
       const sz = 60 + prog * 220
 
-      glowRef.current.style.opacity    = String(clamp(t * 0.95, 0, 0.95))
+      glowRef.current.style.opacity = String(clamp(t * 0.95, 0, 0.95))
       glowRef.current.style.background = `radial-gradient(ellipse 58% 52% at 50% 56%, rgba(${r},${g},${b},${0.22 + prog * 0.52}) 0%, rgba(${r},${g},${b},0.04) 55%, transparent 75%)`
-      glowRef.current.style.filter     = `blur(${sz}px)`
-      glowRef.current.style.transform  = `scale(${1 + prog * 0.4})`
+      glowRef.current.style.filter = `blur(${sz}px)`
+      glowRef.current.style.transform = `scale(${1 + prog * 0.4})`
     }
 
     // ── Cinematic overlay: starts lighter → lifts more as light builds ──
@@ -399,9 +401,9 @@ export function HeroSection() {
     // ── Text reveal: fades in during final 30% ──
     if (textWrapRef.current) {
       const textProg = remap(prog, 0.70, 1.0, 0, 1)
-      const eased    = smoothstep(textProg)
-      textWrapRef.current.style.opacity   = String(eased)
-      textWrapRef.current.style.filter    = `blur(${Math.max(0, 14 - eased * 14)}px)`
+      const eased = smoothstep(textProg)
+      textWrapRef.current.style.opacity = String(eased)
+      textWrapRef.current.style.filter = `blur(${Math.max(0, 14 - eased * 14)}px)`
       textWrapRef.current.style.transform = `translateY(${(1 - eased) * 28}px)`
       textWrapRef.current.style.letterSpacing = `${(1 - eased) * 0.12}em`
     }
@@ -428,7 +430,7 @@ export function HeroSection() {
     // Smooth lerp toward scroll target
     const follow = 1 - Math.exp(-3 * dt)
     const diff = scrollProg.current - smoothProg.current
-    
+
     // Dead-zone snap: if we're extremely close, lock to avoid infinite micro-jitter
     if (Math.abs(diff) < 0.0003) {
       smoothProg.current = scrollProg.current
@@ -437,7 +439,7 @@ export function HeroSection() {
     }
 
     // Both frames AND overlays use the same smoothed progress — no raw jumps
-    const prog     = smoothProg.current
+    const prog = smoothProg.current
     const rawFrame = prog * (TOTAL_FRAMES - 1)
 
     drawFrames(rawFrame, prog)
@@ -473,16 +475,16 @@ export function HeroSection() {
     }
     frameCtxRef.current = frameCtx ?? null
     particleCtxRef.current = particleCanvasRef.current?.getContext('2d') ?? null
-    fogCtxRef.current      = fogCanvasRef.current?.getContext('2d') ?? null
-    raysCtxRef.current     = raysCanvasRef.current?.getContext('2d') ?? null
-    ;[frameCtxRef, particleCtxRef, fogCtxRef, raysCtxRef].forEach((r) => {
-      const ctx = r.current
-      if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
-    })
+    fogCtxRef.current = fogCanvasRef.current?.getContext('2d') ?? null
+    raysCtxRef.current = raysCanvasRef.current?.getContext('2d') ?? null
+      ;[frameCtxRef, particleCtxRef, fogCtxRef, raysCtxRef].forEach((r) => {
+        const ctx = r.current
+        if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
+      })
   }, [])
 
-  // ─── Setup ────────────────────────────────────────────────────────────────
-  useEffect(() => {
+  // useGSAP handles automatic cleanup of ScrollTriggers and contexts
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
 
     preloadFrames()
@@ -496,11 +498,11 @@ export function HeroSection() {
     if (!wrapper) return
 
     const heroScroll = ScrollTrigger.create({
-      trigger:       wrapper,
-      start:         'top top',
-      end:           '+=150%',
-      scrub:         5,              // ultra-smooth — maximum glide, no jank
-      pin:           stickyRef.current,
+      trigger: wrapper,
+      start: 'top top',
+      end: '+=150%',
+      scrub: 5,              // ultra-smooth — maximum glide, no jank
+      pin: stickyRef.current,
       anticipatePin: 1,
       fastScrollEnd: true,
       onUpdate: (self) => {
@@ -513,13 +515,12 @@ export function HeroSection() {
 
     return () => {
       cancelAnimationFrame(rafRef.current)
-      heroScroll.kill()
       window.removeEventListener('resize', onResize)
       // Reset refs
       lastTsRef.current = 0
-      timeRef.current   = 0
+      timeRef.current = 0
     }
-  }, [preloadFrames, initParticles, initFog, resizeAll, renderLoop])
+  }, { scope: wrapperRef, dependencies: [preloadFrames, initParticles, initFog, resizeAll, renderLoop] })
 
   // ──────────────────────────────────────────────────────────────────────────
   return (
@@ -621,7 +622,7 @@ export function HeroSection() {
           }}
         >
           <p
-            className="mb-5 text-[12px] font-bold uppercase"
+            className="mb-5 text-[15px] md:text-[18px] lg:text-[18px] font-bold uppercase"
             style={{
               color: '#000000',
               letterSpacing: '0.6em',
@@ -634,9 +635,8 @@ export function HeroSection() {
 
           <h2
             data-cinematic-text
-            className="text-center font-serif font-light"
+            className="text-center font-serif font-light text-[1.8rem] md:text-[3.8rem] lg:text-[5rem]"
             style={{
-              fontSize: 'clamp(1.8rem, 4.5vw, 5rem)',
               lineHeight: 1.18,
               color: '#ffffff',
               textShadow: '0 0 100px rgba(218,170,55,0.45), 0 0 40px rgba(0,0,0,0.95)',
@@ -675,48 +675,48 @@ export function HeroSection() {
         {/* ── L8: Initial hero copy ── */}
         <div
           ref={heroCopyRef}
-          className="absolute inset-0 z-10 mx-auto flex h-full w-full max-w-7xl items-end px-6 pb-20 lg:px-12"
+          className="absolute inset-0 z-10 mx-auto flex h-full w-full max-w-7xl items-center md:items-end px-6 pb-12 md:pb-20 lg:px-12"
           style={{ willChange: 'opacity, transform' }}
         >
           <motion.div
             variants={stagger}
             initial="hidden"
             animate="visible"
-            className="max-w-4xl flex flex-col items-start"
+            className="max-w-4xl flex flex-col items-center md:items-start text-center md:text-left mt-20 md:mt-0"
           >
             <motion.p
               variants={fadeInUp}
-              className="mb-6 text-sm font-semibold uppercase tracking-[0.32em] text-white/70"
+              className="mb-4 md:mb-6 text-xs md:text-sm font-semibold uppercase tracking-[0.25em] md:tracking-[0.32em] text-white/70"
             >
               Celebrating Human Heritage
             </motion.p>
 
             <motion.h1
               variants={blurIn}
-              className="mb-8 font-serif text-5xl font-light leading-[1.08] text-white md:text-7xl lg:text-8xl"
+              className="mb-6 md:mb-8 font-serif text-4xl md:text-6xl lg:text-8xl font-light leading-[1.1] text-white"
               style={{ textShadow: '0 2px 50px rgba(0,0,0,0.85)' }}
             >
-              Awaken Through <br />
+              Awaken Through <br className="hidden md:block" />
               <span className="italic">Travel</span>
             </motion.h1>
 
             <motion.p
               variants={fadeInUp}
-              className="mb-12 max-w-2xl text-xl leading-relaxed text-white/68 font-light tracking-wide"
+              className="mb-8 md:mb-12 max-w-2xl text-base md:text-xl leading-relaxed text-white/68 font-light tracking-wide"
               style={{ textShadow: '0 1px 25px rgba(0,0,0,0.75)' }}
             >
               Transformative journeys that nourish mind and soul
             </motion.p>
 
-            <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-6">
-              <Button href="/about" variant="primary" size="lg" className="px-8 py-6 text-lg">
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full sm:w-auto">
+              <Button href="/about" variant="primary" size="lg" className="w-full sm:w-auto px-6 py-4 md:px-8 md:py-6 text-base md:text-lg">
                 Discover Our Mission
               </Button>
               <Button
                 onClick={() => window.dispatchEvent(new CustomEvent('open-upcoming-events'))}
                 variant="outline"
                 size="lg"
-                className="px-8 py-6 text-lg border-white/50 text-white hover:bg-white/10 hover:border-white"
+                className="w-full sm:w-auto px-6 py-4 md:px-8 md:py-6 text-base md:text-lg border-white/50 text-white hover:bg-white/10 hover:border-white"
               >
                 Upcoming Events
               </Button>
@@ -751,12 +751,6 @@ export function HeroSection() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes heroScrollLine {
-          0%   { transform: translateY(-100%); opacity: 1; }
-          100% { transform: translateY(100%);  opacity: 0; }
-        }
-      `}</style>
     </div>
   )
 }

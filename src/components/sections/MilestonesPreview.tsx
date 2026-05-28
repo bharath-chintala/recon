@@ -10,25 +10,25 @@ const MILESTONES = [
   {
     title: 'Carnival of Indian Culture',
     desc: 'Recon International Charitable Trust organized a 10-day celebration of "Carnival of Indian Culture" with 630 budding artists, under Ganga Pushkara...',
-    image: '/images/Carnival of Indian Culture.png',
+    image: '/images/Carnival of Indian Culture.webp',
     link: '/events#carnival-of-indian-culture-ganga-pushkar-mahotsav-haridwar'
   },
   {
     title: 'Parakram Diwas',
     desc: 'Recon International Charitable Trust organized celebrations of "Parakram Diwas" under Azadi Ka Amrit Mahotsav, in memory of the great freedom fighter...',
-    image: '/images/parakaran.png',
+    image: '/images/parakaran.webp',
     link: '/events#parakram-divas-celebrations-azadi-ka-amrit-mahotsav-new-delhi'
   },
   {
     title: 'Sri Venkateshwara Kalyana Mahotsavam',
     desc: 'Recon International Charitable Trust organized the "Sri Venkateshwara Kalyana Mahotsavam" at Colombo, Sri Lanka, on 27th July 2024. Sri Santhosh...',
-    image: '/images/venkateshwar.png',
+    image: '/images/venkateshwar.webp',
     link: '/events#sri-venkateshwara-kalyana-mahotsav-colombo-sri-lanka'
   },
   {
     title: 'Food Festival and Telangana...',
     desc: 'Organized cultural programs, Food Festival and Telangana Traditional Products Exhibition in Mauritius, on behalf of YAT & C Department, State...',
-    image: '/images/food festival.png',
+    image: '/images/food festival.webp',
     link: '/events#food-festivals-and-exhibitions'
   }
 ]
@@ -66,7 +66,7 @@ export function MilestonesPreview() {
   }, [])
 
   return (
-    <section className="relative bg-warm-ivory py-24 lg:py-36 overflow-hidden">
+    <section className="relative bg-warm-ivory py-14 lg:py-20 overflow-hidden">
       {/* Premium Background Ambient Glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-royal/5 blur-[150px] rounded-full pointer-events-none" />
@@ -124,7 +124,6 @@ export function MilestonesPreview() {
                 whileInView="visible"
                 viewport={viewportOnce}
                 transition={{ delay: i * 0.1 }}
-                data-cinematic-reveal
                 className="w-full flex flex-col md:flex-row bg-white/75 backdrop-blur-md rounded-[2rem] overflow-hidden border border-royal/20 hover:border-saffron/30 hover:bg-white/95 hover:shadow-xl transition-all duration-700 shadow-md group h-full"
               >
                 {/* Image Section */}
@@ -133,6 +132,7 @@ export function MilestonesPreview() {
                     src={milestone.image}
                     alt={milestone.title}
                     fill
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 500px, 300px"
                     className="object-cover transition-all duration-1000 group-hover:scale-105"
                   />
                   {/* Overlay Dark/Light Gradient */}
@@ -166,9 +166,9 @@ export function MilestonesPreview() {
         <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-6xl mx-auto px-2">
           {/* Indicators Capsule Dots */}
           <div className="flex gap-2">
-            {MILESTONES.map((_, idx) => (
+            {MILESTONES.map((m, idx) => (
               <button
-                key={idx}
+                key={m.title}
                 onClick={() => {
                   if (scrollRef.current) {
                     const cardWidth = scrollRef.current.firstElementChild?.clientWidth || scrollRef.current.clientWidth

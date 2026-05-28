@@ -298,7 +298,7 @@ export default function UpcomingEventsDashboard() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <Image src="/images/recon-logo.png" alt="Logo" width={40} height={40} />
+              <Image src="/images/recon-logo.webp" alt="Logo" width={40} height={40} />
               <div>
                 <h1 className="font-bold text-sm uppercase tracking-widest text-white">Recon Admin</h1>
                 <p className="text-[10px] text-[#8bb8e8] uppercase tracking-wider">Visual CMS Editor</p>
@@ -408,7 +408,7 @@ export default function UpcomingEventsDashboard() {
                 <p>No matching events found. Add a new event to get started.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" data-lenis-prevent>
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-[#8bb8e8]">
@@ -538,13 +538,13 @@ export default function UpcomingEventsDashboard() {
                           <p className="mt-1 text-[11px] text-[#8a9bb5] tracking-wide">{events[activeIdx].date}</p>
                         </div>
                       </div>
-                      <h3 className="font-serif text-xl font-semibold text-[#1a2d47] leading-snug mb-1">
+                       <h3 className="font-serif text-xl font-semibold text-[#1a2d47] leading-snug mb-1 break-words">
                         {events[activeIdx].title}
                       </h3>
                       <p className="text-xs font-medium text-[#335C8B] mb-3 tracking-wide">
                         📍 {events[activeIdx].subtitle}
                       </p>
-                      <p className="text-sm text-[#5a7394] leading-relaxed mb-5">
+                      <p className="text-sm text-[#5a7394] leading-relaxed mb-5 break-words">
                         {events[activeIdx].description}
                       </p>
                       <div className="flex items-center justify-between">
@@ -604,6 +604,7 @@ export default function UpcomingEventsDashboard() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              data-lenis-prevent
               className="relative w-full max-w-2xl bg-[#0f1d30] border border-white/10 rounded-2xl shadow-2xl p-6 z-10 max-h-[90vh] overflow-y-auto text-white scrollbar-thin scrollbar-thumb-white/10"
             >
               <button 

@@ -54,7 +54,7 @@ export const events: Event[] = [
     category: 'Conference',
     description:
       'A gathering of cultural leaders, policymakers, and heritage practitioners to shape the future of cross-border cultural diplomacy.',
-    image: '/images/festivals.jpg',
+    image: '/images/festivals.webp',
     featured: true,
   },
   {
@@ -65,7 +65,7 @@ export const events: Event[] = [
     category: 'Festival',
     description:
       'A ten-day celebration of living art forms — from Kathak to Kalaripayattu — uniting practitioners from 32 nations.',
-    image: '/images/festivals.jpg',
+    image: '/images/festivals.webp',
     featured: true,
   },
   {
@@ -76,7 +76,7 @@ export const events: Event[] = [
     category: 'Cultural Exchange',
     description:
       'A structured 21-day immersive exchange programme for young artists and scholars aged 18–30 from India and the EU.',
-    image: '/images/temples.jpg',
+    image: '/images/temples.webp',
     featured: false,
   },
   {
@@ -87,7 +87,7 @@ export const events: Event[] = [
     category: 'Workshop',
     description:
       'Master weavers, potters, and metalworkers guide participants through dying craft traditions at risk of extinction.',
-    image: '/images/festivals.jpg',
+    image: '/images/festivals.webp',
     featured: false,
   },
   {
@@ -98,7 +98,7 @@ export const events: Event[] = [
     category: 'Conference',
     description:
       'An interdisciplinary academic symposium tracing the cultural and economic legacy of the ancient Silk Route.',
-    image: '/images/temples.jpg',
+    image: '/images/temples.webp',
     featured: true,
   },
 ]
@@ -113,7 +113,7 @@ export const testimonials: Testimonial[] = [
     country: 'India',
     quote:
       'Recon International transformed our ministry\'s approach to soft power. Their frameworks for cultural exchange are unmatched in the diplomatic world.',
-    avatar: '/images/portraits.jpg',
+    avatar: '/images/portraits.webp',
     rating: 5,
   },
   {
@@ -123,7 +123,7 @@ export const testimonials: Testimonial[] = [
     country: 'Spain',
     quote:
       'The depth of research and sensitivity with which Recon approaches intangible heritage preservation is truly remarkable. A gold standard in the field.',
-    avatar: '/images/portraits.jpg',
+    avatar: '/images/portraits.webp',
     rating: 5,
   },
   {
@@ -133,7 +133,7 @@ export const testimonials: Testimonial[] = [
     country: 'Nigeria',
     quote:
       'Working with Recon on our Pan-African cultural exchange opened doors we never imagined. The network and expertise they bring is extraordinary.',
-    avatar: '/images/portraits.jpg',
+    avatar: '/images/portraits.webp',
     rating: 5,
   },
   {
@@ -143,7 +143,7 @@ export const testimonials: Testimonial[] = [
     country: 'Japan',
     quote:
       'Recon International brokered our most successful bilateral cultural agreement in two decades. Their understanding of cross-cultural nuance is unparalleled.',
-    avatar: '/images/portraits.jpg',
+    avatar: '/images/portraits.webp',
     rating: 5,
   },
 ]
@@ -162,7 +162,7 @@ export const initiatives: Initiative[] = [
       'Carefully curated retreats in serene destinations',
       'Travel that leaves a lasting inner imprint',
     ],
-    image: '/images/init1.png',
+    image: '/images/init1.webp',
     color: '#335C8B',
     stats: [
       { label: 'Destinations', value: '12+' },
@@ -181,7 +181,7 @@ export const initiatives: Initiative[] = [
       'Guided retreats focused on inner peace and self-discovery',
       'Thoughtfully designed itineraries for balance and transformation',
     ],
-    image: '/images/init2.png',
+    image: '/images/init2.webp',
     color: '#2a6f8e',
     stats: [
       { label: 'Sites', value: '45+' },
@@ -200,7 +200,7 @@ export const initiatives: Initiative[] = [
       'Small-group journeys guided by experienced facilitators',
       'Moments of silence, prayer, and spiritual connection',
     ],
-    image: '/images/init3.png',
+    image: '/images/init3.webp',
     color: '#4a6fa5',
     stats: [
       { label: 'Temples', value: '120+' },
@@ -219,7 +219,7 @@ export const trustMembers: TrustMember[] = [
     role: 'Founder & Managing Trustee',
     organisation: 'Recon International',
     country: 'India',
-    portrait: '/images/portraits.jpg',
+    portrait: '/images/portraits.webp',
     bio: 'Born in Hathnoora Vill & Mdl, Medak Dist, Telangana State, he holds a postgraduate degree in MA Psychology and comes from an agricultural family. As the founder of "Recon International," he has excelled in strategic planning across sectors such as tourism and culture, coordinating numerous conferences and cultural programs at National and International levels for over two decades. His mission focuses on promoting and preserving cultural heritage and spiritual values through Indian classical, folk, and tribal dance and music. Supported by various Governmental and Non-Governmental organizations, he aims to nurture emerging artists and ensure the transmission of cultural traditions to future generations. He is dedicated to establishing the "Domicile of Rama Rajya" ashram in Ayodhya, providing high-quality accommodation, cuisine, and transportation for devotees.',
   },
   {
@@ -228,7 +228,7 @@ export const trustMembers: TrustMember[] = [
     role: 'Trustee & Secretary',
     organisation: 'Recon International',
     country: 'India',
-    portrait: '/images/portraits.jpg',
+    portrait: '/images/portraits.webp',
     bio: 'Shri Madhava Naidu Garu, from Tirumala Tirupati, is renowned for his deep devotion to Sri Venkateswara. For the past 50 years, he has exemplified the spirit of generosity and charity, dedicating his life to serving others. His commitment to helping those in need is unwavering; throughout this extensive period, he has never uttered the words "No," "Not possible," "Don\'t know," or "Don\'t do" in response to requests for assistance. This remarkable consistency reflects not only his boundless generosity but also his deep sense of responsibility towards others. His actions embody a profound understanding of service as an expression of faith, reflecting the principles of kindness and selflessness inspired by his devotion. Shri Madhava Naidu Garu\'s life stands as a testament to altruism and dedication, making him a revered figure in his community and a living example of compassion.',
   },
   {
@@ -237,7 +237,7 @@ export const trustMembers: TrustMember[] = [
     role: 'Trustee',
     organisation: 'Recon International',
     country: 'India',
-    portrait: '/images/portraits.jpg',
+    portrait: '/images/portraits.webp',
     bio: 'Ms. Pallavi N, an MBA graduate and accomplished Financial Consultant, has dedicated the past seven years to serving as a Trustee of the Recon International Charitable Trust in Hyderabad. In this role, she has spearheaded numerous Corporate Social Responsibility (CSR) initiatives focused on uplifting marginalized communities, with particular emphasis on supporting visually challenged students. Notably, she organized a transformative pilgrimage for approximately 400 visually impaired individuals to the Tirumala Temple, fulfilling their lifelong aspirations and demonstrating the power of community collaboration. To ensure the success of this initiative, she worked closely with esteemed organizations such as Tirupati Tirumala Devasthanam, South Central Railway, and APSRTC. She is deeply committed to Women\'s Empowerment, having developed counselling programs that support both personal and professional growth.',
   },
 ]

@@ -65,7 +65,7 @@ export function Footer() {
               className="mb-6 inline-flex items-center gap-3 group"
             >
               <Image
-                src="/images/recon-logo.png"
+                src="/images/recon-logo.webp"
                 alt="Recon Logo"
                 width={64}
                 height={64}

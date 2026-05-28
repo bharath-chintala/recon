@@ -3,6 +3,10 @@
 import { motion } from 'framer-motion'
 import { hoverScale, tapScale } from '@/animations/variants'
 
+import Link from 'next/link'
+
+const MotionLink = motion(Link)
+
 type Variant = 'primary' | 'secondary' | 'ghost' | 'outline'
 type Size = 'sm' | 'md' | 'lg'
 
@@ -48,7 +52,7 @@ export function Button({
   iconPosition = 'right',
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center font-semibold rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#335C8B] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center font-semibold rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#335C8B] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   const classes = `${base} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
 
   const content = (
@@ -64,15 +68,32 @@ export function Button({
   )
 
   if (href) {
+    const isExternal = href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')
+    
+    if (isExternal) {
+      return (
+        <motion.a
+          href={href}
+          className={classes}
+          whileHover={hoverScale}
+          whileTap={tapScale}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {content}
+        </motion.a>
+      )
+    }
+
     return (
-      <motion.a
+      <MotionLink
         href={href}
         className={classes}
         whileHover={hoverScale}
         whileTap={tapScale}
       >
         {content}
-      </motion.a>
+      </MotionLink>
     )
   }
 

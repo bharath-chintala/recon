@@ -261,7 +261,7 @@ export default function Dashboard() {
 
   // Get active preview image
   const filteredEvents = events.filter(evt => evt.category === activeCategory)
-  const activePreviewImage = hoveredImage || filteredEvents[0]?.image || '/images/events.png'
+  const activePreviewImage = hoveredImage || filteredEvents[0]?.image || '/images/events.webp'
 
   return (
     <div className="min-h-screen bg-[#0b1526] text-white selection:bg-[#335C8B]">
@@ -270,7 +270,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <Image src="/images/recon-logo.png" alt="Logo" width={40} height={40} />
+              <Image src="/images/recon-logo.webp" alt="Logo" width={40} height={40} />
               <div>
                 <h1 className="font-bold text-sm uppercase tracking-widest text-white">Recon Admin</h1>
                 <p className="text-[10px] text-[#8bb8e8] uppercase tracking-wider">Visual CMS Editor</p>
@@ -396,7 +396,7 @@ export default function Dashboard() {
                 <p>No matching events found. Try adjusting your search/filter settings.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" data-lenis-prevent>
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-[#8bb8e8]">
@@ -565,12 +565,12 @@ export default function Dashboard() {
                         </span>
 
                         {/* Title */}
-                        <h4 className="font-serif text-xl lg:text-2xl text-[#1a2d47] font-semibold leading-snug mb-3 group-hover:text-[#335C8B] transition-colors pr-16">
+                        <h4 className="font-serif text-xl lg:text-2xl text-[#1a2d47] font-semibold leading-snug mb-3 group-hover:text-[#335C8B] transition-colors pr-16 break-words">
                           {item.title}
                         </h4>
 
                         {/* Description */}
-                        <p className="text-sm leading-relaxed text-[#5a7394] font-light">
+                        <p className="text-sm leading-relaxed text-[#5a7394] font-light break-words">
                           {item.description}
                         </p>
                       </div>
@@ -598,6 +598,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              data-lenis-prevent
               className="relative w-full max-w-lg bg-[#0f1d30] border border-white/10 rounded-2xl shadow-2xl p-6 z-10 max-h-[90vh] overflow-y-auto text-white scrollbar-thin scrollbar-thumb-white/10"
             >
               <button 

@@ -31,7 +31,7 @@ export function GlobalMap() {
   return (
     <section
       id="global-map"
-      className="relative bg-soft-cream py-24 lg:py-36 overflow-hidden"
+      className="relative bg-soft-cream py-14 lg:py-20 overflow-hidden"
     >
       {/* Decorative ambient lights */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-saffron/5 blur-[120px] rounded-full pointer-events-none" />
@@ -87,7 +87,7 @@ export function GlobalMap() {
             <div 
               className="absolute inset-0 select-none pointer-events-none"
               style={{ 
-                backgroundImage: "url('/world_map_tech.png')",
+                backgroundImage: "url('/world_map_tech.webp')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 filter: 'opacity(0.35) brightness(1.2)'
@@ -95,7 +95,7 @@ export function GlobalMap() {
             />
 
             {/* Animated Arcs Layer (Glowing saffron/gold gradient) */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="arcGradientLight" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="rgba(0, 4, 53, 0)" />
@@ -110,7 +110,7 @@ export function GlobalMap() {
                 const midX = (from.x + to.x) / 2
                 const midY = (from.y + to.y) / 2 - Math.abs(from.x - to.x) * 0.18
                 
-                const path = `M ${from.x}% ${from.y}% Q ${midX}% ${midY}% ${to.x}% ${to.y}%`
+                const path = `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`
                 
                 return (
                   <g key={`conn-${i}`}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { fadeInUp, stagger, viewportOnce } from '@/animations/variants'
 
 const PILLARS = [
@@ -64,7 +65,7 @@ const PILLARS = [
 
 export function CorePillars() {
   return (
-    <section className="relative bg-warm-ivory py-24 lg:py-36 overflow-hidden">
+    <section className="relative bg-warm-ivory py-14 lg:py-20 overflow-hidden">
       {/* Decorative ambient lights */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-saffron/5 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-royal/5 blur-[130px] rounded-full pointer-events-none" />
@@ -104,8 +105,8 @@ export function CorePillars() {
           </motion.p>
         </motion.div>
 
-        {/* Pillars Card Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        {/* Pillars Card Grid / Carousel */}
+        <div className="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 pb-12 md:pb-0 -mx-6 px-6 md:mx-0 md:px-0 no-scrollbar">
           {PILLARS.map((pillar, i) => (
             <motion.div
               key={pillar.title}
@@ -113,26 +114,23 @@ export function CorePillars() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={viewportOnce}
               transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative flex flex-col bg-white/70 backdrop-blur-md p-8 rounded-[2rem] border border-royal/20 hover:shadow-xl hover:border-saffron/30 hover:bg-white/95 hover:-translate-y-2 transition-all duration-500"
+              className="flex-shrink-0 w-[85vw] md:w-auto snap-center group relative flex flex-col bg-[#F8F5EF] p-8 rounded-[2.5rem] border border-white/60 hover:-translate-y-2 transition-all duration-500 shadow-[8px_8px_20px_rgba(0,4,53,0.06),-8px_-8px_20px_rgba(255,255,255,0.8),inset_4px_4px_10px_rgba(255,255,255,1),inset_-4px_-4px_10px_rgba(0,4,53,0.03)] hover:shadow-[12px_12px_24px_rgba(0,4,53,0.08),-12px_-12px_24px_rgba(255,255,255,1),inset_4px_4px_10px_rgba(255,255,255,1),inset_-4px_-4px_10px_rgba(0,4,53,0.03)]"
             >
-              {/* Gold Ornament Line */}
-              <div className="absolute top-0 inset-x-12 h-[2px] bg-gradient-to-r from-transparent via-saffron/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-              {/* Icon Container */}
-              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 border border-royal/25 group-hover:bg-saffron/10 group-hover:border-saffron/30 transition-all duration-500">
+              {/* Icon Container with Claymorphism */}
+              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F8F5EF] transition-all duration-500 shadow-[4px_4px_10px_rgba(0,4,53,0.06),-4px_-4px_10px_rgba(255,255,255,0.8),inset_2px_2px_5px_rgba(255,255,255,1),inset_-2px_-2px_5px_rgba(0,4,53,0.03)]">
                 {pillar.icon}
               </div>
 
               {/* Card Header */}
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-saffron mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-saffron mb-3">
                 {pillar.subtitle}
               </span>
-              <h3 className="mb-4 font-cinzel text-lg md:text-xl font-bold text-royal leading-snug tracking-wide group-hover:text-saffron transition-colors duration-300">
+              <h3 className="mb-4 font-cinzel text-xl md:text-2xl font-bold text-royal leading-snug tracking-wide group-hover:text-saffron transition-colors duration-300 break-words">
                 {pillar.title}
               </h3>
 
               {/* Card Description */}
-              <p className="text-sm md:text-[15px] text-royal/80 leading-relaxed font-normal flex-1 text-justify">
+              <p className="text-sm md:text-[15px] text-royal/80 leading-relaxed font-normal flex-1 text-justify break-words">
                 {pillar.description}
               </p>
             </motion.div>
@@ -164,12 +162,13 @@ export function CorePillars() {
             </div>
             
             <div className="flex-shrink-0">
-              <a 
+              <Link 
                 href="/about"
-                className="inline-flex items-center justify-center rounded-full bg-white hover:bg-saffron text-royal hover:text-white px-8 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-black/20"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-white hover:bg-saffron text-royal hover:text-white px-8 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-black/20 group whitespace-nowrap"
               >
-                Learn More About Us →
-              </a>
+                <span>Learn More About Us</span>
+                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </Link>
             </div>
           </div>
         </motion.div>

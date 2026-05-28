@@ -22,20 +22,28 @@ export function Slider({
   showArrows = true,
   className = '',
 }: SliderProps) {
+  console.count('Slider Render')
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const go = useCallback(
-    (next: number) => {
-      setDirection(next > current ? 1 : -1)
-      setCurrent((next + items.length) % items.length)
+    (nextIdx: number) => {
+      setDirection(nextIdx > current ? 1 : -1)
+      setCurrent((nextIdx + items.length) % items.length)
     },
     [current, items.length]
   )
 
-  const next = useCallback(() => go(current + 1), [go, current])
-  const prev = useCallback(() => go(current - 1), [go, current])
+  const next = useCallback(() => {
+    setDirection(1)
+    setCurrent((c) => (c + 1) % items.length)
+  }, [items.length])
+
+  const prev = useCallback(() => {
+    setDirection(-1)
+    setCurrent((c) => (c - 1 + items.length) % items.length)
+  }, [items.length])
 
   useEffect(() => {
     if (!autoPlay) return
@@ -43,7 +51,7 @@ export function Slider({
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [autoPlay, interval, next])
+  }, [autoPlay, interval, next, current])
 
   const variants: import('framer-motion').Variants = {
     enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),

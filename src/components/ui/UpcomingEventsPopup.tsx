@@ -106,7 +106,7 @@ export function UpcomingEventsPopup() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className="relative w-full max-w-2xl bg-[#FBFBFB] rounded-[2rem] overflow-hidden shadow-2xl"
           >
             {/* ── Header ── */}
@@ -203,7 +203,7 @@ export function UpcomingEventsPopup() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-serif text-xl font-semibold text-[#1a2d47] leading-snug mb-1">
+                      <h3 className="font-serif text-xl font-semibold text-[#1a2d47] leading-snug mb-1 break-words">
                         {ev.title}
                       </h3>
                       <p className="text-xs font-medium text-[#335C8B] mb-3 tracking-wide">
@@ -211,7 +211,7 @@ export function UpcomingEventsPopup() {
                       </p>
 
                       {/* Description */}
-                      <p className="text-sm text-[#5a7394] leading-relaxed mb-5">
+                      <p className="text-sm text-[#5a7394] leading-relaxed mb-5 break-words">
                         {ev.description}
                       </p>
 

@@ -41,7 +41,8 @@ export function Navbar() {
   const shouldHide = pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')
 
   useEffect(() => {
-    const checkHero = (y: number) => {
+    const handleScroll = () => {
+      const y = window.scrollY
       if (pathname === '/') {
         // Hero wrapper is 250vh, so we transition around 2.2vh
         setInHero(y < (window.innerHeight * 2.2))
@@ -51,11 +52,11 @@ export function Navbar() {
     }
 
     // Initial check
-    checkHero(window.scrollY)
+    handleScroll()
 
-    const unsubscribe = scrollY.on('change', checkHero)
-    return unsubscribe
-  }, [scrollY, pathname])
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [pathname])
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -89,7 +90,7 @@ export function Navbar() {
             aria-label="Recon International — Home"
           >
             <Image
-              src="/images/recon-logo.png"
+              src="/images/recon-logo.webp"
               alt="Recon Logo"
               width={70}
               height={70}
