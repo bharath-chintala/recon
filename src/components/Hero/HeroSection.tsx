@@ -101,39 +101,7 @@ export function HeroSection() {
   const fogCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   const raysCtxRef = useRef<CanvasRenderingContext2D | null>(null)
 
-  // ─── Preload frames (fully decoded before scroll) ─────────────────────────────
-  const preloadFrames = useCallback(() => {
-    loadedRef.current = 0
-    framesReadyRef.current = false
 
-    const images = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
-      const img = new Image()
-      img.decoding = 'async'
-      img.src = getFrameSrc(i)
-      return img
-    })
-    imagesRef.current = images
-
-    void Promise.all(
-      images.map(async (img) => {
-        try {
-          if (img.decode) await img.decode()
-          if (!img.complete) {
-            await new Promise<void>((resolve, reject) => {
-              img.onload = () => resolve()
-              img.onerror = () => reject()
-            })
-          }
-        } catch {
-          /* keep going if a single frame fails */
-        } finally {
-          loadedRef.current += 1
-        }
-      }),
-    ).finally(() => {
-      framesReadyRef.current = true
-    })
-  }, [])
 
   // ─── Init particles ──────────────────────────────────────────────────────────
   const initParticles = useCallback(() => {
@@ -200,17 +168,53 @@ export function HeroSection() {
     const idxB = Math.min(idxA + 1, TOTAL_FRAMES - 1)
     const blend = framePos - idxA
 
-    const imgA = imagesRef.current[idxA]
-    const imgB = imagesRef.current[idxB]
+    let imgA = imagesRef.current[idxA]
+    let imgB = imagesRef.current[idxB]
+
+    let aReady = isFrameReady(imgA)
+    let bReady = isFrameReady(imgB)
+
+    // Fallback: If target frame A is not loaded, find the closest loaded frame
+    if (!aReady) {
+      for (let dist = 1; dist < TOTAL_FRAMES; dist++) {
+        const left = idxA - dist
+        const right = idxA + dist
+        if (left >= 0 && isFrameReady(imagesRef.current[left])) {
+          imgA = imagesRef.current[left]
+          aReady = true
+          break
+        }
+        if (right < TOTAL_FRAMES && isFrameReady(imagesRef.current[right])) {
+          imgA = imagesRef.current[right]
+          aReady = true
+          break
+        }
+      }
+    }
+
+    // Fallback: If target frame B is not loaded, find the closest loaded frame
+    if (!bReady && idxA !== idxB) {
+      for (let dist = 1; dist < TOTAL_FRAMES; dist++) {
+        const left = idxB - dist
+        const right = idxB + dist
+        if (left >= 0 && isFrameReady(imagesRef.current[left])) {
+          imgB = imagesRef.current[left]
+          bReady = true
+          break
+        }
+        if (right < TOTAL_FRAMES && isFrameReady(imagesRef.current[right])) {
+          imgB = imagesRef.current[right]
+          bReady = true
+          break
+        }
+      }
+    }
 
     // Slow cinematic zoom: 1.0 at start → 1.15 at end
     const zoom = 1 + prog * 0.15
 
     // Subtle vertical parallax: images drift up slightly as camera "orbits"
     const panY = prog * -h * 0.04
-
-    const aReady = isFrameReady(imgA)
-    const bReady = isFrameReady(imgB)
 
     // Never clear to transparent — that flashes the page background during crossfade
     if (!aReady && !bReady) return
@@ -485,6 +489,98 @@ export function HeroSection() {
         if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
       })
   }, [])
+
+  // ─── Preload frames (fully decoded before scroll) ─────────────────────────────
+  const preloadFrames = useCallback(() => {
+    loadedRef.current = 0
+    framesReadyRef.current = false
+
+    const images: HTMLImageElement[] = []
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image()
+      img.decoding = 'async'
+      img.src = getFrameSrc(i)
+      images.push(img)
+    }
+    imagesRef.current = images
+
+    // Phase 1: Load the first frame immediately for instant LCP
+    const firstImg = images[0]
+    
+    const loadFirstFrame = async () => {
+      try {
+        if (firstImg.decode) await firstImg.decode()
+        if (!firstImg.complete) {
+          await new Promise<void>((resolve, reject) => {
+            firstImg.onload = () => resolve()
+            firstImg.onerror = () => reject()
+          })
+        }
+      } catch (err) {
+        console.warn('Failed to load first hero frame:', err)
+      } finally {
+        loadedRef.current += 1
+        // Paint the first frame immediately to eliminate screen blankness during load
+        requestAnimationFrame(() => {
+          drawFrames(0, 0)
+        })
+      }
+    }
+
+    // Phase 2: Throttle remaining 49 frames in small batches when browser is idle
+    const loadRemainingFrames = async () => {
+      const batchSize = 5
+      const remainingIndices = Array.from({ length: TOTAL_FRAMES - 1 }, (_, i) => i + 1)
+      
+      for (let i = 0; i < remainingIndices.length; i += batchSize) {
+        const batch = remainingIndices.slice(i, i + batchSize)
+        await Promise.all(
+          batch.map(async (idx) => {
+            const img = images[idx]
+            try {
+              if (img.decode) await img.decode()
+              if (!img.complete) {
+                await new Promise<void>((resolve, reject) => {
+                  img.onload = () => resolve()
+                  img.onerror = () => reject()
+                })
+              }
+            } catch {
+              /* ignore individual frame failures */
+            } finally {
+              loadedRef.current += 1
+            }
+          })
+        )
+        // Yield to the main thread to prevent long blocking tasks
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+      framesReadyRef.current = true
+    }
+
+    // Load first frame immediately
+    void loadFirstFrame().then(() => {
+      if (typeof window !== 'undefined') {
+        const runDeferred = () => {
+          if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(() => {
+              void loadRemainingFrames()
+            }, { timeout: 2000 })
+          } else {
+            setTimeout(() => {
+              void loadRemainingFrames()
+            }, 1500)
+          }
+        }
+
+        if (document.readyState === 'complete') {
+          runDeferred()
+        } else {
+          window.addEventListener('load', runDeferred, { once: true })
+        }
+      }
+    })
+  }, [drawFrames])
 
   // useGSAP handles automatic cleanup of ScrollTriggers and contexts
   useGSAP(() => {
