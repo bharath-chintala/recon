@@ -84,11 +84,11 @@ const GALLERY_IMAGES = [
     subtitle: 'Sacred Architecture',
     category: 'Architecture',
     images: [
-      '/images/Temples/ANU05999.webp',
+      '/images/Temples/ANU05999.jpg',
       '/images/Temples/ANU06073.webp',
       '/images/Temples/ANU06113.webp',
-      '/images/Temples/ANU06268.webp',
-      '/images/Temples/ANU06943.webp',
+      '/images/Temples/ANU06268.jpg',
+      '/images/Temples/ANU06943.jpg',
     ]
   },
   {
@@ -105,6 +105,15 @@ const GALLERY_IMAGES = [
       '/images/AP event 2007/DSC_6974.webp',
     ]
   }
+]
+
+const ROTATED_IMAGES = [
+  '/images/Parakram Diwas/pa3.webp',
+  '/images/Parakram Diwas/pa4.webp',
+  '/images/Parakram Diwas/pa6.webp',
+  '/images/Cultural dances/DSC_8111.webp',
+  '/images/Cultural dances/DSC_8192.webp',
+  '/images/Cultural dances/DSC_8195.webp',
 ]
 
 interface GalleryCardProps {
@@ -132,7 +141,11 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
           src={img.src}
           alt={img.alt}
           fill
-          className="object-cover scale-100 group-hover:scale-110 brightness-100 group-hover:brightness-[0.82] transition-all duration-[800ms] ease-out"
+          className={`object-cover brightness-100 group-hover:brightness-[0.82] transition-all duration-[800ms] ease-out ${
+            ROTATED_IMAGES.includes(img.src)
+              ? "-rotate-90 scale-[1.5] group-hover:scale-[1.65] object-[75%_center]"
+              : "scale-100 group-hover:scale-110"
+          }`}
           sizes="(max-width: 768px) 100vw, 30vw"
         />
       </div>
@@ -160,10 +173,10 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
         <h3 className="font-cinzel text-lg md:text-xl font-bold tracking-wide leading-tight text-white mb-0.5 group-hover:text-[rgb(218,170,55)] transition-colors duration-300">
           {img.title}
         </h3>
-        
+
         {/* Subtle decorative sky blue divider that expands on hover */}
         <div className="w-0 group-hover:w-16 h-[2px] bg-[rgb(218,170,55)] my-2 transition-all duration-[600ms] rounded-full" />
-        
+
         <p className="text-[10px] text-white/70 font-medium uppercase tracking-wider flex items-center gap-1">
           {img.subtitle}
           <span className="opacity-0 group-hover:opacity-100 transform translate-x-[-6px] group-hover:translate-x-0 transition-all duration-[500ms] text-[rgb(218,170,55)]">→</span>
@@ -173,9 +186,32 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
   )
 }
 
+const modalBentoContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    }
+  }
+}
+
+const modalBentoItem = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 90,
+      damping: 14
+    }
+  }
+}
+
 export function GalleryPreview() {
   const [selectedImage, setSelectedImage] = useState<typeof GALLERY_IMAGES[0] | null>(null)
-  const [carouselIdx, setCarouselIdx] = useState(0)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -183,33 +219,23 @@ export function GalleryPreview() {
     return () => {
       document.body.style.overflow = ''
       if (typeof window !== 'undefined') {
-        ;(window as any).lenis?.start()
+        ; (window as any).lenis?.start()
       }
     }
   }, [])
 
   useEffect(() => {
     if (selectedImage) {
-      setCarouselIdx(0)
       document.body.style.overflow = 'hidden'
       if (typeof window !== 'undefined') {
-        ;(window as any).lenis?.stop()
+        ; (window as any).lenis?.stop()
       }
     } else {
       document.body.style.overflow = ''
       if (typeof window !== 'undefined') {
-        ;(window as any).lenis?.start()
+        ; (window as any).lenis?.start()
       }
     }
-  }, [selectedImage])
-
-  // Autoplay carousel every 3 seconds when a card is clicked
-  useEffect(() => {
-    if (!selectedImage) return
-    const intervalId = setInterval(() => {
-      setCarouselIdx((prev) => (prev + 1) % selectedImage.images.length)
-    }, 3000)
-    return () => clearInterval(intervalId)
   }, [selectedImage])
 
   useEffect(() => {
@@ -247,7 +273,7 @@ export function GalleryPreview() {
             </p>
             <span className="h-0.5 w-6 bg-royal/30" />
           </motion.div>
-          
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -255,13 +281,13 @@ export function GalleryPreview() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-cinzel text-4xl lg:text-5xl font-light text-royal tracking-tight"
           >
-            Sacred Moments & <br/>
+            Sacred Moments & <br />
             <span className="italic font-normal text-royal">Cultural Chronicles</span>
           </motion.h2>
         </div>
 
         {/* Premium Claymorphic Bento Grid - Symmetrical 504px Height Layout */}
-        <motion.div 
+        <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
@@ -316,7 +342,7 @@ export function GalleryPreview() {
         </motion.div>
       </div>
 
-      {/* Self-contained Lightbox Modal with Auto-playing Carousel */}
+      {/* Self-contained Lightbox Modal with Bento Grid Collage */}
       {mounted && typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
           {selectedImage && (
@@ -326,78 +352,92 @@ export function GalleryPreview() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={() => setSelectedImage(null)}
-              className="fixed inset-0 bg-[#020617]/95 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 md:p-8"
+              className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 md:p-8"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-6 right-6 p-3 rounded-full bg-white/10 border border-white/20 text-white hover:text-[#daaa37] hover:scale-105 transition-all duration-300 shadow-md z-[10000] cursor-pointer"
-                aria-label="Close Lightbox"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
-              {/* Modal Image Box */}
+              {/* Floating Glassmorphic Bento Panel */}
               <motion.div
-                initial={{ scale: 0.97, opacity: 0 }}
+                initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.97, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                className="relative flex flex-col items-center justify-center max-w-[95vw] max-h-[90vh]"
+                className="relative w-full max-w-5xl bg-[#080d1a]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] md:rounded-[2.5rem] shadow-[0_24px_60px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] p-4 sm:p-6 md:p-10 flex flex-col items-center overflow-y-auto max-h-[95vh] pr-1 md:pr-0"
               >
-                {/* 3-Second Cross-fading Image Box */}
-                <div className="relative w-[95vw] max-w-4xl h-[60vh] md:h-[65vh] overflow-hidden rounded-3xl bg-black/40 border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.5)]">
-                  {selectedImage.images.map((imgSrc, idx) => (
-                    <div
-                      key={imgSrc}
-                      className={`absolute inset-0 transition-opacity duration-[1000ms] ease-in-out ${
-                        idx === carouselIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                      }`}
-                    >
-                      <Image
-                        src={imgSrc}
-                        alt={`${selectedImage.title} Image ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        priority={idx === 0}
-                        sizes="(max-width: 1200px) 100vw, 1200px"
-                      />
-                    </div>
-                  ))}
-                </div>
+                {/* Close Button directly inside the floating panel top-right */}
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-5 right-5 md:top-6 md:right-6 p-2.5 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-[#daaa37] hover:bg-white/10 hover:scale-105 transition-all duration-300 shadow-md z-[10000] cursor-pointer"
+                  aria-label="Close Lightbox"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
 
-                {/* Progress Indicators & Manual Controls */}
-                <div className="flex justify-center gap-2.5 mt-6 z-20">
-                  {selectedImage.images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setCarouselIdx(idx)
-                      }}
-                      className={`h-2 rounded-full transition-all duration-[400ms] cursor-pointer ${
-                        idx === carouselIdx ? 'w-6 bg-[#daaa37]' : 'w-2 bg-white/30 hover:bg-white/60'
-                      }`}
-                      aria-label={`Go to slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-                
-                {/* Info Bar below image */}
-                <div className="text-center mt-5">
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.25em] text-[#daaa37] mb-1 block animate-pulse">
-                    {selectedImage.category} (Image {carouselIdx + 1} of {selectedImage.images.length})
-                  </span>
-                  <h3 className="font-cinzel text-base md:text-lg font-light tracking-wide text-white/90">
+                {/* Header Information */}
+                <div className="text-center mb-8 max-w-2xl select-none">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/20 text-[#daaa37] text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#daaa37] animate-pulse" />
+                    {selectedImage.category}
+                  </div>
+                  <h3 className="font-cinzel text-2xl md:text-3.5xl font-light tracking-wide text-white/95 leading-tight">
                     {selectedImage.title}
                   </h3>
-                  <p className="text-[10px] text-white/50 uppercase tracking-wider mt-1">
+                  <p className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest mt-2 font-medium">
                     {selectedImage.subtitle}
                   </p>
                 </div>
+
+                {/* Creative Bento Collage Grid */}
+                <motion.div
+                  variants={modalBentoContainer}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full h-auto md:h-[450px] lg:h-[500px]"
+                >
+                  {selectedImage.images.map((imgSrc, idx) => {
+                    const gridClasses = idx === 0
+                      ? "col-span-2 md:row-span-2 h-[220px] sm:h-[280px] md:h-full"
+                      : "col-span-1 md:row-span-1 h-[180px] sm:h-[230px] md:h-full"
+
+                    return (
+                      <motion.div
+                        key={imgSrc}
+                        variants={modalBentoItem}
+                        whileHover={{ scale: 1.01 }}
+                        className={`group relative rounded-2xl overflow-hidden cursor-default bg-white/5 border border-white/10 shadow-[0_12px_24px_rgba(0,0,0,0.3)] transition-all duration-[400ms] ease-out ${gridClasses}`}
+                      >
+                        {/* Main Image Asset */}
+                        <div className="absolute inset-0 overflow-hidden">
+                          <Image
+                            src={imgSrc}
+                            alt={`${selectedImage.title} Gallery Image ${idx + 1}`}
+                            fill
+                            className={`object-cover transition-transform duration-[700ms] ease-out ${ROTATED_IMAGES.includes(imgSrc)
+                              ? "-rotate-90 scale-[1.5] group-hover:scale-[1.62] object-[85%_center]"
+                              : "scale-100 group-hover:scale-108"
+                              }`}
+                            sizes={idx === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 50vw, 25vw"}
+                            priority={idx === 0}
+                          />
+                        </div>
+
+                        {/* Glaze Gloss Reflection Sweep */}
+                        <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
+                          <div className="absolute top-0 -inset-y-2 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 -translate-x-[150%] group-hover:translate-x-[400%] transition-transform duration-[1000ms] ease-out" />
+                        </div>
+
+                        {/* High-Contrast Vignette Layer */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-65 group-hover:opacity-85 transition-opacity duration-300 z-10" />
+
+                        {/* Small Image Indicator Tag */}
+                        <div className="absolute bottom-3 left-4 z-20 text-[9px] font-bold text-white/50 group-hover:text-white uppercase tracking-widest transition-colors duration-300">
+                          {idx === 0 ? "Featured View" : `Image 0${idx + 1}`}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </motion.div>
               </motion.div>
             </motion.div>
           )}

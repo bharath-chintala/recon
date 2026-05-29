@@ -19,7 +19,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={viewportOnce}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="relative rounded-[3rem] bg-white/70 border border-royal/20 backdrop-blur-md shadow-xl p-10 md:p-24 overflow-hidden max-w-6xl mx-auto text-center text-royal cinematic-cta-glow"
+          className="relative rounded-[3rem] bg-white/70 border border-royal/20 backdrop-blur-md shadow-xl p-6 sm:p-10 md:p-24 overflow-hidden max-w-6xl mx-auto text-center text-royal cinematic-cta-glow"
         >
           {/* Floating glassmorphic saffron/royal spheres */}
           <motion.div
@@ -91,7 +91,7 @@ export function CtaSection() {
                 href="/contact"
                 variant="primary"
                 size="lg"
-                className="rounded-full shadow-xl shadow-saffron/10 hover:shadow-saffron/20 hover:scale-105 transition-all duration-300 px-10 py-5 bg-saffron hover:bg-royal text-white hover:text-white border-none font-bold tracking-widest group"
+                className="rounded-full shadow-xl shadow-saffron/10 hover:shadow-saffron/20 hover:scale-105 transition-all duration-300 px-6 sm:px-10 py-3.5 sm:py-5 bg-saffron hover:bg-royal text-white hover:text-white border-none font-bold text-xs sm:text-sm tracking-widest group"
               >
                 <span>SUPPORT OUR MISSION</span>
                 <span className="transition-transform duration-300 group-hover:translate-x-1 ml-2">→</span>
