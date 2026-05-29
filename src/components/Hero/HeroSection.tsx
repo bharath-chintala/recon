@@ -428,7 +428,10 @@ export function HeroSection() {
     timeRef.current += dt
 
     // Smooth lerp toward scroll target
-    const follow = 1 - Math.exp(-3 * dt)
+    // Viewport-adaptive interpolation speed: snappy feedback on mobile/tablet (7.0) and cinematic glide on desktop (4.5)
+    const isMobileOrTablet = typeof window !== 'undefined' && window.innerWidth < 1024
+    const lerpSpeed = isMobileOrTablet ? 7.0 : 4.5
+    const follow = 1 - Math.exp(-lerpSpeed * dt)
     const diff = scrollProg.current - smoothProg.current
 
     // Dead-zone snap: if we're extremely close, lock to avoid infinite micro-jitter
@@ -501,7 +504,7 @@ export function HeroSection() {
       trigger: wrapper,
       start: 'top top',
       end: '+=150%',
-      scrub: 5,              // ultra-smooth — maximum glide, no jank
+      scrub: 1.2,            // matches Lenis scroll duration perfectly
       pin: stickyRef.current,
       anticipatePin: 1,
       fastScrollEnd: true,
