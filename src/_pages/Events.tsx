@@ -1025,12 +1025,14 @@ const TabletCarousel = ({ items }: { items: any[] }) => {
           <button
             key={idx}
             onClick={() => scrollTo(idx)}
-            className={`transition-all duration-300 rounded-full ${activeIndex === idx
+            className={`relative transition-all duration-300 rounded-full ${activeIndex === idx
               ? 'bg-[#335C8B] w-6 h-2'
               : 'bg-[#d0dae6] w-2 h-2 hover:bg-[#8a9bb5]'
               }`}
             aria-label={`Go to slide ${idx + 1}`}
-          />
+          >
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] cursor-pointer" />
+          </button>
         ))}
       </div>
     </div>

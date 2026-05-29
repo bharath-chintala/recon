@@ -244,6 +244,7 @@ export function UpcomingEventsPopup() {
                 <button
                   onClick={() => setActiveIdx((p) => Math.max(0, p - 1))}
                   disabled={activeIdx === 0}
+                  aria-label="Previous event"
                   className="w-9 h-9 rounded-full border border-[#d0dae6] flex items-center justify-center text-[#5a7394] transition-all duration-200 disabled:opacity-30 hover:border-[#335C8B] hover:text-[#335C8B] hover:scale-105"
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -258,6 +259,7 @@ export function UpcomingEventsPopup() {
                 <button
                   onClick={() => setActiveIdx((p) => Math.min(events.length - 1, p + 1))}
                   disabled={activeIdx === events.length - 1}
+                  aria-label="Next event"
                   className="w-9 h-9 rounded-full border border-[#d0dae6] flex items-center justify-center text-[#5a7394] transition-all duration-200 disabled:opacity-30 hover:border-[#335C8B] hover:text-[#335C8B] hover:scale-105"
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

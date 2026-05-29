@@ -176,11 +176,13 @@ export function MilestonesPreview() {
                     scrollRef.current.scrollTo({ left: idx * (cardWidth + gap), behavior: 'smooth' })
                   }
                 }}
-                className={`h-2 rounded-full transition-all duration-500 ${
+                className={`relative h-2 rounded-full transition-all duration-500 ${
                   activeIdx === idx ? 'w-8 bg-saffron' : 'w-2 bg-royal/20 hover:bg-royal/40'
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
-              />
+              >
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] cursor-pointer" />
+              </button>
             ))}
           </div>
 

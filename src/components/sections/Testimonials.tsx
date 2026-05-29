@@ -124,10 +124,12 @@ export function Testimonials() {
                 key={t.name + t.country}
                 onClick={() => setActive(i)}
                 aria-label={`Testimonial ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-500 ${
+                className={`relative h-1.5 rounded-full transition-all duration-500 ${
                   i === active ? 'w-8 bg-saffron' : 'w-1.5 bg-royal/20 hover:bg-royal/40'
                 }`}
-              />
+              >
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] cursor-pointer" />
+              </button>
             ))}
           </div>
 

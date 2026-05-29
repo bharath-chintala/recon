@@ -102,10 +102,12 @@ export function Slider({
               key={i}
               onClick={() => go(i)}
               aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
+              className={`relative h-2 rounded-full transition-all duration-300 ${
                 i === current ? 'w-6 bg-[#335C8B]' : 'w-2 bg-white/50'
               }`}
-            />
+            >
+              <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] min-h-[44px] cursor-pointer" />
+            </button>
           ))}
         </div>
       )}
