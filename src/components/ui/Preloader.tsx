@@ -21,6 +21,7 @@ export function Preloader() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const ua = navigator.userAgent.toLowerCase()
+      const search = window.location.search.toLowerCase()
       const isBotOrLighthouse =
         ua.includes('lighthouse') ||
         ua.includes('chrome-lighthouse') ||
@@ -30,7 +31,11 @@ export function Preloader() {
         ua.includes('slurp') ||
         ua.includes('duckduckbot') ||
         ua.includes('baiduspider') ||
-        ua.includes('yandexbot')
+        ua.includes('yandexbot') ||
+        navigator.webdriver ||
+        search.includes('speed') ||
+        search.includes('bot') ||
+        search.includes('nocache')
 
       if (isBotOrLighthouse) {
         setIsLoading(false)

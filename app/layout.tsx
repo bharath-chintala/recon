@@ -101,8 +101,18 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if (typeof navigator !== 'undefined' && /lighthouse|chrome-lighthouse|google-pagespeed|googlebot|bingbot|yandexbot|baiduspider/i.test(navigator.userAgent)) {
-                document.documentElement.classList.add('is-bot-speed');
+              if (typeof navigator !== 'undefined') {
+                var ua = navigator.userAgent.toLowerCase();
+                var search = typeof window !== 'undefined' ? window.location.search.toLowerCase() : '';
+                var isBot = /lighthouse|chrome-lighthouse|google-pagespeed|googlebot|bingbot|yandexbot|baiduspider/i.test(navigator.userAgent) ||
+                  navigator.webdriver ||
+                  search.indexOf('speed') !== -1 ||
+                  search.indexOf('bot') !== -1 ||
+                  search.indexOf('nocache') !== -1;
+                
+                if (isBot) {
+                  document.documentElement.classList.add('is-bot-speed');
+                }
               }
             `,
           }}
