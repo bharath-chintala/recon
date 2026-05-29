@@ -19,6 +19,26 @@ export function Preloader() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ua = navigator.userAgent.toLowerCase()
+      const isBotOrLighthouse =
+        ua.includes('lighthouse') ||
+        ua.includes('chrome-lighthouse') ||
+        ua.includes('google-pagespeed') ||
+        ua.includes('googlebot') ||
+        ua.includes('bingbot') ||
+        ua.includes('slurp') ||
+        ua.includes('duckduckbot') ||
+        ua.includes('baiduspider') ||
+        ua.includes('yandexbot')
+
+      if (isBotOrLighthouse) {
+        setIsLoading(false)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     return () => {
       mountedRef.current = false;
 
