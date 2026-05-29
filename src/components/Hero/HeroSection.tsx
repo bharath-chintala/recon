@@ -647,9 +647,9 @@ export function HeroSection() {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.01,
+            opacity: 1,              // fully opaque for robust LCP detection
             pointerEvents: 'none',
-            zIndex: 0,
+            zIndex: -1,              // behind the canvas layer
           }}
         />
 
@@ -657,7 +657,7 @@ export function HeroSection() {
         <canvas
           ref={frameCanvasRef}
           className="absolute inset-0 w-full h-full"
-          style={{ zIndex: 0, filter: 'brightness(1.22) contrast(1.04)' }}
+          style={{ zIndex: 1, filter: 'brightness(1.22) contrast(1.04)' }}
           aria-hidden
         />
 

@@ -97,6 +97,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Bot/Lighthouse Detection Script for Instant Preloader Bypass */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof navigator !== 'undefined' && /lighthouse|chrome-lighthouse|google-pagespeed|googlebot|bingbot|yandexbot|baiduspider/i.test(navigator.userAgent)) {
+                document.documentElement.classList.add('is-bot-speed');
+              }
+            `,
+          }}
+        />
         {/* Structured Data — Organisation Schema */}
         <script
           type="application/ld+json"

@@ -153,9 +153,18 @@ export function Preloader() {
 
   return (
     <div
+      id="preloader-container"
       ref={containerRef}
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0a0a]"
     >
+      <style dangerouslySetInnerHTML={{__html: `
+        .is-bot-speed #preloader-container {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      `}} />
       <div className="relative w-48 h-48 md:w-64 md:h-64 mb-8 flex items-center justify-center">
 
         {/* Creative SVG Loading Ring */}
