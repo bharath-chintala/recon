@@ -636,6 +636,23 @@ export function HeroSection() {
           backfaceVisibility: 'hidden',
         }}
       >
+        {/* ── LCP Image Placeholder for PageSpeed/Lighthouse ── */}
+        <img
+          src="/images/frames2/ezgif-frame-001.webp"
+          alt="Sacred Journey Heritage Backdrop"
+          fetchPriority="high"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.01,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+
         {/* ── L0: Frame sequence ── */}
         <canvas
           ref={frameCanvasRef}
