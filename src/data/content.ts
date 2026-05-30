@@ -219,7 +219,7 @@ export const trustMembers: TrustMember[] = [
     role: 'Founder & Managing Trustee',
     organisation: 'Recon International',
     country: 'India',
-    portrait: '/images/portraits.webp',
+    portrait: '/images/chandrashekar.webp',
     bio: 'Born in Hathnoora Vill & Mdl, Medak Dist, Telangana State, he holds a postgraduate degree in MA Psychology and comes from an agricultural family. As the founder of "Recon International," he has excelled in strategic planning across sectors such as tourism and culture, coordinating numerous conferences and cultural programs at National and International levels for over two decades. His mission focuses on promoting and preserving cultural heritage and spiritual values through Indian classical, folk, and tribal dance and music. Supported by various Governmental and Non-Governmental organizations, he aims to nurture emerging artists and ensure the transmission of cultural traditions to future generations. He is dedicated to establishing the "Domicile of Rama Rajya" ashram in Ayodhya, providing high-quality accommodation, cuisine, and transportation for devotees.',
   },
   {
@@ -237,7 +237,7 @@ export const trustMembers: TrustMember[] = [
     role: 'Trustee',
     organisation: 'Recon International',
     country: 'India',
-    portrait: '/images/portraits.webp',
+    portrait: '/images/pallavi.webp',
     bio: 'Ms. Pallavi N, an MBA graduate and accomplished Financial Consultant, has dedicated the past seven years to serving as a Trustee of the Recon International Charitable Trust in Hyderabad. In this role, she has spearheaded numerous Corporate Social Responsibility (CSR) initiatives focused on uplifting marginalized communities, with particular emphasis on supporting visually challenged students. Notably, she organized a transformative pilgrimage for approximately 400 visually impaired individuals to the Tirumala Temple, fulfilling their lifelong aspirations and demonstrating the power of community collaboration. To ensure the success of this initiative, she worked closely with esteemed organizations such as Tirupati Tirumala Devasthanam, South Central Railway, and APSRTC. She is deeply committed to Women\'s Empowerment, having developed counselling programs that support both personal and professional growth.',
   },
 ]

@@ -134,7 +134,7 @@ const PROGRAM_DATA = [
       {
         title: 'Scribe Support for Visually Impaired Students (2015–Present)',
         desc: 'Enabled over 200 students to successfully appear in academic and competitive exams.',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2573&auto=format&fit=crop',
+        image: '/images/scribe-event.webp',
       },
       {
         title: 'Inclusive Sports Marathons (2017–Present)',
@@ -290,15 +290,23 @@ export default function Events() {
         })
       })
 
-      const mappedCategories = Object.keys(groupedMap).map(catName => ({
-        title: catName,
-        description: descriptionsMap[catName] || '',
-        image: groupedMap[catName][0]?.image || '/images/events.webp',
-        items: groupedMap[catName]
-      }))
+      const categoryOrder = PROGRAM_DATA.map(p => p.title)
+      const mappedCategories = Object.keys(groupedMap)
+        .map(catName => ({
+          title: catName,
+          description: descriptionsMap[catName] || '',
+          image: groupedMap[catName][0]?.image || '/images/events.webp',
+          items: groupedMap[catName]
+        }))
+        .sort((a, b) => categoryOrder.indexOf(a.title) - categoryOrder.indexOf(b.title))
 
       setProgramData(mappedCategories)
-      setFilter(mappedCategories[0]?.title || '')
+      setFilter(prev => {
+        if (prev && mappedCategories.some(c => c.title === prev)) {
+          return prev
+        }
+        return mappedCategories[0]?.title || ''
+      })
     }
     loadEvents()
   }, [])
@@ -352,7 +360,7 @@ export default function Events() {
   const eventsListRef = useRef<HTMLElement>(null)
   const leftImagePinRef = useRef<HTMLDivElement>(null)
   const cardsWrapRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<HTMLElement[]>([])
+  const cardsRef = useRef<(HTMLElement | null)[]>([])
   const activeItemIndexRef = useRef(0)
 
   const filteredItems = filteredData[0]?.items ?? []
@@ -390,7 +398,7 @@ export default function Events() {
     }
 
     // Capture the current height before updating the filter to prevent immediate height shrinkage
-    const prevHeight = `${Math.max(filteredItems.length, 2) * 100}vh`
+    const prevHeight = `${Math.max(filteredItems.length, 2) * 65}vh`
     setOverrideMinHeight(prevHeight)
 
     setFilter(newFilter)
@@ -475,13 +483,13 @@ export default function Events() {
       const section = eventsListRef.current
       if (!section || filteredItems.length === 0) return
 
-      cardsRef.current = cardsRef.current.filter(Boolean)
+      const cards = cardsRef.current.filter((c): c is HTMLElement => !!c)
 
       const mm = gsap.matchMedia()
       const ctx = gsap.context(() => {
         mm.add('(min-width: 1024px)', () => {
           const cardTweens: gsap.core.Tween[] = []
-          cardsRef.current.forEach((card) => {
+          cards.forEach((card) => {
             const tween = gsap.fromTo(
               card,
               { opacity: 0.4, scale: 0.92, y: 56 },
@@ -507,7 +515,7 @@ export default function Events() {
             let nearestIndex = 0
             let minDelta = Number.POSITIVE_INFINITY
 
-            cardsRef.current.forEach((card, index) => {
+            cards.forEach((card, index) => {
               const rect = card.getBoundingClientRect()
               const cardCenter = rect.top + rect.height * 0.5
               const delta = Math.abs(cardCenter - center)
@@ -578,7 +586,7 @@ export default function Events() {
   const opacityHero = useTransform(scrollYProgress, [0, 0.8, 1], [1, 1, 0])
   const blurBg = useTransform(scrollYProgress, [0, 1], ["blur(0px)", "blur(10px)"])
 
-  const splitScrollHeight = `${Math.max(filteredItems.length, 2) * 100}vh`
+  const splitScrollHeight = `${Math.max(filteredItems.length, 2) * 65}vh`
 
   return (
     <main className="events-page bg-[#FBFBFB] min-h-screen">
@@ -788,14 +796,14 @@ export default function Events() {
                           key={itemIdx}
                           id={item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
                           ref={(el) => {
-                            if (el) cardsRef.current[itemIdx] = el
+                            cardsRef.current[itemIdx] = el
                           }}
                           data-event-item
                           data-image={item.image}
                           data-index={itemIdx}
                           onMouseEnter={() => setHoveredImage(item.image)}
                           onMouseLeave={() => setHoveredImage(null)}
-                          className={`event-scroll-card group flex min-h-screen items-center border-b border-[#e0e7ef] py-16 will-change-transform ${isActive ? 'relative' : ''
+                          className={`event-scroll-card group flex min-h-[65vh] items-center border-b border-[#e0e7ef] py-8 will-change-transform ${isActive ? 'relative' : ''
                             }`}
                         >
                           <div
