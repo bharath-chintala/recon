@@ -202,22 +202,36 @@ const isSameImage = (url1: string | null | undefined, url2: string | null | unde
 export default function Events() {
   const [programData, setProgramData] = useState(PROGRAM_DATA)
   const [filter, setFilter] = useState(PROGRAM_DATA[0].title)
-  const [hoveredImage, setHoveredImage] = useState<string | null>(null)
-  const hoveredImageRef = useRef<string | null>(null)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const hoveredIndexRef = useRef<number | null>(null)
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [overrideMinHeight, setOverrideMinHeight] = useState<string | null>(null)
   const filterTimeoutRef = useRef<any>(null)
 
   useEffect(() => {
-    hoveredImageRef.current = hoveredImage
-  }, [hoveredImage])
+    hoveredIndexRef.current = hoveredIndex
+  }, [hoveredIndex])
 
   useEffect(() => {
     return () => {
-      if (filterTimeoutRef.current) {
-        clearTimeout(filterTimeoutRef.current)
-      }
+      if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current)
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
     }
   }, [])
+
+  const handleMouseEnter = (idx: number) => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredIndex(idx)
+    }, 60)
+  }
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredIndex(null)
+    }, 60)
+  }
 
   // Proactively refresh GSAP ScrollTrigger when the height override transitions back to null
   useEffect(() => {
@@ -353,6 +367,7 @@ export default function Events() {
 
   const [activeItemImage, setActiveItemImage] = useState<string | null>(null)
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0)
+  const effectiveActiveIndex = hoveredIndex !== null ? hoveredIndex : activeItemIndex
 
   const introContainerRef = useRef<HTMLDivElement>(null)
   const legacyContainerRef = useRef<HTMLDivElement>(null)
@@ -381,7 +396,7 @@ export default function Events() {
   const categoryImage = filteredData[0]?.image ?? '/images/events.webp'
   const firstItemImage = filteredData[0]?.items[0]?.image ?? categoryImage
   const activeImage =
-    hoveredImage || activeItemImage || firstItemImage || categoryImage || '/images/events.webp'
+    filteredItems[effectiveActiveIndex]?.image || activeItemImage || firstItemImage || categoryImage || '/images/events.webp'
 
   const scrollToY = (y: number) => {
     const lenis = typeof window !== 'undefined' ? (window as any).lenis : undefined
@@ -530,7 +545,7 @@ export default function Events() {
               const item = filteredItems[nearestIndex]
               if (item) {
                 setActiveItemIndex(nearestIndex)
-                if (!hoveredImageRef.current) setActiveItemImage(item.image)
+                if (hoveredIndexRef.current === null) setActiveItemImage(item.image)
               }
             }
           }
@@ -741,14 +756,11 @@ export default function Events() {
                 }}
               >
                 {filteredItems.map((item, index) => {
-                  const isActive =
-                    hoveredImage
-                      ? isSameImage(hoveredImage, item.image)
-                      : activeItemIndex === index
+                  const isActive = effectiveActiveIndex === index
                   return (
                     <div
                       key={item.title}
-                      className="absolute inset-0 transition-all duration-700 ease-out"
+                      className="absolute inset-0 transition-all duration-700 ease-in-out"
                       style={{
                         opacity: isActive ? 1 : 0,
                         transform: isActive ? 'scale(1)' : 'scale(1.06)',
@@ -790,7 +802,7 @@ export default function Events() {
                   {/* Desktop: full-viewport storytelling cards */}
                   <div>
                     {section.items.map((item, itemIdx) => {
-                      const isActive = activeItemIndex === itemIdx
+                      const isActive = effectiveActiveIndex === itemIdx
                       return (
                         <article
                           key={itemIdx}
@@ -801,8 +813,8 @@ export default function Events() {
                           data-event-item
                           data-image={item.image}
                           data-index={itemIdx}
-                          onMouseEnter={() => setHoveredImage(item.image)}
-                          onMouseLeave={() => setHoveredImage(null)}
+                          onMouseEnter={() => handleMouseEnter(itemIdx)}
+                          onMouseLeave={handleMouseLeave}
                           className={`event-scroll-card group flex min-h-[65vh] items-center border-b border-[#e0e7ef] py-8 will-change-transform ${isActive ? 'relative' : ''
                             }`}
                         >
@@ -812,10 +824,11 @@ export default function Events() {
                               : 'bg-white/80'
                               }`}
                           >
-                            {isActive && (
-                              <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-full bg-[#c8a96e]" />
-                            )}
-                            <div className={isActive ? 'pl-4' : ''}>
+                            <div
+                              className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-full bg-[#c8a96e] transition-all duration-500 ease-out ${isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'}`}
+                              style={{ transformOrigin: 'center' }}
+                            />
+                            <div className="pl-4">
                               <h3
                                 className={`font-serif text-2xl lg:text-4xl leading-snug mb-6 transition-all duration-700 ease-out break-words ${isActive
                                   ? 'text-[#335C8B] blur-0'
