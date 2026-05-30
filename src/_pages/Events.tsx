@@ -418,12 +418,12 @@ export default function Events() {
 
     setFilter(newFilter)
 
-    const filterBar = document.getElementById('filter-bar')
-    const eventsList = document.getElementById('events-list')
-    const targetElement = filterBar || eventsList
+    const eventsListDesktop = eventsListRef.current
+    const eventsListMobile = document.getElementById('events-list')
+    const scrollTarget = window.innerWidth >= 1024 ? eventsListDesktop : eventsListMobile
 
-    if (targetElement) {
-      const y = targetElement.getBoundingClientRect().top + window.scrollY - 100
+    if (scrollTarget) {
+      const y = scrollTarget.getBoundingClientRect().top + window.scrollY - 150
       scrollToY(y)
     } else {
       scrollToY(0)
