@@ -43,3 +43,5 @@ next-env.d.ts
 # large media assets
 *.mp4
 *.MP4
+*.zip
+/out.zip
