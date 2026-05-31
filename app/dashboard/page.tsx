@@ -8,6 +8,7 @@ import { Plus, Pencil, Trash2, LogOut, X, Loader2, LayoutGrid, Eye, Upload } fro
 import { supabase } from '@/lib/supabase'
 import imageCompression from 'browser-image-compression'
 import { fetchWithCoalescing, getCachedData, setCachedData } from '@/lib/cache'
+import { SEED_DATA } from '@/data/seed-events'
 
 interface Event {
   id: string
@@ -140,13 +141,20 @@ export default function Dashboard() {
   }, [searchTerm])
 
   useEffect(() => {
-    fetchEvents()
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.push('/login')
+      } else {
+        fetchEvents()
+      }
+    }
+    checkAuth()
   }, [])
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    await supabase.auth.signOut()
     router.push('/login')
-    router.refresh()
   }
 
   const openModal = (event?: Event, defaultCategory?: string) => {
@@ -216,15 +224,16 @@ export default function Dashboard() {
     if (confirm('This will delete all current database events and reset them to match the original website content exactly. Do you want to continue?')) {
       setImporting(true)
       try {
-        const res = await fetch('/api/seed-events')
-        if (res.ok) {
-          await fetchEvents()
-          alert('Events imported successfully!')
-        } else {
-          alert('Import failed. Please make sure the table has been set up in Supabase.')
-        }
-      } catch (err) {
-        alert('An error occurred during import.')
+        const { error: deleteError } = await supabase.from('events').delete().neq('title', '')
+        if (deleteError) throw deleteError
+        
+        const { error: seedError } = await supabase.from('events').insert(SEED_DATA)
+        if (seedError) throw seedError
+        
+        await fetchEvents()
+        alert('Events imported successfully!')
+      } catch (err: any) {
+        alert(`An error occurred during import: ${err.message || err}`)
       } finally {
         setImporting(false)
       }

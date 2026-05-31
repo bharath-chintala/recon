@@ -1,7 +1,4 @@
-import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-
-const SEED_DATA = [
+export const SEED_DATA = [
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Hari Hara Kalyana Purvaka Shri Satyanarayana Swamy Anushtan Mahotsav (5–15 February 2025)',
@@ -30,13 +27,13 @@ const SEED_DATA = [
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Parakram Divas Celebrations – Azadi Ka Amrit Mahotsav, New Delhi',
     description: 'A four-day commemoration at Ambedkar Auditorium, AP Bhawan, honouring India’s freedom fighters, with special tribute to Netaji Subhash Chandra Bose, in association with the Ministry of Culture, Government of India.',
-    image: '/images/parakarana divas.webp'
+    image: '/images/Parakram Diwas/pa1.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Cultural Festivities of Varanasi',
     description: 'Organized in collaboration with Banaras Hindu University, supported by the Department of Culture, Government of Uttar Pradesh, celebrating Varanasi’s rich artistic legacy.',
-    image: 'https://images.unsplash.com/photo-1560086820-e7cfba1bd53d?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/Varanasi event/DSC07180.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
@@ -54,13 +51,13 @@ const SEED_DATA = [
     category: 'Special Projects & Creative Platforms',
     title: 'Kanakabhishekam (Golden Flower Anointing Ceremony)',
     description: 'Celebrated the 80th Spring Festival of Dr. Tirumala Srinivasa Chary, honouring his contributions to spiritual and cultural life.',
-    image: 'https://images.unsplash.com/photo-1518175376518-e362da562da8?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/Temples/ANU06073.webp'
   },
   {
     category: 'Cultural Exchange & International Engagements',
     title: 'Indian Classical Dance Troupes in Sri Lanka',
     description: 'Including performances at the Shankari Temple, and participation in the Indian Traditional Dance Competition (Aug 2017).',
-    image: 'https://images.unsplash.com/photo-1594112674390-349f42df3522?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/Cultural dances/DSC_8111.jpg'
   },
   {
     category: 'Cultural Exchange & International Engagements',
@@ -72,13 +69,13 @@ const SEED_DATA = [
     category: 'Cultural Exchange & International Engagements',
     title: 'Ugadi Celebrations (2016)',
     description: 'Kuala Lumpur, featuring classical and folk arts such as Perini, Kuchipudi, Lambadi dance, and mimicry.',
-    image: 'https://images.unsplash.com/photo-1506450519339-e932bce228dc?q=80&w=2657&auto=format&fit=crop'
+    image: '/images/Cultural dances/DSC_8192.jpg'
   },
   {
     category: 'Cultural Exchange & International Engagements',
     title: 'Golden Jubilee Celebrations',
     description: 'Malaysia Telugu Sangham, Teluk Intan, showcasing Telugu culture on an international stage.',
-    image: 'https://images.unsplash.com/photo-1533227260828-531c6c5ad326?q=80&w=2670&auto=format&fit=crop'
+    image: '/images/AP event 2007/DSC_6974.webp'
   },
   {
     category: 'Humanitarian & Social Impact Initiatives',
@@ -90,7 +87,7 @@ const SEED_DATA = [
     category: 'Humanitarian & Social Impact Initiatives',
     title: 'Food Festivals and Exhibitions',
     description: 'Showcasing traditional Indian products in Mauritius (2007) during regional festivals in collaboration with erstwhile Government of Andhra Pradesh.',
-    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2574&auto=format&fit=crop'
+    image: '/images/Mauritius/DSC_6938.webp'
   },
   {
     category: 'Humanitarian & Social Impact Initiatives',
@@ -165,19 +162,3 @@ const SEED_DATA = [
     image: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=2574&auto=format&fit=crop'
   }
 ]
-
-export async function GET() {
-  try {
-    // Delete existing events
-    await supabase.from('events').delete().neq('title', '')
-
-    // Insert seeds
-    const { error } = await supabase.from('events').insert(SEED_DATA)
-
-    if (error) throw error
-
-    return NextResponse.json({ success: true, message: `${SEED_DATA.length} events migrated successfully!` })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Seeding failed' }, { status: 500 })
-  }
-}

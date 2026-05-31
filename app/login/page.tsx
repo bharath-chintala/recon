@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -19,18 +20,17 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
 
-      if (res.ok) {
+      if (signInError) {
+        setError(signInError.message || 'Login failed')
+      } else if (data.user) {
         router.push('/dashboard')
-        router.refresh()
       } else {
-        const data = await res.json()
-        setError(data.error || 'Login failed')
+        setError('Login failed')
       }
     } catch (err) {
       setError('An error occurred. Please try again.')

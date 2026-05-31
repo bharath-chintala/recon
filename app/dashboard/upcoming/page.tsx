@@ -160,13 +160,20 @@ export default function UpcomingEventsDashboard() {
   }
 
   useEffect(() => {
-    fetchEvents()
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.push('/login')
+      } else {
+        fetchEvents()
+      }
+    }
+    checkAuth()
   }, [])
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    await supabase.auth.signOut()
     router.push('/login')
-    router.refresh()
   }
 
   const openModal = (event?: UpcomingEvent) => {
