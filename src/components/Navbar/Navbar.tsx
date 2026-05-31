@@ -97,16 +97,16 @@ export function Navbar() {
               className={`transition-all duration-300 group-hover:scale-105 ${isTransparent ? 'brightness-0 invert' : ''
                 }`}
             />
-            <div className="flex flex-col leading-none">
-              <span className={`text-[17px] font-logo font-extrabold uppercase tracking-wide transition-colors ${isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
+            <div className="flex flex-col leading-none font-logo">
+              <span className={`text-[17px] font-extrabold uppercase tracking-wide transition-colors ${isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
                 }`}>
                 recon
               </span>
-              <span className={`text-[12px] font-logo font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${isTransparent ? 'text-white/80' : 'text-royal'
+              <span className={`text-[12px] font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${isTransparent ? 'text-white/80' : 'text-royal'
                 }`}>
                 International
               </span>
-              <h5 className={`text-[9px] font-logo font-semibold uppercase tracking-[0.12em] mt-1 transition-colors ${isTransparent ? 'text-white/70' : 'text-royal/70'
+              <h5 className={`text-[9px] font-semibold uppercase tracking-[0.12em] mt-1 transition-colors ${isTransparent ? 'text-white/70' : 'text-royal/70'
                 }`}>
                 Charitable Trust
               </h5>
