@@ -24,7 +24,7 @@ const SEED_DATA = [
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Carnival of Indian Culture – Ganga Pushkar Mahotsav, Haridwar',
     description: 'A 10-day event featuring over 630 emerging artists, celebrating India’s diverse traditional arts.',
-    image: '/images/ganga puskara.webp'
+    image: '/images/Haridwar event 2023/IMG_6700.webp'
   },
   {
     category: 'Key Cultural & Spiritual Initiatives',
@@ -96,7 +96,7 @@ const SEED_DATA = [
     category: 'Humanitarian & Social Impact Initiatives',
     title: 'Pilgrimage Support (2023–2024)',
     description: 'Facilitated spiritual access and safe travel for over 400 visually impaired pilgrims to Tirumala supported by TTD, Andhra Pradesh.',
-    image: 'https://images.unsplash.com/photo-1601614742468-b7c72957b98f?q=80&w=2574&auto=format&fit=crop'
+    image: '/images/Haridwar event 2023/DSC_1093.webp'
   },
   {
     category: 'Humanitarian & Social Impact Initiatives',

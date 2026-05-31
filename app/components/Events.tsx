@@ -40,7 +40,7 @@ const PROGRAM_DATA: EventSection[] = [
       {
         title: 'Carnival of Indian Culture - Ganga Pushkar Mahotsav, Haridwar',
         desc: 'A 10-day event featuring over 630 emerging artists, celebrating India\'s diverse traditional arts.',
-        image: '/images/ganga puskara.webp',
+        image: '/images/Haridwar event 2023/IMG_6700.webp',
       },
       {
         title: 'Parakram Divas Celebrations - Azadi Ka Amrit Mahotsav, New Delhi',
