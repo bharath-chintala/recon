@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Motschcc';
+  src: url('/images/fonts/motschcc/motschcc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── Design Tokens ────────────────────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
@@ -10,6 +18,7 @@
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-cinzel: 'Cinzel', serif;
   --font-cormorant: 'Cormorant Garamond', serif;
+  --font-logo: 'Motschcc', sans-serif;
 
   --color-royal: #000435;
   --color-saffron: #000435;
