@@ -78,12 +78,12 @@ export function AboutPreview() {
       mm.add('(max-width: 767px)', () => {
         images.forEach((el, i) => {
           if (!el) return
-          
+
           gsap.set(el, { force3D: true })
 
           // Simple Y-axis parallax for mobile
           const yOffset = i === 1 ? -30 : i === 2 ? -20 : -40
-          
+
           gsap.fromTo(
             el,
             { y: Math.abs(yOffset) },
@@ -117,7 +117,7 @@ export function AboutPreview() {
       <div className="absolute top-1/4 -left-48 w-[600px] h-[600px] bg-gradient-to-tr from-saffron/5 via-royal/5 to-transparent blur-[130px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 -right-48 w-[600px] h-[600px] bg-gradient-to-br from-royal/5 via-saffron/5 to-transparent blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="absolute top-12 right-12 w-96 h-96 opacity-[0.03] pointer-events-none select-none">
+      <div className="absolute top-12 right-12 w-96 h-96 opacity-[0.08] pointer-events-none select-none">
         <svg viewBox="0 0 100 100" fill="currentColor" className="text-royal w-full h-full">
           <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" fill="none" />
           <path d="M 50 0 L 50 100 M 0 50 L 100 50 M 15 15 L 85 85 M 15 85 L 85 15" stroke="currentColor" strokeWidth="0.25" />
@@ -128,62 +128,92 @@ export function AboutPreview() {
       <div className="relative mx-auto max-w-7xl px-6 lg:px-12">
         <div className="grid items-center gap-10 md:gap-12 lg:gap-20 md:grid-cols-12">
 
-          {/* Layered image collage with scroll-driven 3D tilt */}
+          {/* Premium Editorial Mosaic Grid */}
           <div
-            className="md:col-span-7 relative flex items-center justify-center min-h-[300px] md:min-h-[520px] lg:min-h-[560px] w-full"
+            className="md:col-span-7 relative w-full"
             style={{ perspective: '1400px' }}
           >
-            <div className="absolute h-64 w-64 md:h-80 md:w-80 rounded-full bg-saffron/5 blur-3xl" />
+            {/* Ambient glow behind the grid */}
+            <div className="absolute -inset-8 bg-gradient-to-br from-saffron/8 via-transparent to-royal/8 blur-3xl rounded-[3rem] pointer-events-none" />
 
-            <div
-              className="about-preview-image absolute left-0 md:left-4 top-0 md:top-4 w-[55%] md:w-[62%] lg:w-[50%] aspect-[4/5] rounded-3xl md:rounded-[2rem] overflow-hidden shadow-2xl border border-royal/15 z-10 will-change-transform"
-            >
-              <Image
-                src="/images/about2-aarti.webp"
-                alt="Ganga Aarti ceremony — Recon International"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 55vw, 35vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#000435]/70 via-transparent to-transparent pointer-events-none" />
+            <div className="relative grid grid-cols-[1.15fr_1fr] grid-rows-[1fr_0.75fr] gap-3 md:gap-4 h-[480px] md:h-[580px] lg:h-[640px]" style={{ overflow: 'visible' }}>
+
+              {/* HERO — full left column spanning both rows */}
+              <div
+                className="about-preview-image row-span-2 relative rounded-[2rem] overflow-hidden shadow-2xl will-change-transform"
+                style={{ boxShadow: '0 32px 80px rgba(0,4,53,0.22), 0 4px 20px rgba(0,4,53,0.12)' }}
+              >
+                <Image
+                  src="/images/about2-aarti.webp"
+                  alt="Ganga Aarti ceremony — Recon International"
+                  fill
+                  className="object-cover transition-transform duration-[2s] ease-out hover:scale-[1.03]"
+                  sizes="(max-width: 1024px) 45vw, 32vw"
+                />
+                {/* Bottom gradient + label */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#000435]/80 via-[#000435]/15 to-transparent pointer-events-none" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <span className="inline-block text-[9px] font-bold uppercase tracking-[0.25em] text-saffron mb-1.5 opacity-90">Sacred Rituals</span>
+                  <p className="font-serif text-white text-base md:text-lg leading-snug font-light">Ganga Aarti, Haridwar</p>
+                </div>
+                {/* Thin gold top accent line */}
+                <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-saffron/60 to-transparent" />
+              </div>
+
+              {/* TOP-RIGHT — Classical Dance portrait */}
+              <div
+                className="about-preview-image relative rounded-[1.5rem] overflow-hidden shadow-xl will-change-transform"
+                style={{ boxShadow: '0 20px 50px rgba(0,4,53,0.18)' }}
+              >
+                <Image
+                  src="/images/about1.webp"
+                  alt="Classical dance — Recon International heritage"
+                  fill
+                  className="object-cover transition-transform duration-[2s] ease-out hover:scale-[1.04]"
+                  sizes="(max-width: 1024px) 40vw, 28vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#000435]/70 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-block text-[9px] font-bold uppercase tracking-[0.22em] text-saffron opacity-90">Classical Arts</span>
+                  <p className="font-serif text-white text-sm leading-snug font-light mt-0.5">Indian Heritage Dance</p>
+                </div>
+              </div>
+
+              {/* BOTTOM-RIGHT — Aerial temples landscape */}
+              <div
+                className="about-preview-image relative rounded-[1.5rem] overflow-hidden shadow-xl will-change-transform"
+                style={{ boxShadow: '0 20px 50px rgba(0,4,53,0.18)' }}
+              >
+                <Image
+                  src="/images/about 3.webp"
+                  alt="Aerial view of sacred temple complex"
+                  fill
+                  className="object-cover object-center transition-transform duration-[2s] ease-out hover:scale-[1.04]"
+                  sizes="(max-width: 1024px) 40vw, 28vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#000435]/65 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-block text-[9px] font-bold uppercase tracking-[0.22em] text-saffron opacity-90">Heritage Sites</span>
+                  <p className="font-serif text-white text-sm leading-snug font-light mt-0.5">Sacred Temple Complexes</p>
+                </div>
+              </div>
+
+              {/* Floating 30+ badge — outside all overflow-hidden cards, anchored to grid bottom-right */}
+              <motion.div
+                className="absolute -bottom-12 -right-6 flex flex-col items-center justify-center h-[92px] w-[92px] md:h-[112px] md:w-[112px] rounded-full bg-white shadow-2xl border border-royal/10 z-50"
+                style={{ boxShadow: '0 12px 40px rgba(0,4,53,0.18), 0 2px 8px rgba(0,4,53,0.08)' }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+              >
+                <span className="font-cinzel text-2xl md:text-3xl font-light text-royal leading-none">30+</span>
+                <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-[0.18em] text-saffron mt-1 text-center leading-tight px-2">
+                  Years of<br />Service
+                </span>
+              </motion.div>
+
             </div>
-
-            <div
-              className="about-preview-image absolute right-0 md:right-4 top-16 md:top-20 w-[50%] md:w-[56%] lg:w-[45%] aspect-[3/4] rounded-3xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-royal/15 z-20 will-change-transform"
-            >
-              <Image
-                src="/images/about1.webp"
-                alt="Classical dance — Recon International heritage"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 50vw, 30vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#000435]/50 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            <div
-              className="about-preview-image absolute left-[15%] md:left-1/4 bottom-4 md:bottom-0 w-[45%] md:w-[58%] lg:w-[38%] aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden shadow-xl border border-royal/15 z-30 will-change-transform"
-            >
-              <Image
-                src="/images/about 3.webp"
-                alt="Traditional folk arts and events"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 45vw, 25vw"
-              />
-            </div>
-
-            <motion.div
-              className="absolute -bottom-6 right-6 hidden md:flex flex-col items-center justify-center h-32 w-32 rounded-full bg-white/75 backdrop-blur-xl border border-royal/20 shadow-2xl z-30"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-            >
-              <span className="font-cinzel text-3xl font-light text-royal">30+</span>
-              <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-saffron mt-1 text-center leading-none">
-                Years of <br />Service
-              </span>
-            </motion.div>
           </div>
+
 
           <div className="md:col-span-5 flex flex-col justify-center md:-translate-x-[5%] lg:translate-x-0">
             <motion.div
@@ -250,10 +280,10 @@ export function AboutPreview() {
               viewport={viewportOnce}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              <Button 
-                href="/about" 
-                variant="primary" 
-                size="lg" 
+              <Button
+                href="/about"
+                variant="primary"
+                size="lg"
                 className="rounded-full shadow-lg shadow-saffron/10 hover:shadow-saffron/20 transition-all duration-300 group"
               >
                 <span>Explore Our Legacy</span>

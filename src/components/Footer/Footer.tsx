@@ -12,10 +12,10 @@ const LINKS = {
     { label: 'Trust Members', href: '/about#members' },
   ],
   Initiatives: [
-    { label: 'Awaken Through Travel', href: '/initiatives' },
-    { label: 'Journeys of the Soul', href: '/initiatives' },
-    { label: 'Sacred Paths', href: '/initiatives' },
-    { label: 'Global Impact', href: '/initiatives' },
+    { label: 'Awaken Through Travel', href: '/events' },
+    { label: 'Journeys of the Soul', href: '/events' },
+    { label: 'Sacred Paths', href: '/events' },
+    { label: 'Global Impact', href: '/events' },
   ],
   Connect: [
     { label: 'Upcoming Events', href: '/events' },
@@ -49,7 +49,7 @@ export function Footer() {
       <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Decorative Traditional Circular Silhouette in Footer Corner */}
-      <div className="absolute bottom-4 left-4 w-48 h-48 opacity-[0.02] pointer-events-none select-none">
+      <div className="absolute bottom-4 left-4 w-48 h-48 opacity-[0.12] pointer-events-none select-none">
         <svg viewBox="0 0 100 100" fill="currentColor" className="text-white w-full h-full">
           <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" fill="none" />
         </svg>
@@ -149,6 +149,13 @@ export function Footer() {
                 </Link>
               )
             )}
+            <Link
+              href="/sitemap.xml"
+              target="_blank"
+              className="text-[10px] md:text-xs text-white/40 hover:text-[#17A3FF] transition-colors duration-300 font-light"
+            >
+              Site Map
+            </Link>
           </div>
         </div>
       </div>

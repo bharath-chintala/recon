@@ -57,12 +57,27 @@ export function UpcomingEventsPopup() {
 
   useEffect(() => {
     setMounted(true)
-    
-    // Auto-show at 15s, 30s, and 45s
-    const t1 = setTimeout(() => setOpen(true), 15000)
-    const t2 = setTimeout(() => setOpen(true), 30000)
-    const t3 = setTimeout(() => setOpen(true), 45000)
-    
+
+    let popupCount = 0
+
+    const showPopup = () => {
+      popupCount += 1
+      setOpen(true)
+    }
+
+    // 1st popup at 30 seconds
+    const t1 = setTimeout(() => showPopup(), 30000)
+    // 2nd popup at 60 seconds
+    const t2 = setTimeout(() => {
+      setOpen(false)
+      setTimeout(() => showPopup(), 400)
+    }, 60000)
+    // 3rd popup at 120 seconds
+    const t3 = setTimeout(() => {
+      setOpen(false)
+      setTimeout(() => showPopup(), 400)
+    }, 120000)
+
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
@@ -223,7 +238,7 @@ export function UpcomingEventsPopup() {
                         </span>
 
                         <Link
-                          href="/events"
+                          href="/upcoming"
                           onClick={close}
                           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[12px] font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
                           style={{ background: `linear-gradient(135deg, #1a2d47, #335C8B)` }}

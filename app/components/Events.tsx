@@ -284,9 +284,8 @@ export default function Events() {
                   className="flex min-h-screen items-center border-b border-white/10 px-2 py-16 will-change-transform"
                 >
                   <div
-                    className={`w-full rounded-3xl border border-white/15 bg-white/10 p-8 backdrop-blur-sm transition-all duration-500 md:p-12 ${
-                      isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95'
-                    }`}
+                    className={`w-full rounded-3xl border border-white/15 bg-white/10 p-8 backdrop-blur-sm transition-all duration-500 md:p-12 ${isActive ? 'opacity-100 scale-100' : 'opacity-40 scale-95'
+                      }`}
                   >
                     <p className="mb-4 text-xs uppercase tracking-[0.2em] text-[#9fc0e1]">{event.category}</p>
                     <h3 className="mb-6 font-serif text-3xl leading-tight text-white md:text-5xl">{event.title}</h3>

@@ -92,17 +92,17 @@ const GALLERY_IMAGES = [
     ]
   },
   {
-    src: '/images/AP event 2007/DSC_6974.webp',
-    alt: 'AP Event 2007',
-    title: 'AP Event 2007',
-    subtitle: 'State Forum Celebrations',
+    src: '/images/goldenjublee.webp',
+    alt: 'Golden Jubilee Celebrations',
+    title: 'Golden Jubilee',
+    subtitle: 'Malaysia Telugu Sangham',
     category: 'State Forums',
     images: [
       '/images/AP event 2007/DSC01021.webp',
       '/images/AP event 2007/DSC01043.webp',
       '/images/AP event 2007/DSC01048.webp',
       '/images/AP event 2007/DSC01089.webp',
-      '/images/AP event 2007/DSC_6974.webp',
+      '/images/goldenjublee.webp',
     ]
   }
 ]
@@ -306,7 +306,7 @@ export function GalleryPreview() {
             ))}
           </div>
 
-          {/* MIDDLE COLUMN: Classical Dance and AP Event 2007 (Perfectly Stacked) */}
+          {/* MIDDLE COLUMN: Classical Dance and Golden Jubilee Celebrations (Perfectly Stacked) */}
           <div className="col-span-1 md:col-span-1 lg:col-span-3 flex flex-col gap-6">
             {[GALLERY_IMAGES[2], GALLERY_IMAGES[6]].map((img) => (
               <GalleryCard

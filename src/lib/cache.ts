@@ -36,3 +36,12 @@ export function setCachedData<T>(key: string, data: T) {
     timestamp: Date.now()
   });
 }
+
+export function clearCachedData(key?: string) {
+  if (key) {
+    dataCache.delete(key);
+  } else {
+    dataCache.clear();
+  }
+}
+

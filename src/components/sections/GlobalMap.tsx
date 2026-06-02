@@ -9,7 +9,7 @@ const REGIONS = [
   { id: 'srilanka', label: 'Sri Lanka', x: 63, y: 51, active: true, count: 12 },
   { id: 'middleeast', label: 'Middle East', x: 56, y: 44, active: true, count: 15 },
   { id: 'malaysia', label: 'Malaysia', x: 70.5, y: 54, active: true, count: 10 },
-  { id: 'singapore', label: 'Singapore', x: 71, y: 56, active: true, count: 8 },
+  { id: 'singapore', label: 'Singapore', x: 73, y: 57, active: true, count: 8 },
   { id: 'southafrica', label: 'South Africa', x: 53, y: 72, active: true, count: 7 },
   { id: 'mauritius', label: 'Mauritius', x: 61, y: 68, active: true, count: 5 },
   { id: 'bhutan', label: 'Bhutan', x: 65, y: 44, active: true, count: 6 },

@@ -757,6 +757,7 @@ export function HeroSection() {
               color: '#ffffff',
               textShadow: '0 0 100px rgba(218,170,55,0.45), 0 0 40px rgba(0,0,0,0.95)',
               letterSpacing: '0.03em',
+              WebkitTextStroke: '1.2px rgba(2, 5, 15, 0.8)',
               willChange: 'opacity, filter, transform',
             }}
           >

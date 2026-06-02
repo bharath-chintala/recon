@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Pencil, Trash2, LogOut, X, Loader2, LayoutGrid, Eye, Upload } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import imageCompression from 'browser-image-compression'
+import { clearCachedData } from '@/lib/cache'
+
 
 interface UpcomingEvent {
   id: string
@@ -223,28 +225,65 @@ export default function UpcomingEventsDashboard() {
       date, day, month, title, subtitle, description, category, color, seats, image
     }
 
-    if (editingEvent) {
-      await supabase.from('upcoming_events').update(payload).eq('id', editingEvent.id)
-      setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
-    } else {
-      if (events.length >= 4) {
-        alert("Maximum 4 upcoming events allowed.")
-        setSaving(false)
-        return
-      }
-      const { data } = await supabase.from('upcoming_events').insert([payload]).select().single()
-      if (data) setEvents(prev => [...prev, data])
-    }
+    try {
+      if (editingEvent) {
+        const { error } = await supabase
+          .from('upcoming_events')
+          .update(payload)
+          .eq('id', editingEvent.id)
 
-    setSaving(false)
-    closeModal()
+        if (error) throw error
+
+        setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
+      } else {
+        if (events.length >= 4) {
+          alert("Maximum 4 upcoming events allowed. Please delete an existing event to add a new one.")
+          setSaving(false)
+          return
+        }
+        const { data, error } = await supabase
+          .from('upcoming_events')
+          .insert([payload])
+          .select()
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          setEvents(prev => [...prev, data[0]])
+        }
+      }
+
+      // Invalidate memory cache immediately on successful database save
+      clearCachedData('upcoming_events_popup')
+      
+      closeModal()
+    } catch (err: any) {
+      console.error('Error saving upcoming event:', err)
+      alert(`Failed to save upcoming event: ${err.message || err}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const deleteEvent = async (id: string) => {
     if (confirm('Are you sure you want to delete this event?')) {
-      await supabase.from('upcoming_events').delete().eq('id', id)
-      setEvents(prev => prev.filter(evt => evt.id !== id))
-      setActiveIdx(0)
+      try {
+        const { error } = await supabase
+          .from('upcoming_events')
+          .delete()
+          .eq('id', id)
+
+        if (error) throw error
+
+        setEvents(prev => prev.filter(evt => evt.id !== id))
+        setActiveIdx(0)
+        
+        // Invalidate memory cache immediately on successful database deletion
+        clearCachedData('upcoming_events_popup')
+      } catch (err: any) {
+        console.error('Error deleting upcoming event:', err)
+        alert(`Failed to delete event: ${err.message || err}`)
+      }
     }
   }
 
@@ -257,25 +296,22 @@ export default function UpcomingEventsDashboard() {
           .delete()
           .neq('id', '00000000-0000-0000-0000-000000000000') // Deletes all safely
 
-        if (delError) {
-          alert('Failed to clear existing events. Make sure table exists.')
-          setSyncing(false)
-          return
-        }
+        if (delError) throw delError
 
         const { error: insertError } = await supabase
           .from('upcoming_events')
           .insert(ORIGINAL_UPCOMING_EVENTS)
 
-        if (insertError) {
-          alert('Failed to insert original events.')
-          console.error(insertError)
-        } else {
-          await fetchEvents()
-          alert('Original events synced successfully!')
-        }
-      } catch (err) {
-        alert('An error occurred during sync.')
+        if (insertError) throw insertError
+
+        // Invalidate memory cache immediately on successful database sync
+        clearCachedData('upcoming_events_popup')
+
+        await fetchEvents()
+        alert('Original events synced successfully!')
+      } catch (err: any) {
+        console.error('Error syncing upcoming events:', err)
+        alert(`An error occurred during sync: ${err.message || err}`)
       } finally {
         setSyncing(false)
       }

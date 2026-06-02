@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Pencil, Trash2, LogOut, X, Loader2, LayoutGrid, Eye, Upload } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import imageCompression from 'browser-image-compression'
-import { fetchWithCoalescing, getCachedData, setCachedData } from '@/lib/cache'
+import { fetchWithCoalescing, getCachedData, setCachedData, clearCachedData } from '@/lib/cache'
 import { SEED_DATA } from '@/data/seed-events'
 
 interface Event {
@@ -201,22 +201,59 @@ export default function Dashboard() {
       category: finalCategory
     }
 
-    if (editingEvent) {
-      await supabase.from('events').update(payload).eq('id', editingEvent.id)
-      setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
-    } else {
-      const { data } = await supabase.from('events').insert([payload]).select().single()
-      if (data) setEvents(prev => [...prev, data])
-    }
+    try {
+      if (editingEvent) {
+        const { error } = await supabase
+          .from('events')
+          .update(payload)
+          .eq('id', editingEvent.id)
 
-    setSaving(false)
-    closeModal()
+        if (error) throw error
+
+        setEvents(prev => prev.map(evt => evt.id === editingEvent.id ? { ...evt, ...payload } : evt))
+      } else {
+        const { data, error } = await supabase
+          .from('events')
+          .insert([payload])
+          .select()
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          setEvents(prev => [...prev, data[0]])
+        }
+      }
+
+      // Invalidate memory cache immediately on successful database save
+      clearCachedData('events_page_data')
+
+      closeModal()
+    } catch (err: any) {
+      console.error('Error saving past event:', err)
+      alert(`Failed to save event: ${err.message || err}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const deleteEvent = async (id: string) => {
     if (confirm('Are you sure you want to delete this event?')) {
-      await supabase.from('events').delete().eq('id', id)
-      setEvents(prev => prev.filter(evt => evt.id !== id))
+      try {
+        const { error } = await supabase
+          .from('events')
+          .delete()
+          .eq('id', id)
+
+        if (error) throw error
+
+        setEvents(prev => prev.filter(evt => evt.id !== id))
+        
+        // Invalidate memory cache immediately on successful database deletion
+        clearCachedData('events_page_data')
+      } catch (err: any) {
+        console.error('Error deleting past event:', err)
+        alert(`Failed to delete event: ${err.message || err}`)
+      }
     }
   }
 
@@ -230,9 +267,13 @@ export default function Dashboard() {
         const { error: seedError } = await supabase.from('events').insert(SEED_DATA)
         if (seedError) throw seedError
         
+        // Invalidate memory cache immediately on successful database import
+        clearCachedData('events_page_data')
+
         await fetchEvents()
         alert('Events imported successfully!')
       } catch (err: any) {
+        console.error('Error importing past events:', err)
         alert(`An error occurred during import: ${err.message || err}`)
       } finally {
         setImporting(false)

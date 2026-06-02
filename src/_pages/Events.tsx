@@ -50,7 +50,7 @@ const PROGRAM_DATA = [
       {
         title: 'Student Entrepreneurship Initiative (April 2024)',
         desc: 'Empowered MBA students to market original organic “Ugadi Pachhadi” through kiosk setups, fostering entrepreneurial and marketing skills.',
-        image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2574&auto=format&fit=crop',
+        image: '/images/student.webp',
       },
     ],
   },
@@ -67,7 +67,7 @@ const PROGRAM_DATA = [
       {
         title: 'Kanakabhishekam (Golden Flower Anointing Ceremony)',
         desc: 'Celebrated the 80th Spring Festival of Dr. Tirumala Srinivasa Chary, honouring his contributions to spiritual and cultural life.',
-        image: '/images/Temples/ANU06073.webp',
+        image: '/images/goldenjublee.webp',
       },
     ],
   },
@@ -129,7 +129,7 @@ const PROGRAM_DATA = [
   {
     title: 'Education, CSR & Volunteerism',
     description: '',
-    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2664&auto=format&fit=crop',
+    image: '/images/scribe-event.webp',
     items: [
       {
         title: 'Scribe Support for Visually Impaired Students (2015–Present)',
@@ -376,6 +376,7 @@ export default function Events() {
   const leftImagePinRef = useRef<HTMLDivElement>(null)
   const cardsWrapRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLElement | null)[]>([])
+  const mediaContainersRef = useRef<(HTMLDivElement | null)[]>([])
   const activeItemIndexRef = useRef(0)
 
   const filteredItems = filteredData[0]?.items ?? []
@@ -386,11 +387,47 @@ export default function Events() {
       setActiveItemIndex(0)
       activeItemIndexRef.current = 0
       cardsRef.current = []
+      mediaContainersRef.current = []
     }
   }, [filter, programData, filteredItems.length])
 
   useEffect(() => {
     activeItemIndexRef.current = activeItemIndex
+  }, [activeItemIndex])
+
+  // GSAP-controlled crossfade for pinned images to prevent overlapping, ghosting, and flickering
+  useEffect(() => {
+    const containers = mediaContainersRef.current
+    if (!containers || containers.length === 0) return
+
+    containers.forEach((container, idx) => {
+      if (!container) return
+      const isActive = activeItemIndex === idx
+
+      if (isActive) {
+        gsap.killTweensOf(container)
+        // Active image: set z-index high, pointer-events enabled, and visibility visible immediately
+        gsap.set(container, { pointerEvents: 'auto', zIndex: 10, visibility: 'visible' })
+        gsap.to(container, {
+          opacity: 1,
+          duration: 0.4,
+          ease: 'power2.inOut',
+        })
+      } else {
+        gsap.killTweensOf(container)
+        // Inactive image: immediately reduce z-index and disable pointer-events to prevent interaction issues
+        gsap.set(container, { pointerEvents: 'none', zIndex: 1 })
+        gsap.to(container, {
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            // Hide visibility only after fade completes to prevent visual cutting/flickering
+            gsap.set(container, { visibility: 'hidden' })
+          }
+        })
+      }
+    })
   }, [activeItemIndex])
 
   const categoryImage = filteredData[0]?.image ?? '/images/events.webp'
@@ -413,7 +450,7 @@ export default function Events() {
     }
 
     // Capture the current height before updating the filter to prevent immediate height shrinkage
-    const prevHeight = `${Math.max(filteredItems.length, 2) * 65}vh`
+    const prevHeight = `${Math.max(filteredItems.length, 2) * 40}vh`
     setOverrideMinHeight(prevHeight)
 
     setFilter(newFilter)
@@ -496,9 +533,9 @@ export default function Events() {
   useGSAP(
     () => {
       const section = eventsListRef.current
-      if (!section || filteredItems.length === 0) return
+      if (!section || !cardsWrapRef.current || filteredItems.length === 0) return
 
-      const cards = cardsRef.current.filter((c): c is HTMLElement => !!c)
+      const cards = gsap.utils.toArray<HTMLElement>('[data-event-item]', cardsWrapRef.current)
 
       const mm = gsap.matchMedia()
       const ctx = gsap.context(() => {
@@ -540,7 +577,7 @@ export default function Events() {
               }
             })
 
-            if (nearestIndex !== activeItemIndexRef.current) {
+            if (nearestIndex !== activeItemIndexRef.current && nearestIndex < filteredItems.length) {
               activeItemIndexRef.current = nearestIndex
               const item = filteredItems[nearestIndex]
               if (item) {
@@ -553,7 +590,7 @@ export default function Events() {
           const activeST = ScrollTrigger.create({
             trigger: section,
             start: 'top top',
-            end: 'bottom bottom',
+            end: () => `bottom+=${window.innerHeight * 0.45} bottom`,
             scrub: true,
             invalidateOnRefresh: true,
             onUpdate: updateActiveFromViewport,
@@ -601,7 +638,7 @@ export default function Events() {
   const opacityHero = useTransform(scrollYProgress, [0, 0.8, 1], [1, 1, 0])
   const blurBg = useTransform(scrollYProgress, [0, 1], ["blur(0px)", "blur(10px)"])
 
-  const splitScrollHeight = `${Math.max(filteredItems.length, 2) * 65}vh`
+  const splitScrollHeight = `${Math.max(filteredItems.length, 2) * 40}vh`
 
   return (
     <main className="events-page bg-[#FBFBFB] min-h-screen">
@@ -756,15 +793,20 @@ export default function Events() {
                 }}
               >
                 {filteredItems.map((item, index) => {
-                  const isActive = activeItemIndex === index
+                  const isInitialActive = activeItemIndex === index
                   return (
                     <div
                       key={item.title}
-                      className="absolute inset-0 transition-all duration-700 ease-in-out"
+                      ref={(el) => {
+                        mediaContainersRef.current[index] = el
+                      }}
+                      className="absolute inset-0"
                       style={{
-                        opacity: isActive ? 1 : 0,
-                        transform: isActive ? 'scale(1)' : 'scale(1.06)',
-                        willChange: 'opacity, transform',
+                        opacity: isInitialActive ? 1 : 0,
+                        visibility: isInitialActive ? 'visible' : 'hidden',
+                        pointerEvents: isInitialActive ? 'auto' : 'none',
+                        zIndex: isInitialActive ? 10 : 1,
+                        willChange: 'opacity',
                       }}
                     >
                       <img
@@ -775,6 +817,9 @@ export default function Events() {
                         style={item.objectPosition ? { objectPosition: item.objectPosition } : undefined}
                         loading={index === 0 ? 'eager' : 'lazy'}
                         decoding="async"
+                        onLoad={() => {
+                          ScrollTrigger.refresh()
+                        }}
                       />
                     </div>
                   )
@@ -815,11 +860,11 @@ export default function Events() {
                           data-index={itemIdx}
                           onMouseEnter={() => handleMouseEnter(itemIdx)}
                           onMouseLeave={handleMouseLeave}
-                          className={`event-scroll-card group flex min-h-[65vh] items-center border-b border-[#e0e7ef] py-8 will-change-transform ${isActive ? 'relative' : ''
+                          className={`event-scroll-card group flex min-h-[40vh] items-center border-b border-[#e0e7ef] py-6 will-change-transform ${isActive ? 'relative' : ''
                             }`}
                         >
                           <div
-                            className={`relative w-full rounded-2xl border border-[#e0e7ef] px-8 py-12 lg:px-10 lg:py-14 transition-colors duration-500 ${isActive
+                            className={`relative w-full rounded-2xl border border-[#e0e7ef] px-8 py-8 lg:px-10 lg:py-10 transition-colors duration-500 ${isActive
                               ? 'bg-[#F0F4F8] border-[#335C8B]/20 shadow-lg shadow-[#335C8B]/5'
                               : 'bg-white/80'
                               }`}
@@ -831,8 +876,8 @@ export default function Events() {
                             <div className="pl-4">
                               <h3
                                 className={`font-serif text-2xl lg:text-4xl leading-snug mb-6 transition-all duration-700 ease-out break-words ${isActive
-                                  ? 'text-[#335C8B] blur-0'
-                                  : 'text-[#1a2d47] group-hover:text-[#335C8B] blur-[3px]'
+                                  ? 'text-[#0f1d30]'
+                                  : 'text-[#1a2d47] group-hover:text-[#04234d]'
                                   }`}
                               >
                                 {item.title}
@@ -849,6 +894,8 @@ export default function Events() {
                       )
                     })}
                   </div>
+                  {/* Bottom spacer after the final card to prevent touching next section */}
+                  <div className="h-[45vh] pointer-events-none" />
                 </div>
               ))}
             </div>
@@ -857,7 +904,7 @@ export default function Events() {
       </section>
 
       {/* Legacy and Sign-off - Museum Style (GSAP Animated) */}
-      <section ref={legacyContainerRef} className="bg-[#0b1526] py-32 lg:py-48 relative overflow-hidden">
+      <section ref={legacyContainerRef} className="bg-[#0b1526] py-16 lg:py-24 relative overflow-hidden">
         {/* Parallax Background */}
         <div
           ref={legacyBgRef}
@@ -866,28 +913,25 @@ export default function Events() {
 
         <div className="mx-auto max-w-5xl px-6 lg:px-12 relative">
           <div className="text-center">
-            <div className="legacy-reveal flex justify-center mb-12">
+            <div className="legacy-reveal flex justify-center mb-6">
               <Image src="/images/om.webp" alt="om" width={80} height={80} sizes="80px" className="opacity-30 mix-blend-luminosity" />
             </div>
 
-            <h2 className="legacy-reveal mb-10 font-serif text-4xl font-light text-white md:text-6xl leading-tight">
+            <h2 className="legacy-reveal mb-6 font-serif text-4xl font-light text-white md:text-6xl leading-tight">
               Legacy of Excellence <br />
               <span className="italic text-[#8a9bb5]">& Cultural Bridge-building</span>
             </h2>
 
-            <p className="legacy-reveal text-base md:text-lg lg:text-2xl text-[#a3b8d4] leading-relaxed font-light max-w-4xl mx-auto mb-20 text-justify md:text-center">
+            <p className="legacy-reveal text-base md:text-lg lg:text-2xl text-[#a3b8d4] leading-relaxed font-light max-w-4xl mx-auto mb-10 text-justify md:text-center">
               Recon International Charitable Trust, under the aegis of IIIRRC Trust, has continually bridged Tourism, Pilgrim, Spiritual Tradition, Cultural expression, and Global connectivity. With a proven track record in program execution, grassroots engagement, and international outreach, the Trust stands as a torchbearer of India’s Cultural Diplomacy and Spiritual ethos.
             </p>
 
-            <div className="legacy-reveal pt-16 border-t border-white/10 flex flex-col items-center max-w-sm mx-auto">
+            <div className="legacy-reveal pt-10 border-t border-white/10 flex flex-col items-center max-w-sm mx-auto">
               <p className="text-3xl font-serif font-light text-white tracking-wide">
                 K. Chandra Shekher Rao
               </p>
               <p className="mt-4 text-[#6b9fd4] font-bold tracking-[0.3em] uppercase text-xs">
                 Managing Trustee
-              </p>
-              <p className="mt-6 text-[#8a9bb5] font-mono tracking-widest text-sm">
-                +91 950 510 015
               </p>
             </div>
           </div>

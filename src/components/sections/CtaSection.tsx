@@ -34,7 +34,7 @@ export function CtaSection() {
           />
 
           {/* Decorative mandala silhouette */}
-          <div className="absolute inset-0 opacity-[0.02] pointer-events-none select-none flex items-center justify-center">
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none select-none flex items-center justify-center">
             <svg viewBox="0 0 100 100" fill="currentColor" className="text-royal w-[500px] h-[500px]">
               <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" fill="none" />
               <path d="M 50 0 L 50 100 M 0 50 L 100 50 M 15 15 L 85 85 M 15 85 L 85 15" stroke="currentColor" strokeWidth="0.25" />

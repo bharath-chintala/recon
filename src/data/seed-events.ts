@@ -39,7 +39,7 @@ export const SEED_DATA = [
     category: 'Key Cultural & Spiritual Initiatives',
     title: 'Student Entrepreneurship Initiative (April 2024)',
     description: 'Empowered MBA students to market original organic “Ugadi Pachhadi” through kiosk setups, fostering entrepreneurial and marketing skills.',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2574&auto=format&fit=crop'
+    image: '/images/student.webp'
   },
   {
     category: 'Special Projects & Creative Platforms',
@@ -51,7 +51,7 @@ export const SEED_DATA = [
     category: 'Special Projects & Creative Platforms',
     title: 'Kanakabhishekam (Golden Flower Anointing Ceremony)',
     description: 'Celebrated the 80th Spring Festival of Dr. Tirumala Srinivasa Chary, honouring his contributions to spiritual and cultural life.',
-    image: '/images/Temples/ANU06073.webp'
+    image: '/images/goldenjublee.webp'
   },
   {
     category: 'Cultural Exchange & International Engagements',
@@ -75,7 +75,7 @@ export const SEED_DATA = [
     category: 'Cultural Exchange & International Engagements',
     title: 'Golden Jubilee Celebrations',
     description: 'Malaysia Telugu Sangham, Teluk Intan, showcasing Telugu culture on an international stage.',
-    image: '/images/AP event 2007/DSC_6974.webp'
+    image: '/images/goldenjublee.webp'
   },
   {
     category: 'Humanitarian & Social Impact Initiatives',

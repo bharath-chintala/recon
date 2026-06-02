@@ -135,8 +135,6 @@ export function MilestonesPreview() {
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 500px, 300px"
                     className="object-cover transition-all duration-1000 group-hover:scale-105"
                   />
-                  {/* Overlay Dark/Light Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-warm-ivory/95 via-transparent to-transparent opacity-85 group-hover:opacity-40 transition-opacity" />
                 </div>
 
                 {/* Content Section */}

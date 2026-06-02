@@ -30,7 +30,8 @@ export default function About() {
             variants={fadeInUp}
             initial="hidden"
             animate="visible"
-            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#F5EFEB]"
+            className="mb-4 font-bold uppercase tracking-[0.2em] text-[#F5EFEB]"
+            style={{ fontSize: '12.6px' }}
           >
             Who We Are
           </motion.p>
@@ -48,7 +49,8 @@ export default function About() {
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.2 }}
-            className="mt-6 max-w-xl mx-auto text-lg font-bold text-[#F5EFEB] uppercase tracking-wide"
+            className="mt-6 max-w-xl mx-auto text-xl md:text-2xl font-bold text-white uppercase tracking-wide leading-relaxed"
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.5)' }}
           >
             Meaningful travel experiences focused on sacred journeys and spiritual exploration.
           </motion.p>
