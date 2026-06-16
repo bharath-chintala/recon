@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    webpackBuildWorker: true,
+    webpackBuildWorker: false,
   },
 };
 

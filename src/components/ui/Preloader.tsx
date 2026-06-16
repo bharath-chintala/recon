@@ -14,45 +14,96 @@ export const Preloader = React.memo(function Preloader() {
   const blueLogoRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLSpanElement>(null);
   const ringRef = useRef<SVGCircleElement>(null);
+
   const [isLoading, setIsLoading] = useState(true);
+
   const mountedRef = useRef(true);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioBufferRef = useRef<AudioBuffer | null>(null);
+  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  const hasInteractedRef = useRef(false);
+  const isPlayStartedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    let hasInteracted = false;
-    let isPlayStarted = false;
+    const startBufferPlayback = () => {
+      if (isPlayStartedRef.current) return;
+      const ctx = audioContextRef.current;
+      const buffer = audioBufferRef.current;
+      if (!ctx || !buffer) return;
 
-    const getOrCreateAudio = () => {
-      if (!audioRef.current && typeof window !== 'undefined') {
-        const audio = new Audio('/images/aum.mp3');
-        audio.loop = true;
-        audio.volume = 1.0;
-        audioRef.current = audio;
+      try {
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        sourceNodeRef.current = source;
+
+        const gain = ctx.createGain();
+        gain.gain.value = 1.5; // Exactly 1.5x volume boost as requested
+        gainNodeRef.current = gain;
+
+        source.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+
+        source.start(0);
+        isPlayStartedRef.current = true;
+        removeInteractionListeners();
+        console.log('[Preloader] Audio playing successfully via AudioBufferSourceNode.');
+      } catch (err) {
+        console.warn('[Preloader] Audio playback failed:', err);
       }
-      return audioRef.current;
     };
 
-    const startPlayback = async () => {
-      if (isPlayStarted) return;
-      const audio = getOrCreateAudio();
-      if (!audio) return;
+    const fetchAndDecodeAudio = async () => {
       try {
-        await audio.play();
-        isPlayStarted = true;
-        removeInteractionListeners();
-      } catch {
-        // Safe to ignore or log warning (expected due to browser autoplay policies)
-        console.warn('[Preloader] Autoplay blocked. Listening for user interaction to start audio.');
+        const response = await fetch('/images/aum.mp3');
+        const arrayBuffer = await response.arrayBuffer();
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          const ctx = new AudioContextClass();
+          audioContextRef.current = ctx;
+
+          const decodedData = await ctx.decodeAudioData(arrayBuffer);
+          audioBufferRef.current = decodedData;
+
+          // If the user has already clicked or if the browser allows autoplay, play it immediately!
+          if (hasInteractedRef.current || ctx.state === 'running') {
+            startBufferPlayback();
+          } else {
+            // Try starting, if it fails due to autoplay policy it will just be suspended
+            startBufferPlayback();
+          }
+        }
+      } catch (err) {
+        console.warn('[Preloader] Audio decoding failed:', err);
       }
     };
 
     const handleInteraction = () => {
-      if (!hasInteracted) {
-        hasInteracted = true;
-        startPlayback();
+      if (!hasInteractedRef.current) {
+        hasInteractedRef.current = true;
+        
+        // Resume AudioContext if it exists
+        if (audioContextRef.current) {
+          if (audioContextRef.current.state === 'suspended') {
+            audioContextRef.current.resume().then(() => {
+              startBufferPlayback();
+            }).catch(() => {});
+          } else {
+            startBufferPlayback();
+          }
+        } else {
+          console.log('[Preloader] User interacted before audio decoded.');
+        }
       }
     };
 
@@ -60,24 +111,32 @@ export const Preloader = React.memo(function Preloader() {
       window.addEventListener('click', handleInteraction, { once: true });
       window.addEventListener('keydown', handleInteraction, { once: true });
       window.addEventListener('touchstart', handleInteraction, { once: true });
+      window.addEventListener('pointerup', handleInteraction, { once: true });
     };
 
     const removeInteractionListeners = () => {
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('keydown', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('pointerup', handleInteraction);
     };
 
-    // Try to play immediately
-    startPlayback();
+    // Load and decode audio asynchronously in the background
+    fetchAndDecodeAudio();
     addInteractionListeners();
 
     return () => {
       removeInteractionListeners();
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.stop();
+        } catch (e) {}
       }
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current = null;
+      }
+      gainNodeRef.current = null;
     };
   }, []);
 
@@ -120,11 +179,8 @@ export const Preloader = React.memo(function Preloader() {
     };
   }, []);
 
-  // ── CRITICAL: All hooks MUST be called unconditionally before any early returns ──
-  // Conditional rendering logic is moved inside the hook callback, not before it.
   useGSAP(
     () => {
-      // Skip animation for dashboard/login routes or when already done loading
       if (
         !isLoading ||
         pathname?.startsWith('/dashboard') ||
@@ -139,12 +195,9 @@ export const Preloader = React.memo(function Preloader() {
       const progress = progressRef.current
       const ring = ringRef.current
 
-      // Guard: all refs must be mounted
       if (!container || !logoContainer || !blueLogo || !progress || !ring) return
 
-      // Speed up duration based on form factor: 3 seconds on desktop, 2 seconds on mobile
-      const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
-      const DURATION = isMobile ? 2 : 3;
+      const DURATION = 5; // Run for exactly 5 seconds
 
       if (timelineRef.current) {
         timelineRef.current.kill();
@@ -152,20 +205,18 @@ export const Preloader = React.memo(function Preloader() {
 
       const tl = gsap.timeline({
         onComplete: () => {
-          // Immediately disable pointer events to prevent blocking user clicks while fading out
           container.style.pointerEvents = 'none';
 
           // Fade out the audio volume in sync with the container fade-out
-          if (audioRef.current) {
-            gsap.to(audioRef.current, {
-              volume: 0,
+          if (gainNodeRef.current) {
+            gsap.to(gainNodeRef.current.gain, {
+              value: 0,
               duration: 1,
               delay: 0.3,
               ease: 'power2.inOut',
             });
           }
 
-          // Fade out the preloader container after a brief hold at 100%
           gsap.to(container, {
             opacity: 0,
             duration: 1,
@@ -191,7 +242,6 @@ export const Preloader = React.memo(function Preloader() {
       });
       timelineRef.current = tl;
 
-      // 1. Animate percentage from 0 to 100
       const progressObj = { value: 0 };
       tl.to(progressObj, {
         value: 100,
@@ -204,8 +254,6 @@ export const Preloader = React.memo(function Preloader() {
         }
       }, 'start');
 
-      // 2. Animate the SVG circular loading ring around the logo
-      // 301.59 is the circumference of the circle (2 * pi * r where r=48)
       tl.fromTo(
         ring,
         { strokeDashoffset: 301.59 },
@@ -217,7 +265,6 @@ export const Preloader = React.memo(function Preloader() {
         'start'
       );
 
-      // 3. Bottom-to-top fill animation for the logo
       tl.fromTo(
         blueLogo,
         { clipPath: 'inset(100% 0% 0% 0%)', opacity: 1 },
@@ -229,7 +276,6 @@ export const Preloader = React.memo(function Preloader() {
         'start'
       );
 
-      // 4. Creative touch: slowly scale up the entire logo container
       tl.fromTo(
         logoContainer,
         { scale: 0.85 },
@@ -244,7 +290,6 @@ export const Preloader = React.memo(function Preloader() {
     { scope: containerRef, dependencies: [isLoading, pathname] },
   );
 
-  // ── Safe to return null AFTER all hooks have been called ──
   if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')) {
     return null;
   }
