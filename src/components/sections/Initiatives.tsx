@@ -11,7 +11,7 @@ import {
 export function Initiatives() {
   return (
     <section id="journeys" className="flex flex-col">
-      {initiatives.map((initiative, index) => (
+      {initiatives.map((initiative) => (
         <div
           key={initiative.id}
           className="relative min-h-[70vh] flex items-center overflow-hidden py-24"

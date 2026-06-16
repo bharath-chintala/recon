@@ -78,7 +78,7 @@ export function MobileMenu({ links, isOpen, onClose }: MobileMenuProps) {
                   height={58}
                 />
                 <div className="flex flex-col leading-none">
-                  <span className="text-[16px] font-extrabold uppercase tracking-wide text-white">
+                  <span className="text-[16px] font-extrabold uppercase tracking-wide text-[#00a6e6]">
                     recon
                   </span>
                   <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8bb8e8] mt-0.5">

@@ -34,7 +34,7 @@ export function useCinematicReveal<T extends HTMLElement = HTMLDivElement>(
         toggleActions: 'play none none reverse',
       },
     })
-  }, { dependencies: deps as any[], scope: ref })
+  }, { dependencies: deps as unknown[], scope: ref })
 
   return ref
 }

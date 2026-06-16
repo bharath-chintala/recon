@@ -19,6 +19,13 @@ const GALLERY_IMAGES = [
       '/images/Varanasi event/DSC07300.webp',
       '/images/Varanasi event/DSC08436.webp',
       '/images/Varanasi event/DSC08593.webp',
+    ],
+    imageNames: [
+      'Ganga Aarti prayers',
+      'Spiritual Gathering',
+      'Devotional assembly',
+      'Cultural celebration',
+      'Varanasi evening prayers'
     ]
   },
   {
@@ -33,6 +40,13 @@ const GALLERY_IMAGES = [
       '/images/Mauritius/DSC_6950.webp',
       '/images/Mauritius/DSC_6964.webp',
       '/images/Mauritius/President_Mauritius.webp',
+    ],
+    imageNames: [
+      'Diplomatic Forum',
+      'Traditional Food Festival',
+      'Delegate Presentation',
+      'Cultural Exchange Forum',
+      'Meeting the President of Mauritius'
     ]
   },
   {
@@ -47,6 +61,13 @@ const GALLERY_IMAGES = [
       '/images/Cultural dances/DSC_8195.webp',
       '/images/about1.webp',
       '/images/telangana.webp',
+    ],
+    imageNames: [
+      'Kuchipudi Traditional Dance',
+      'Bihari Folk Dance',
+      'Classical Dance Ensemble',
+      'Cultural Delegation Group',
+      'Bathukamma Festive Performance'
     ]
   },
   {
@@ -61,6 +82,13 @@ const GALLERY_IMAGES = [
       '/images/Haridwar event 2023/DSC_1379.webp',
       '/images/Haridwar event 2023/DSC_3597.webp',
       '/images/Haridwar event 2023/DSC_3799.webp',
+    ],
+    imageNames: [
+      'Visually Impaired Scribes Group',
+      'Ganga Pushkar Mahotsav',
+      'River Ganga Devotional Gathering',
+      'Haridwar Ghat Rituals',
+      'Spiritual Pilgrims Group'
     ]
   },
   {
@@ -75,6 +103,13 @@ const GALLERY_IMAGES = [
       '/images/Parakram Diwas/pa3.webp',
       '/images/Parakram Diwas/pa4.webp',
       '/images/Parakram Diwas/pa6.webp',
+    ],
+    imageNames: [
+      'Netaji Subhash Chandra Bose Tribute',
+      'National Azadi celebrations',
+      'Parakram Diwas Exhibition',
+      'Inaugural Address',
+      'National Folk Dance Showcase'
     ]
   },
   {
@@ -89,6 +124,13 @@ const GALLERY_IMAGES = [
       '/images/Temples/ANU06113.webp',
       '/images/Temples/ANU06268.jpg',
       '/images/Temples/ANU06943.jpg',
+    ],
+    imageNames: [
+      'Sacred Ritual Offerings',
+      'Temple Gopuram Entrance',
+      'Vedic Heritage Study',
+      'Spiritual Devotees Meet',
+      'Temple Trust Ceremony'
     ]
   },
   {
@@ -103,6 +145,13 @@ const GALLERY_IMAGES = [
       '/images/AP event 2007/DSC01048.webp',
       '/images/AP event 2007/DSC01089.webp',
       '/images/goldenjublee.webp',
+    ],
+    imageNames: [
+      'Telugu Sangham Celebrations',
+      'VIP Delegation Welcome',
+      'Traditional Welcoming Ceremony',
+      'Kuchipudi Cultural Dance',
+      'Golden Jubilee Malaysia Meet'
     ]
   }
 ]
@@ -128,7 +177,7 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
     <motion.div
       variants={fadeInUp}
       onClick={onClick}
-      className={`group relative rounded-[2.2rem] overflow-hidden bg-[#eef3f7] border border-white/50 cursor-pointer shadow-[12px_12px_24px_rgba(15,23,42,0.06),inset_2px_2px_5px_rgba(255,255,255,0.8),inset_-2px_-2px_5px_rgba(15,23,42,0.02)] hover:shadow-[0_20px_40px_rgba(218,170,55,0.22),inset_2px_2px_5px_rgba(255,255,255,0.9)] hover:border-amber-400/50 hover:-translate-y-2 transition-all duration-[600ms] ease-out ${className}`}
+      className={`group relative rounded-[2.2rem] overflow-hidden bg-[#eef3f7] border border-white/50 cursor-pointer shadow-[12px_12px_24px_rgba(15,23,42,0.06),inset_2px_2px_5px_rgba(255,255,255,0.8),inset_-2px_-2px_5px_rgba(15,23,42,0.02)] hover:shadow-[0_20px_40px_rgba(218,170,55,0.22),inset_2px_2px_5px_rgba(255,255,255,0.9)] hover:border-amber-400/50 [transform:translate3d(0,0,0)] hover:[transform:translate3d(0,-8px,0)] transition-[transform,box-shadow,border-color] duration-[600ms] ease-out will-change-transform ${className}`}
     >
       {/* Gloss Glaze Reflection Sweep */}
       <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
@@ -141,11 +190,10 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
           src={img.src}
           alt={img.alt}
           fill
-          className={`object-cover brightness-100 group-hover:brightness-[0.82] transition-all duration-[800ms] ease-out ${
-            ROTATED_IMAGES.includes(img.src)
-              ? "-rotate-90 scale-[1.5] group-hover:scale-[1.65] object-[75%_center]"
-              : "scale-100 group-hover:scale-110"
-          }`}
+          className={`object-cover brightness-100 group-hover:brightness-[0.82] transition-[transform,filter] duration-[800ms] ease-out will-change-[transform,filter] ${ROTATED_IMAGES.includes(img.src)
+            ? "-rotate-90 scale-[1.5] group-hover:scale-[1.65] object-[75%_center] md:object-[98%_center]"
+            : "scale-100 group-hover:scale-110"
+            }`}
           sizes="(max-width: 768px) 100vw, 30vw"
         />
       </div>
@@ -154,13 +202,13 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
 
       {/* Floating Glassmorphic Category Capsule */}
-      <div className="absolute top-4 left-4 z-20 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-[9px] font-bold uppercase tracking-[0.15em] text-white/95 flex items-center gap-1.5 transition-all duration-300 group-hover:bg-amber-500/90 group-hover:border-amber-400/80 group-hover:text-white">
+      <div className="absolute top-4 left-4 z-20 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-[9px] font-bold uppercase tracking-[0.15em] text-white/95 flex items-center gap-1.5 transition-[background-color,border-color,color] duration-300 group-hover:bg-amber-500/90 group-hover:border-amber-400/80 group-hover:text-white">
         <span className="h-1.5 w-1.5 rounded-full bg-amber-400/90 group-hover:bg-white animate-pulse" />
         {img.category}
       </div>
 
       {/* Floating Sacred Celestial Mandala Wheel */}
-      <div className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:bg-white group-hover:text-[rgb(218,170,55)] group-hover:border-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out">
+      <div className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:bg-white group-hover:text-[rgb(218,170,55)] group-hover:border-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-[transform,opacity,background-color,color,border-color] duration-500 ease-out">
         <svg className="w-5 h-5 transform group-hover:rotate-180 transition-transform duration-[800ms] ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="2" className="fill-white/80 group-hover:fill-[rgb(218,170,55)] transition-colors duration-300" />
           <circle cx="12" cy="12" r="8" strokeDasharray="3 3" strokeWidth="1" className="stroke-white/40 group-hover:stroke-[rgb(218,170,55)]/40 transition-colors duration-300" />
@@ -169,17 +217,17 @@ function GalleryCard({ img, className = '', onClick }: GalleryCardProps) {
       </div>
 
       {/* Text Content with upward shift and line reveal on hover */}
-      <div className="absolute bottom-6 left-6 right-6 z-20 text-white select-none transition-all duration-[600ms] ease-out group-hover:translate-y-[-4px]">
+      <div className="absolute bottom-6 left-6 right-6 z-20 text-white select-none [transform:translate3d(0,0,0)] group-hover:[transform:translate3d(0,-4px,0)] transition-transform duration-[600ms] ease-out">
         <h3 className="font-cinzel text-lg md:text-xl font-bold tracking-wide leading-tight text-white mb-0.5 group-hover:text-[rgb(218,170,55)] transition-colors duration-300">
           {img.title}
         </h3>
 
         {/* Subtle decorative sky blue divider that expands on hover */}
-        <div className="w-0 group-hover:w-16 h-[2px] bg-[rgb(218,170,55)] my-2 transition-all duration-[600ms] rounded-full" />
+        <div className="w-0 group-hover:w-16 h-[2px] bg-[rgb(218,170,55)] my-2 transition-[width] duration-[600ms] rounded-full" />
 
         <p className="text-[10px] text-white/70 font-medium uppercase tracking-wider flex items-center gap-1">
           {img.subtitle}
-          <span className="opacity-0 group-hover:opacity-100 transform translate-x-[-6px] group-hover:translate-x-0 transition-all duration-[500ms] text-[rgb(218,170,55)]">→</span>
+          <span className="opacity-0 group-hover:opacity-100 transform translate-x-[-6px] group-hover:translate-x-0 transition-[opacity,transform] duration-[500ms] text-[rgb(218,170,55)]">→</span>
         </p>
       </div>
     </motion.div>
@@ -213,27 +261,35 @@ const modalBentoItem = {
 export function GalleryPreview() {
   const [selectedImage, setSelectedImage] = useState<typeof GALLERY_IMAGES[0] | null>(null)
   const [mounted, setMounted] = useState(false)
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
-    setMounted(true)
+    setTimeout(() => {
+      setMounted(true)
+    }, 0)
     return () => {
       document.body.style.overflow = ''
       if (typeof window !== 'undefined') {
-        ; (window as any).lenis?.start()
+        ; (window as unknown as { lenis?: { start: () => void } }).lenis?.start()
       }
     }
   }, [])
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     if (selectedImage) {
       document.body.style.overflow = 'hidden'
       if (typeof window !== 'undefined') {
-        ; (window as any).lenis?.stop()
+        ; (window as unknown as { lenis?: { stop: () => void } }).lenis?.stop()
       }
     } else {
       document.body.style.overflow = ''
       if (typeof window !== 'undefined') {
-        ; (window as any).lenis?.start()
+        ; (window as unknown as { lenis?: { start: () => void } }).lenis?.start()
       }
     }
   }, [selectedImage])
@@ -414,7 +470,10 @@ export function GalleryPreview() {
                             alt={`${selectedImage.title} Gallery Image ${idx + 1}`}
                             fill
                             className={`object-cover transition-transform duration-[700ms] ease-out ${ROTATED_IMAGES.includes(imgSrc)
-                              ? "-rotate-90 scale-[1.5] group-hover:scale-[1.62] object-[85%_center]"
+                              ? `-rotate-90 scale-[1.5] group-hover:scale-[1.62] object-[85%_center] ${imgSrc.includes('Parakram')
+                                ? 'md:object-[200%_center]'
+                                : 'md:object-[98%_center]'
+                              }`
                               : "scale-100 group-hover:scale-108"
                               }`}
                             sizes={idx === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 50vw, 25vw"}
@@ -432,7 +491,7 @@ export function GalleryPreview() {
 
                         {/* Small Image Indicator Tag */}
                         <div className="absolute bottom-3 left-4 z-20 text-[9px] font-bold text-white/50 group-hover:text-white uppercase tracking-widest transition-colors duration-300">
-                          {idx === 0 ? "Featured View" : `Image 0${idx + 1}`}
+                          {selectedImage.imageNames?.[idx] || (idx === 0 ? "Featured View" : `Image 0${idx + 1}`)}
                         </div>
                       </motion.div>
                     )

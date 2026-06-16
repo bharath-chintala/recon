@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, MapPin, Users, Mail, Phone, FileText, CheckCircle, Loader2, Sparkles, X, ChevronRight, Bookmark } from 'lucide-react'
+import { MapPin, Mail, Phone, FileText, CheckCircle, Loader2, Sparkles, X, ChevronRight, Bookmark } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 interface UpcomingEvent {
@@ -66,7 +65,13 @@ export default function UpcomingEvents() {
   const [events, setEvents] = useState<UpcomingEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null)
-  const [registeredList, setRegisteredList] = useState<string[]>([])
+  const [registeredList, setRegisteredList] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedRegs = localStorage.getItem('recon_registrations')
+      return savedRegs ? JSON.parse(savedRegs) : []
+    }
+    return []
+  })
   
   // Registration Form State
   const [fullName, setFullName] = useState('')
@@ -87,7 +92,7 @@ export default function UpcomingEvents() {
     const fetchUpcoming = async () => {
       setLoading(true)
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('upcoming_events')
           .select('*')
           .order('created_at', { ascending: true })
@@ -97,19 +102,13 @@ export default function UpcomingEvents() {
         } else {
           setEvents(ORIGINAL_UPCOMING_EVENTS)
         }
-      } catch (err) {
+      } catch {
         setEvents(ORIGINAL_UPCOMING_EVENTS)
       } finally {
         setLoading(false)
       }
     }
     fetchUpcoming()
-
-    // Load local registrations
-    const savedRegs = localStorage.getItem('recon_registrations')
-    if (savedRegs) {
-      setRegisteredList(JSON.parse(savedRegs))
-    }
   }, [])
 
   // Dynamic Seats Adjustment based on local storage registrations
@@ -194,12 +193,15 @@ export default function UpcomingEvents() {
     // Save registration locally
     const newRegList = [...registeredList, selectedEvent.id]
     setRegisteredList(newRegList)
-    localStorage.setItem('recon_registrations', JSON.stringify(newRegList))
     
-    // Store exact ticket info locally
-    const allTickets = JSON.parse(localStorage.getItem('recon_tickets') || '[]')
-    allTickets.push(registrationData)
-    localStorage.setItem('recon_tickets', JSON.stringify(allTickets))
+    setTimeout(() => {
+      localStorage.setItem('recon_registrations', JSON.stringify(newRegList))
+      
+      // Store exact ticket info locally
+      const allTickets = JSON.parse(localStorage.getItem('recon_tickets') || '[]')
+      allTickets.push(registrationData)
+      localStorage.setItem('recon_tickets', JSON.stringify(allTickets))
+    }, 0)
 
     setSuccessRegistration({ id: selectedEvent.id, ticket: ticketId })
     setSubmitting(false)

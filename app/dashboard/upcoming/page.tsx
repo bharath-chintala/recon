@@ -144,16 +144,17 @@ export default function UpcomingEventsDashboard() {
       const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(fullPath)
       setImage(publicUrl)
       setCompressing(false)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Image upload error:', err)
-      alert(`Failed to upload image: ${err.message || err}`)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Failed to upload image: ${msg}`)
       setCompressing(false)
     }
   }
 
   const fetchEvents = async () => {
     setLoading(true)
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('upcoming_events')
       .select('*')
       .order('created_at', { ascending: true })
@@ -171,7 +172,7 @@ export default function UpcomingEventsDashboard() {
       }
     }
     checkAuth()
-  }, [])
+  }, [router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -257,9 +258,10 @@ export default function UpcomingEventsDashboard() {
       clearCachedData('upcoming_events_popup')
       
       closeModal()
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error saving upcoming event:', err)
-      alert(`Failed to save upcoming event: ${err.message || err}`)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Failed to save upcoming event: ${msg}`)
     } finally {
       setSaving(false)
     }
@@ -280,9 +282,10 @@ export default function UpcomingEventsDashboard() {
         
         // Invalidate memory cache immediately on successful database deletion
         clearCachedData('upcoming_events_popup')
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error deleting upcoming event:', err)
-        alert(`Failed to delete event: ${err.message || err}`)
+        const msg = err instanceof Error ? err.message : String(err)
+        alert(`Failed to delete event: ${msg}`)
       }
     }
   }
@@ -309,9 +312,10 @@ export default function UpcomingEventsDashboard() {
 
         await fetchEvents()
         alert('Original events synced successfully!')
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error syncing upcoming events:', err)
-        alert(`An error occurred during sync: ${err.message || err}`)
+        const msg = err instanceof Error ? err.message : String(err)
+        alert(`An error occurred during sync: ${msg}`)
       } finally {
         setSyncing(false)
       }

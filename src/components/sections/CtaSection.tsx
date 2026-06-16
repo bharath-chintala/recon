@@ -76,7 +76,7 @@ export function CtaSection() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="font-cormorant text-xl md:text-2xl text-royal/90 italic mb-10 max-w-2xl leading-relaxed font-medium"
             >
-              "Every shared journey preserves a sacred temple corridor, uplifts an emerging traditional artist, and builds a soft-power bridge across global horizons."
+              &quot;Every shared journey preserves a sacred temple corridor, uplifts an emerging traditional artist, and builds a soft-power bridge across global horizons.&quot;
             </motion.p>
 
             {/* Premium Button Controls */}

@@ -72,7 +72,7 @@ export function Footer() {
                 className="transition-transform duration-500 group-hover:scale-105 filter brightness-100"
               />
               <div className="flex flex-col leading-none">
-                <span className="font-logo text-[18px] font-extrabold uppercase tracking-wide text-white">
+                <span className="font-logo text-[18px] font-extrabold uppercase tracking-wide text-[#00a6e6]">
                   recon
                 </span>
                 <span className="font-logo text-[10px] font-bold uppercase tracking-[0.2em] text-white mt-0.5">

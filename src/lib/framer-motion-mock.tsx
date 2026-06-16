@@ -1,11 +1,41 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import React, { forwardRef, useEffect, useState, useRef } from 'react'
 
-// Cache-busting timestamp to force Next.js Turbopack cache invalidation: 2026-05-27T19:22:00
 // Helper mock types
 export type Variants = any
 
-// The motion proxy allows motion.div, motion.section, motion.h2, etc.
-// to resolve to forwardRef wrappers rendering standard DOM elements with IntersectionObserver support.
+export class MockMotionValue {
+  private value: any
+  private listeners: Set<(v: any) => void> = new Set()
+
+  constructor(initial: any) {
+    this.value = initial
+  }
+
+  get() {
+    return this.value
+  }
+
+  set(target: any) {
+    this.value = target
+    this.listeners.forEach(cb => cb(target))
+  }
+
+  onChange(cb: (v: any) => void) {
+    this.listeners.add(cb)
+    return () => { this.listeners.delete(cb) }
+  }
+
+  on(event: string, cb: any) {
+    this.listeners.add(cb)
+    return () => { this.listeners.delete(cb) }
+  }
+
+  destroy() {
+    this.listeners.clear()
+  }
+}
+
 const motionBase = (Component: any) => {
   const Wrapped = forwardRef(({
     children,
@@ -33,10 +63,69 @@ const motionBase = (Component: any) => {
     onAnimationStart,
     onAnimationComplete,
     onUpdate,
+    style,
     ...props
   }: any, ref) => {
     const elementRef = useRef<any>(null)
 
+    // Handle children as MockMotionValue (like displayValue inside motion.span)
+    useEffect(() => {
+      const el = elementRef.current
+      if (!el) return
+      if (children instanceof MockMotionValue) {
+        el.textContent = String(children.get())
+        return children.onChange((latest) => {
+          el.textContent = String(latest)
+        })
+      }
+    }, [children])
+
+    // Handle styles containing MockMotionValue objects
+    useEffect(() => {
+      const el = elementRef.current
+      if (!el || !style) return
+
+      const unsubs: (() => void)[] = []
+      const transforms: Record<string, string | number> = {}
+
+      const applyStyle = (key: string, val: any) => {
+        const isTransform = ['scale', 'scaleX', 'scaleY', 'x', 'y', 'rotate', 'rotateX', 'rotateY'].includes(key)
+        if (isTransform) {
+          let unit = ''
+          if (['x', 'y'].includes(key) && typeof val === 'number') {
+            unit = 'px'
+          } else if (['rotate', 'rotateX', 'rotateY'].includes(key) && typeof val === 'number') {
+            unit = 'deg'
+          }
+          
+          let cssKey = key
+          if (key === 'x') cssKey = 'translateX'
+          if (key === 'y') cssKey = 'translateY'
+          
+          transforms[key] = `${cssKey}(${val}${unit})`
+          el.style.transform = Object.values(transforms).join(' ')
+        } else {
+          el.style[key as any] = val
+        }
+      }
+
+      // Initialize and subscribe to motion styles
+      Object.entries(style).forEach(([key, val]) => {
+        if (val instanceof MockMotionValue) {
+          applyStyle(key, val.get())
+          const unsub = val.onChange((latest) => {
+            applyStyle(key, latest)
+          })
+          unsubs.push(unsub)
+        } else {
+          applyStyle(key, val)
+        }
+      })
+
+      return () => unsubs.forEach(fn => fn())
+    }, [style])
+
+    // Viewport IntersectionObserver
     useEffect(() => {
       if (!onViewportEnter && !onViewportLeave) return
 
@@ -77,7 +166,23 @@ const motionBase = (Component: any) => {
       }
     }
 
-    return React.createElement(Component, { ...props, ref: setRefs }, children)
+    // Pass styling without MockMotionValue values to prevent React stylesheet serialization errors
+    const cleanedStyle: Record<string, any> = {}
+    if (style) {
+      Object.entries(style).forEach(([key, val]) => {
+        if (!(val instanceof MockMotionValue)) {
+          cleanedStyle[key] = val
+        }
+      })
+    }
+
+    const renderedChildren = children instanceof MockMotionValue ? String(children.get()) : children
+
+    return React.createElement(Component, { 
+      ...props, 
+      style: cleanedStyle, 
+      ref: setRefs 
+    }, renderedChildren)
   })
   Wrapped.displayName = `motion.${typeof Component === 'string' ? Component : Component.displayName || Component.name || 'Component'}`
   return Wrapped
@@ -95,79 +200,7 @@ export const motion = new Proxy(
       if (motionComponentCache[tagName]) {
         return motionComponentCache[tagName]
       }
-      const Component = forwardRef(({
-        children,
-        whileHover,
-        whileTap,
-        whileInView,
-        whileFocus,
-        whileDrag,
-        transition,
-        animate,
-        initial,
-        exit,
-        viewport,
-        variants,
-        layoutId,
-        layout,
-        custom,
-        onViewportEnter,
-        onViewportLeave,
-        drag,
-        dragConstraints,
-        dragElastic,
-        dragMomentum,
-        dragTransition,
-        onAnimationStart,
-        onAnimationComplete,
-        onUpdate,
-        ...props
-      }: any, ref) => {
-        const elementRef = useRef<any>(null)
-
-        useEffect(() => {
-          if (!onViewportEnter && !onViewportLeave) return
-
-          const element = elementRef.current
-          if (!element || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
-            if (onViewportEnter) onViewportEnter()
-            return
-          }
-
-          const observerMargin = viewport?.margin || '0px'
-          const observerOnce = viewport?.once !== false
-
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-              if (onViewportEnter) onViewportEnter()
-              if (observerOnce) {
-                observer.unobserve(element)
-              }
-            } else {
-              if (!observerOnce && onViewportLeave) {
-                onViewportLeave()
-              }
-            }
-          }, {
-            rootMargin: observerMargin,
-            threshold: viewport?.amount || 0,
-          })
-
-          observer.observe(element)
-          return () => observer.disconnect()
-        }, [onViewportEnter, onViewportLeave, viewport?.margin, viewport?.once, viewport?.amount])
-
-        const setRefs = (node: any) => {
-          elementRef.current = node
-          if (ref) {
-            if (typeof ref === 'function') ref(node)
-            else (ref as any).current = node
-          }
-        }
-
-        return React.createElement(tagName, { ...props, ref: setRefs }, children)
-      })
-      Component.displayName = `motion.${tagName}`
+      const Component = motionBase(tagName)
       motionComponentCache[tagName] = Component
       return Component
     },
@@ -178,38 +211,6 @@ export const AnimatePresence = ({ children }: any) => <>{children}</>
 
 export const useInView = (ref: any, options?: any) => {
   return true
-}
-
-export class MockMotionValue {
-  private value: any
-  private listeners: Set<(v: any) => void> = new Set()
-
-  constructor(initial: any) {
-    this.value = initial
-  }
-
-  get() {
-    return this.value
-  }
-
-  set(target: any) {
-    this.value = target
-    this.listeners.forEach(cb => cb(target))
-  }
-
-  onChange(cb: (v: any) => void) {
-    this.listeners.add(cb)
-    return () => { this.listeners.delete(cb) }
-  }
-
-  on(event: string, cb: any) {
-    this.listeners.add(cb)
-    return () => { this.listeners.delete(cb) }
-  }
-
-  destroy() {
-    this.listeners.clear()
-  }
 }
 
 export const useScroll = (options?: any) => {
@@ -245,7 +246,6 @@ export const useSpring = (initialValue: number | MockMotionValue, config?: any) 
   const rawInitial = isMotionValue ? (initialValue as MockMotionValue).get() : initialValue
 
   const [springValue] = useState(() => new MockMotionValue(rawInitial))
-  const [, forceUpdate] = useState({})
 
   useEffect(() => {
     if (isMotionValue) {
@@ -255,10 +255,6 @@ export const useSpring = (initialValue: number | MockMotionValue, config?: any) 
       })
     }
   }, [initialValue, isMotionValue, springValue])
-
-  useEffect(() => {
-    return springValue.onChange(() => forceUpdate({}))
-  }, [springValue])
 
   return springValue
 }
@@ -297,40 +293,41 @@ function interpolate(value: number, inputRange: number[], outputRange: any[]) {
 }
 
 export const useTransform = (value: MockMotionValue, transformerOrInput: any, output?: any) => {
-  const [displayVal, setDisplayVal] = useState(() => {
-    const raw = value && typeof value.get === 'function' ? value.get() : 0
-    if (typeof transformerOrInput === 'function') {
-      return transformerOrInput(raw)
+  const rawInitial = value && typeof value.get === 'function' ? value.get() : 0
+  
+  const [transformedValue] = useState(() => {
+    const compute = (val: any) => {
+      if (typeof transformerOrInput === 'function') {
+        return transformerOrInput(val)
+      }
+      if (Array.isArray(transformerOrInput) && Array.isArray(output)) {
+        return interpolate(val, transformerOrInput, output)
+      }
+      return val
     }
-    if (Array.isArray(transformerOrInput) && Array.isArray(output)) {
-      return interpolate(raw, transformerOrInput, output)
-    }
-    return raw
+    return new MockMotionValue(compute(rawInitial))
   })
-
-  // Store configuration values in mutable refs to keep the subscription stable and prevent loop triggers
-  const latestTransformer = useRef(transformerOrInput)
-  const latestOutput = useRef(output)
-
+  
+  const latestCompute = useRef<(val: any) => any>(() => 0)
+  
   useEffect(() => {
-    latestTransformer.current = transformerOrInput
-    latestOutput.current = output
-  })
+    latestCompute.current = (val: any) => {
+      if (typeof transformerOrInput === 'function') {
+        return transformerOrInput(val)
+      }
+      if (Array.isArray(transformerOrInput) && Array.isArray(output)) {
+        return interpolate(val, transformerOrInput, output)
+      }
+      return val
+    }
+  }, [transformerOrInput, output])
 
   useEffect(() => {
     if (!value || typeof value.onChange !== 'function') return
     return value.onChange((latest) => {
-      let next = latest
-      const currentTransformer = latestTransformer.current
-      const currentOutput = latestOutput.current
-      if (typeof currentTransformer === 'function') {
-        next = currentTransformer(latest)
-      } else if (Array.isArray(currentTransformer) && Array.isArray(currentOutput)) {
-        next = interpolate(latest, currentTransformer, currentOutput)
-      }
-      setDisplayVal(next)
+      transformedValue.set(latestCompute.current(latest))
     })
-  }, [value])
+  }, [value, transformedValue])
 
-  return displayVal
+  return transformedValue
 }

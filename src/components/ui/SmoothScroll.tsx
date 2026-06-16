@@ -17,6 +17,13 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/login')
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.history.scrollRestoration = 'manual'
+      window.scrollTo(0, 0)
+    }
+  }, [])
+
+  useEffect(() => {
     // Don't initialise Lenis on dashboard / login routes —
     // native scroll is needed for modal overflow-y-auto to work.
     if (isDashboard) return
@@ -31,7 +38,16 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
     lenisRef.current = lenis
     if (typeof window !== 'undefined') {
-      ;(window as any).lenis = lenis
+      ;(window as unknown as { lenis: Lenis }).lenis = lenis
+    }
+
+    // Lock scroll immediately if preloader is active
+    if (typeof document !== 'undefined') {
+      const hasPreloader = document.getElementById('preloader-container')
+      if (hasPreloader) {
+        lenis.stop()
+        document.body.style.overflow = 'hidden'
+      }
     }
 
     lenis.on('scroll', ScrollTrigger.update)
@@ -50,7 +66,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       lenisRef.current = null
       tickRef.current = null
       if (typeof window !== 'undefined') {
-        delete (window as any).lenis
+        delete (window as unknown as { lenis?: Lenis }).lenis
       }
     }
   }, [isDashboard])

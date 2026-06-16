@@ -56,12 +56,11 @@ export function UpcomingEventsPopup() {
   }, [])
 
   useEffect(() => {
-    setMounted(true)
-
-    let popupCount = 0
+    setTimeout(() => {
+      setMounted(true)
+    }, 0)
 
     const showPopup = () => {
-      popupCount += 1
       setOpen(true)
     }
 

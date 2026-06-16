@@ -88,7 +88,7 @@ export function Testimonials() {
 
               {/* Emotional Quote */}
               <blockquote className="mb-10 font-cormorant text-2xl md:text-3xl leading-relaxed text-royal/90 italic font-medium max-w-2xl mx-auto">
-                "{current.quote}"
+                &quot;{current.quote}&quot;
               </blockquote>
 
               {/* Profile Details (Layered) */}

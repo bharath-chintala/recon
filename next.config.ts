@@ -27,6 +27,9 @@ const nextConfig: NextConfig = {
       'framer-motion': './src/lib/framer-motion-mock.tsx',
     },
   },
+  experimental: {
+    webpackBuildWorker: true,
+  },
 };
 
 export default nextConfig;

@@ -6,7 +6,7 @@ import { useGSAP } from '@gsap/react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-export function Preloader() {
+export const Preloader = React.memo(function Preloader() {
   console.count('Preloader Render');
   const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,6 +17,69 @@ export function Preloader() {
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let hasInteracted = false;
+    let isPlayStarted = false;
+
+    const getOrCreateAudio = () => {
+      if (!audioRef.current && typeof window !== 'undefined') {
+        const audio = new Audio('/images/aum.mp3');
+        audio.loop = true;
+        audio.volume = 1.0;
+        audioRef.current = audio;
+      }
+      return audioRef.current;
+    };
+
+    const startPlayback = async () => {
+      if (isPlayStarted) return;
+      const audio = getOrCreateAudio();
+      if (!audio) return;
+      try {
+        await audio.play();
+        isPlayStarted = true;
+        removeInteractionListeners();
+      } catch {
+        // Safe to ignore or log warning (expected due to browser autoplay policies)
+        console.warn('[Preloader] Autoplay blocked. Listening for user interaction to start audio.');
+      }
+    };
+
+    const handleInteraction = () => {
+      if (!hasInteracted) {
+        hasInteracted = true;
+        startPlayback();
+      }
+    };
+
+    const addInteractionListeners = () => {
+      window.addEventListener('click', handleInteraction, { once: true });
+      window.addEventListener('keydown', handleInteraction, { once: true });
+      window.addEventListener('touchstart', handleInteraction, { once: true });
+    };
+
+    const removeInteractionListeners = () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+
+    // Try to play immediately
+    startPlayback();
+    addInteractionListeners();
+
+    return () => {
+      removeInteractionListeners();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -38,7 +101,11 @@ export function Preloader() {
         search.includes('nocache')
 
       if (isBotOrLighthouse) {
-        setIsLoading(false)
+        setTimeout(() => {
+          if (mountedRef.current) {
+            setIsLoading(false);
+          }
+        }, 0);
       }
     }
   }, [])
@@ -75,11 +142,29 @@ export function Preloader() {
       // Guard: all refs must be mounted
       if (!container || !logoContainer || !blueLogo || !progress || !ring) return
 
-      // Slower duration as requested
-      const DURATION = 5;
+      // Speed up duration based on form factor: 3 seconds on desktop, 2 seconds on mobile
+      const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+      const DURATION = isMobile ? 2 : 3;
+
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
 
       const tl = gsap.timeline({
         onComplete: () => {
+          // Immediately disable pointer events to prevent blocking user clicks while fading out
+          container.style.pointerEvents = 'none';
+
+          // Fade out the audio volume in sync with the container fade-out
+          if (audioRef.current) {
+            gsap.to(audioRef.current, {
+              volume: 0,
+              duration: 1,
+              delay: 0.3,
+              ease: 'power2.inOut',
+            });
+          }
+
           // Fade out the preloader container after a brief hold at 100%
           gsap.to(container, {
             opacity: 0,
@@ -87,8 +172,18 @@ export function Preloader() {
             delay: 0.3,
             ease: 'power2.inOut',
             onComplete: () => {
+              container.style.visibility = 'hidden';
               if (mountedRef.current) {
                 setIsLoading(false);
+                document.body.style.overflow = '';
+                if (typeof window !== 'undefined') {
+                  const win = window as unknown as { lenis?: { start: () => void; scrollTo: (y: number, options?: { immediate?: boolean }) => void } };
+                  if (win.lenis) {
+                    win.lenis.start();
+                    win.lenis.scrollTo(0, { immediate: true });
+                  }
+                  window.scrollTo(0, 0);
+                }
               }
             },
           });
@@ -238,4 +333,4 @@ export function Preloader() {
       </div>
     </div>
   );
-}
+});

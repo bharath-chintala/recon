@@ -10,7 +10,7 @@ const PILLARS = [
     subtitle: 'Securing the Future',
     description: (
       <>
-        <strong className="font-extrabold text-royal">Safeguarding India's classical, folk, and tribal art forms.</strong> We create platforms for dance mentors, classical educators, and disciples to pass on living traditions to subsequent generations.
+        <strong className="font-extrabold text-royal">Safeguarding India&apos;s classical, folk, and tribal art forms.</strong> We create platforms for dance mentors, classical educators, and disciples to pass on living traditions to subsequent generations.
       </>
     ),
     icon: (
@@ -154,7 +154,7 @@ export function CorePillars() {
                 Our Enduring Motto
               </span>
               <h3 className="font-cinzel text-2xl md:text-3xl font-light leading-tight text-soft-cream mb-3">
-                "Save Our Culture for the <span className="italic text-soft-cream font-semibold">Next Generation"</span>
+                &quot;Save Our Culture for the <span className="italic text-soft-cream font-semibold">Next Generation&quot;</span>
               </h3>
               <p className="text-[10px] text-soft-cream/60 uppercase tracking-widest font-semibold">
                 Recon International Charitable Trust

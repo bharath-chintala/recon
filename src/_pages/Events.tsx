@@ -192,21 +192,47 @@ const PROGRAM_DATA = [
   },
 ]
 
-const isSameImage = (url1: string | null | undefined, url2: string | null | undefined) => {
-  if (!url1 || !url2) return false
-  const u1 = decodeURIComponent(String(url1)).trim().toLowerCase()
-  const u2 = decodeURIComponent(String(url2)).trim().toLowerCase()
-  return u1 === u2
+interface DatabaseEvent {
+  id: string | number
+  title: string
+  category: string | null
+  image: string | null
+  description: string | null
+  created_at: string
+}
+
+interface ProgramItem {
+  title: string
+  desc: string
+  image: string
+  thumb: string
+  objectPosition?: string
+}
+
+interface ProgramSection {
+  title: string
+  description: string
+  image: string
+  items: ProgramItem[]
 }
 
 export default function Events() {
-  const [programData, setProgramData] = useState(PROGRAM_DATA)
+  const scrollToY = (y: number) => {
+    const lenis = typeof window !== 'undefined' ? (window as unknown as { lenis?: { scrollTo: (y: number, options?: { duration?: number }) => void } }).lenis : undefined
+    if (lenis?.scrollTo) {
+      lenis.scrollTo(y, { duration: 1.2 })
+    } else {
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
+  }
+
+  const [programData, setProgramData] = useState<ProgramSection[]>(PROGRAM_DATA as unknown as ProgramSection[])
   const [filter, setFilter] = useState(PROGRAM_DATA[0].title)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const hoveredIndexRef = useRef<number | null>(null)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [overrideMinHeight, setOverrideMinHeight] = useState<string | null>(null)
-  const filterTimeoutRef = useRef<any>(null)
+  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     hoveredIndexRef.current = hoveredIndex
@@ -247,7 +273,7 @@ export default function Events() {
   useEffect(() => {
     const loadEvents = async () => {
       const cacheKey = 'events_page_data'
-      const cached = getCachedData<any[]>(cacheKey)
+      const cached = getCachedData<DatabaseEvent[]>(cacheKey)
       if (cached) {
         processEvents(cached)
         return
@@ -258,7 +284,7 @@ export default function Events() {
           .from('events')
           .select('id, title, category, image, description, created_at')
           .order('created_at', { ascending: true })
-        return data || []
+        return (data || []) as DatabaseEvent[]
       }
 
       const data = await fetchWithCoalescing(cacheKey, fetcher)
@@ -268,14 +294,14 @@ export default function Events() {
       }
     }
 
-    const processEvents = (data: any[]) => {
+    const processEvents = (data: DatabaseEvent[]) => {
       const descriptionsMap: { [key: string]: string } = {
         'Humanitarian & Social Impact Initiatives': 'The Trust has consistently demonstrated a deep commitment to Social Responsibility, particularly in supporting underprivileged and visually impaired communities:',
         'Cultural Exchange & International Engagements': 'The Trust has a long-standing legacy of leading cultural delegations from Andhra Pradesh and Telangana to several international destinations in association with erstwhile Government of Andhra Pradesh and Government of Telangana:',
         'Trade Facilitation Expertise': 'Recon International, Hyderabad has represented Indian interests at several Global trade forums and exhibitions, including:'
       }
 
-      const groupedMap: { [key: string]: any[] } = {}
+      const groupedMap: { [key: string]: ProgramItem[] } = {}
       data.forEach(evt => {
         const cat = evt.category || 'Key Cultural & Spiritual Initiatives'
         if (!groupedMap[cat]) {
@@ -293,12 +319,12 @@ export default function Events() {
         });
 
         // Precompute thumbnail
-        let imageUrl = localImage || evt.image || '/images/events.webp';
-        let thumbUrl = imageUrl;
+        const imageUrl = localImage || evt.image || '/images/events.webp';
+        const thumbUrl = imageUrl;
 
         groupedMap[cat].push({
           title: evt.title,
-          desc: evt.description,
+          desc: evt.description || '',
           image: imageUrl,
           thumb: thumbUrl
         })
@@ -365,7 +391,6 @@ export default function Events() {
 
   const filteredData = programData.filter((s) => s.title === filter)
 
-  const [activeItemImage, setActiveItemImage] = useState<string | null>(null)
   const [activeItemIndex, setActiveItemIndex] = useState<number>(0)
   const effectiveActiveIndex = hoveredIndex !== null ? hoveredIndex : activeItemIndex
 
@@ -381,15 +406,12 @@ export default function Events() {
 
   const filteredItems = filteredData[0]?.items ?? []
 
-  useEffect(() => {
-    if (filteredItems.length > 0) {
-      setActiveItemImage(filteredItems[0].image)
-      setActiveItemIndex(0)
-      activeItemIndexRef.current = 0
-      cardsRef.current = []
-      mediaContainersRef.current = []
-    }
-  }, [filter, programData, filteredItems.length])
+  // Render-phase state adjustments to prevent synchronous cascade effects
+  const [prevFilter, setPrevFilter] = useState(filter)
+  if (filter !== prevFilter) {
+    setPrevFilter(filter)
+    setActiveItemIndex(0)
+  }
 
   useEffect(() => {
     activeItemIndexRef.current = activeItemIndex
@@ -402,7 +424,7 @@ export default function Events() {
 
     containers.forEach((container, idx) => {
       if (!container) return
-      const isActive = activeItemIndex === idx
+      const isActive = effectiveActiveIndex === idx
 
       if (isActive) {
         gsap.killTweensOf(container)
@@ -428,21 +450,7 @@ export default function Events() {
         })
       }
     })
-  }, [activeItemIndex])
-
-  const categoryImage = filteredData[0]?.image ?? '/images/events.webp'
-  const firstItemImage = filteredData[0]?.items[0]?.image ?? categoryImage
-  const activeImage =
-    filteredItems[effectiveActiveIndex]?.image || activeItemImage || firstItemImage || categoryImage || '/images/events.webp'
-
-  const scrollToY = (y: number) => {
-    const lenis = typeof window !== 'undefined' ? (window as any).lenis : undefined
-    if (lenis?.scrollTo) {
-      lenis.scrollTo(y, { duration: 1.2 })
-    } else {
-      window.scrollTo({ top: y, behavior: 'smooth' })
-    }
-  }
+  }, [effectiveActiveIndex])
 
   const handleFilterClick = (newFilter: string) => {
     if (filterTimeoutRef.current) {
@@ -510,8 +518,8 @@ export default function Events() {
     })
 
     // Legacy Text Reveal
-    const legacyElements = gsap.utils.toArray('.legacy-reveal')
-    legacyElements.forEach((el: any, i) => {
+    const legacyElements = gsap.utils.toArray<HTMLElement>('.legacy-reveal')
+    legacyElements.forEach((el) => {
       gsap.fromTo(el,
         { opacity: 0, y: 50 },
         {
@@ -582,7 +590,6 @@ export default function Events() {
               const item = filteredItems[nearestIndex]
               if (item) {
                 setActiveItemIndex(nearestIndex)
-                if (hoveredIndexRef.current === null) setActiveItemImage(item.image)
               }
             }
           }
@@ -635,7 +642,6 @@ export default function Events() {
   const scaleText = useTransform(scrollYProgress, [0, 1], [1, 10])
   const scaleBg = useTransform(scrollYProgress, [0, 1], [1, 1.25])
   const opacityText = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0, 0])
-  const opacityHero = useTransform(scrollYProgress, [0, 0.8, 1], [1, 1, 0])
   const blurBg = useTransform(scrollYProgress, [0, 1], ["blur(0px)", "blur(10px)"])
 
   const splitScrollHeight = `${Math.max(filteredItems.length, 2) * 40}vh`
@@ -708,7 +714,7 @@ export default function Events() {
             viewport={{ once: true, margin: "-50px" }}
             className="flex items-center gap-3 overflow-x-auto no-scrollbar py-4"
           >
-            {programData.map((section, i) => {
+            {programData.map((section) => {
               const isActive = filter === section.title
               return (
                 <motion.button
@@ -793,7 +799,7 @@ export default function Events() {
                 }}
               >
                 {filteredItems.map((item, index) => {
-                  const isInitialActive = activeItemIndex === index
+                  const isInitialActive = effectiveActiveIndex === index
                   return (
                     <div
                       key={item.title}
@@ -941,7 +947,7 @@ export default function Events() {
   )
 }
 
-const MobileCarousel = ({ items }: { items: any[] }) => {
+const MobileCarousel = ({ items }: { items: ProgramItem[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1009,7 +1015,7 @@ const MobileCarousel = ({ items }: { items: any[] }) => {
   );
 };
 
-const TabletCarousel = ({ items }: { items: any[] }) => {
+const TabletCarousel = ({ items }: { items: ProgramItem[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 

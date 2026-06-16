@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface Particle {
   x: number
@@ -27,8 +27,8 @@ export function ParticleField({
   const particlesRef = useRef<Particle[]>([])
   const animRef = useRef<number>(0)
 
-  const particles = useMemo<Particle[]>(() => {
-    return Array.from({ length: count }, () => ({
+  useEffect(() => {
+    particlesRef.current = Array.from({ length: count }, () => ({
       x: Math.random(),
       y: Math.random(),
       vx: (Math.random() - 0.5) * 0.0003,
@@ -38,10 +38,6 @@ export function ParticleField({
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
     }))
   }, [count])
-
-  useEffect(() => {
-    particlesRef.current = particles.map((p) => ({ ...p }))
-  }, [particles])
 
   useEffect(() => {
     let mounted = true

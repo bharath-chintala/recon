@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -32,7 +31,7 @@ export default function LoginPage() {
       } else {
         setError('Login failed')
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)

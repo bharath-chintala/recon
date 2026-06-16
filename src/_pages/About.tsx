@@ -5,11 +5,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { trustMembers } from '@/data/content'
-import { Counter } from '@/components/ui/Counter'
 import {
   fadeInUp,
-  slideInLeft,
-  slideInRight,
   stagger,
   viewportOnce,
 } from '@/animations/variants'

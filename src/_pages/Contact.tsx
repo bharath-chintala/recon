@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
-import { fadeInUp, slideInLeft, slideInRight, stagger, viewportOnce } from '@/animations/variants'
+import { fadeInUp, slideInLeft, slideInRight, viewportOnce } from '@/animations/variants'
 
 const CONTACT_REASONS = [
   'General Enquiry',
@@ -46,7 +46,7 @@ export default function Contact() {
             Get In Touch
           </motion.h1>
           <motion.p variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-6 max-w-xl mx-auto text-lg text-[#8a9bb5]">
-            Whether you're a Government, Foundation, Cultural Institution, or individual — we'd love to hear from you.
+            Whether you&apos;re a Government, Foundation, Cultural Institution, or individual — we&apos;d love to hear from you.
           </motion.p>
         </div>
       </section>
@@ -63,7 +63,7 @@ export default function Contact() {
               viewport={viewportOnce}
             >
               <h2 className="mb-6 font-serif text-3xl font-bold text-[#1a2d47]">
-                Let's Build Something Together
+                Let&apos;s Build Something Together
               </h2>
               <p className="mb-10 text-[#5a7394] leading-relaxed text-lg">
                 Our team typically responds within two business days. For urgent enquiries or press requests, please call our Hyderabad office directly.

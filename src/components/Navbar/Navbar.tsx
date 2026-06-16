@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
-import { motion, useScroll } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { MegaMenu } from './MegaMenu'
 import { MobileMenu } from './MobileMenu'
 
@@ -36,7 +36,6 @@ export function Navbar() {
   const [aboutOpen, setAboutOpen] = useState(false)
   const [inHero, setInHero] = useState(true)
   const pathname = usePathname()
-  const { scrollY } = useScroll()
 
   const shouldHide = pathname?.startsWith('/dashboard') || pathname?.startsWith('/login')
 
@@ -59,9 +58,11 @@ export function Navbar() {
   }, [pathname])
 
   // Close mobile menu on route change
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
     setMobileOpen(false)
-  }, [pathname])
+  }
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -98,8 +99,7 @@ export function Navbar() {
                 }`}
             />
             <div className="flex flex-col leading-none font-logo">
-              <span className={`text-[17px] font-extrabold uppercase tracking-wide transition-colors ${isTransparent ? 'text-white group-hover:text-white/80' : 'text-royal group-hover:text-[#17A3FF]'
-                }`}>
+              <span className="text-[17px] font-extrabold uppercase tracking-wide text-[#00a6e6] transition-colors group-hover:text-[#00a6e6]/80">
                 recon
               </span>
               <span className={`text-[12px] font-bold uppercase tracking-[0.18em] mt-0.5 transition-colors ${isTransparent ? 'text-white/80' : 'text-royal'

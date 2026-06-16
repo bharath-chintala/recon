@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Pencil, Trash2, LogOut, X, Loader2, LayoutGrid, Eye, Upload } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import imageCompression from 'browser-image-compression'
-import { fetchWithCoalescing, getCachedData, setCachedData, clearCachedData } from '@/lib/cache'
+import { clearCachedData } from '@/lib/cache'
 import { SEED_DATA } from '@/data/seed-events'
 
 interface Event {
@@ -95,9 +95,10 @@ export default function Dashboard() {
       const { data: { publicUrl } } = supabase.storage.from('event-images').getPublicUrl(fullPath)
       setImage(publicUrl)
       setCompressing(false)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Image upload error:', err)
-      alert(`Failed to upload image: ${err.message || err}`)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Failed to upload image: ${msg}`)
       setCompressing(false)
     }
   }
@@ -108,7 +109,7 @@ export default function Dashboard() {
 
   const fetchEvents = async (pageNum = 0, append = false) => {
     if (!append) setLoading(true)
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('events')
       .select('*')
       .order('created_at', { ascending: true })
@@ -150,7 +151,7 @@ export default function Dashboard() {
       }
     }
     checkAuth()
-  }, [])
+  }, [router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -228,9 +229,10 @@ export default function Dashboard() {
       clearCachedData('events_page_data')
 
       closeModal()
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error saving past event:', err)
-      alert(`Failed to save event: ${err.message || err}`)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Failed to save event: ${msg}`)
     } finally {
       setSaving(false)
     }
@@ -250,9 +252,10 @@ export default function Dashboard() {
         
         // Invalidate memory cache immediately on successful database deletion
         clearCachedData('events_page_data')
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error deleting past event:', err)
-        alert(`Failed to delete event: ${err.message || err}`)
+        const msg = err instanceof Error ? err.message : String(err)
+        alert(`Failed to delete event: ${msg}`)
       }
     }
   }
@@ -272,9 +275,10 @@ export default function Dashboard() {
 
         await fetchEvents()
         alert('Events imported successfully!')
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error importing past events:', err)
-        alert(`An error occurred during import: ${err.message || err}`)
+        const msg = err instanceof Error ? err.message : String(err)
+        alert(`An error occurred during import: ${msg}`)
       } finally {
         setImporting(false)
       }

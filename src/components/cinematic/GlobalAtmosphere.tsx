@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import { useGSAP } from '@gsap/react'
 import { remap, smoothstep } from '@/lib/cinematic'
 
@@ -148,12 +148,17 @@ export function GlobalAtmosphere() {
 
         const hue = 38 + p.warm * warmth * 28 + (1 - warmth) * (200 + p.warm * 20)
         const alpha = p.a * (0.6 + warmth * 0.8 + breath * 0.15)
-        const grd = ctx.createRadialGradient(p.x * w, p.y * h, 0, p.x * w, p.y * h, p.r * 5)
-        grd.addColorStop(0, `hsla(${hue},75%,72%,${alpha})`)
-        grd.addColorStop(1, `hsla(${hue},60%,60%,0)`)
+
+        // Outer aura
         ctx.beginPath()
-        ctx.arc(p.x * w, p.y * h, p.r * 5, 0, Math.PI * 2)
-        ctx.fillStyle = grd
+        ctx.arc(p.x * w, p.y * h, p.r * 4, 0, Math.PI * 2)
+        ctx.fillStyle = `hsla(${hue},60%,60%,${alpha * 0.15})`
+        ctx.fill()
+
+        // Inner core
+        ctx.beginPath()
+        ctx.arc(p.x * w, p.y * h, p.r * 1.5, 0, Math.PI * 2)
+        ctx.fillStyle = `hsla(${hue},75%,72%,${alpha * 0.6})`
         ctx.fill()
       })
 

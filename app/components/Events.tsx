@@ -53,6 +53,13 @@ const PROGRAM_DATA: EventSection[] = [
 
 const FALLBACK_IMAGE = '/images/events.webp'
 
+type SupabaseEventRow = {
+  title: string
+  category: string | null
+  image: string | null
+  description: string | null
+}
+
 export default function Events() {
   const [programData, setProgramData] = useState<EventSection[]>(PROGRAM_DATA)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -77,7 +84,7 @@ export default function Events() {
 
     const loadEvents = async () => {
       const cacheKey = 'events_page_data'
-      const cached = getCachedData<any[]>(cacheKey)
+      const cached = getCachedData<SupabaseEventRow[]>(cacheKey)
       if (cached && !cancelled) {
         hydrateFromSupabase(cached)
         return
@@ -88,7 +95,7 @@ export default function Events() {
           .from('events')
           .select('title, category, image, description, created_at')
           .order('created_at', { ascending: true })
-        return data || []
+        return (data || []) as SupabaseEventRow[]
       }
 
       const data = await fetchWithCoalescing(cacheKey, fetcher)
@@ -98,7 +105,7 @@ export default function Events() {
       }
     }
 
-    const hydrateFromSupabase = (rows: any[]) => {
+    const hydrateFromSupabase = (rows: SupabaseEventRow[]) => {
       const grouped: Record<string, EventItem[]> = {}
       for (const row of rows) {
         const category = row.category || 'Key Cultural & Spiritual Initiatives'

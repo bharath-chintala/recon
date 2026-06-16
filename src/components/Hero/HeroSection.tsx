@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useRef, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { fadeInUp, blurIn, stagger } from '@/animations/variants'
@@ -68,7 +68,7 @@ interface FogLayer {
 export function HeroSection() {
   console.count('HeroSection Render')
 
-  // ── DOM refs ────────────────────────────────────────────────────────────────
+  // ── DOM refs ──────────────────────────────────────────
   const wrapperRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
   const frameCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -77,9 +77,9 @@ export function HeroSection() {
   const raysCanvasRef = useRef<HTMLCanvasElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
-  const vignetteRef = useRef<HTMLDivElement>(null)
-  const textWrapRef = useRef<HTMLDivElement>(null)
   const heroCopyRef = useRef<HTMLDivElement>(null)
+  const textWrapRef = useRef<HTMLDivElement>(null)
+  const vignetteRef = useRef<HTMLDivElement>(null)
 
   // ── State refs ──────────────────────────────────────────────────────────────
   const imagesRef = useRef<HTMLImageElement[]>([])
@@ -94,6 +94,19 @@ export function HeroSection() {
   const loadedRef = useRef(0)
   const framesReadyRef = useRef(false)
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
+  const isInViewRef = useRef(true)
+
+  // ── Offscreen canvas refs for caching fog & god rays ───────────────────────
+  const fogOffscreenCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const fogOffscreenCtxRef = useRef<CanvasRenderingContext2D | null>(null)
+  const raysOffscreenCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const raysOffscreenCtxRef = useRef<CanvasRenderingContext2D | null>(null)
+
+  // ── Redundant frame rendering guards ────────────────────────────────────────
+  const lastFramePosRef = useRef(-1)
+  const lastZoomRef = useRef(-1)
+  const lastPanYRef = useRef(-1)
+  const lastDprRef = useRef(-1)
 
   // ── Pre-cache canvas contexts (avoid repeated getContext calls) ─────────────
   const frameCtxRef = useRef<CanvasRenderingContext2D | null>(null)
@@ -101,11 +114,11 @@ export function HeroSection() {
   const fogCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   const raysCtxRef = useRef<CanvasRenderingContext2D | null>(null)
 
-
-
-  // ─── Init particles ──────────────────────────────────────────────────────────
+  // ─── Init particles with adaptive counts based on window size ───────────────
   const initParticles = useCallback(() => {
-    dustRef.current = Array.from({ length: 90 }, () => ({
+    const w = typeof window !== 'undefined' ? window.innerWidth : 1024
+    const count = w >= 1024 ? 60 : w >= 768 ? 40 : 20
+    dustRef.current = Array.from({ length: count }, () => ({
       x: Math.random(),
       y: Math.random(),
       vx: (Math.random() - 0.5) * 0.00009,
@@ -168,6 +181,27 @@ export function HeroSection() {
     const idxB = Math.min(idxA + 1, TOTAL_FRAMES - 1)
     const blend = framePos - idxA
 
+    // Slow cinematic zoom: 1.0 at start → 1.15 at end
+    const zoom = 1 + prog * 0.15
+
+    // Subtle vertical parallax: images drift up slightly as camera "orbits"
+    const panY = prog * -h * 0.04
+
+    // Render Guard: skip drawing entirely if parameters are unchanged
+    if (
+      framePos === lastFramePosRef.current &&
+      zoom === lastZoomRef.current &&
+      panY === lastPanYRef.current &&
+      dprRef.current === lastDprRef.current
+    ) {
+      return
+    }
+
+    lastFramePosRef.current = framePos
+    lastZoomRef.current = zoom
+    lastPanYRef.current = panY
+    lastDprRef.current = dprRef.current
+
     let imgA = imagesRef.current[idxA]
     let imgB = imagesRef.current[idxB]
 
@@ -210,12 +244,6 @@ export function HeroSection() {
       }
     }
 
-    // Slow cinematic zoom: 1.0 at start → 1.15 at end
-    const zoom = 1 + prog * 0.15
-
-    // Subtle vertical parallax: images drift up slightly as camera "orbits"
-    const panY = prog * -h * 0.04
-
     // Never clear to transparent — that flashes the page background during crossfade
     if (!aReady && !bReady) return
 
@@ -236,15 +264,21 @@ export function HeroSection() {
     ctx.globalAlpha = 1
   }, [drawImgCover])
 
-  // ─── Draw fog layers ──────────────────────────────────────────────────────
+  // ─── Draw fog layers with Cached Offscreen Scaling (Upscaled 4x for speed) ──
   const drawFog = useCallback((prog: number) => {
     const ctx = fogCtxRef.current
     const canvas = fogCanvasRef.current
-    if (!ctx || !canvas) return
+    const offscreenCtx = fogOffscreenCtxRef.current
+    const offscreenCanvas = fogOffscreenCanvasRef.current
+    if (!ctx || !canvas || !offscreenCtx || !offscreenCanvas) return
 
     const w = canvas.width / dprRef.current
     const h = canvas.height / dprRef.current
     ctx.clearRect(0, 0, w, h)
+
+    const offW = offscreenCanvas.width / (dprRef.current / 4)
+    const offH = offscreenCanvas.height / (dprRef.current / 4)
+    offscreenCtx.clearRect(0, 0, offW, offH)
 
     // Fog intensifies through mid-scroll (peaks at 0.5, eases at end)
     const fogMult = prog < 0.5
@@ -257,23 +291,29 @@ export function HeroSection() {
       if (f.x > 1.3) f.x = -0.3
       if (f.x < -0.3) f.x = 1.3
 
-      const grd = ctx.createRadialGradient(
-        f.x * w, f.y * h, 0,
-        f.x * w, f.y * h, f.w * w,
+      const grd = offscreenCtx.createRadialGradient(
+        f.x * offW, f.y * offH, 0,
+        f.x * offW, f.y * offH, f.w * offW,
       )
       const a = f.alpha * fogMult
       grd.addColorStop(0, `hsla(${f.hue},35%,75%,${a})`)
       grd.addColorStop(0.5, `hsla(${f.hue},25%,65%,${a * 0.45})`)
       grd.addColorStop(1, `hsla(${f.hue},20%,60%,0)`)
 
-      ctx.beginPath()
-      ctx.ellipse(f.x * w, f.y * h, f.w * w, f.h * h, 0, 0, Math.PI * 2)
-      ctx.fillStyle = grd
-      ctx.fill()
+      offscreenCtx.beginPath()
+      offscreenCtx.ellipse(f.x * offW, f.y * offH, f.w * offW, f.h * offH, 0, 0, Math.PI * 2)
+      offscreenCtx.fillStyle = grd
+      offscreenCtx.fill()
     })
+
+    // Blit onto main canvas upscaled
+    ctx.save()
+    ctx.scale(4, 4)
+    ctx.drawImage(offscreenCanvas, 0, 0, w / 4, h / 4)
+    ctx.restore()
   }, [])
 
-  // ─── Draw golden particles ────────────────────────────────────────────────
+  // ─── Draw golden particles (with pre-allocated array / no new allocations) ──
   const drawParticles = useCallback((prog: number, t: number) => {
     const ctx = particleCtxRef.current
     const canvas = particleCanvasRef.current
@@ -309,70 +349,81 @@ export function HeroSection() {
       const size = p.radius * (1 + pProg * 1.4)
       const hue = 38 + p.hue + pProg * 12   // shifts more golden at end
 
-      const grd = ctx.createRadialGradient(
-        p.x * w, p.y * h, 0,
-        p.x * w, p.y * h, size * 4,
-      )
-      grd.addColorStop(0, `hsla(${hue},90%,75%,${finalAlpha})`)
-      grd.addColorStop(0.4, `hsla(${hue},80%,65%,${finalAlpha * 0.35})`)
-      grd.addColorStop(1, `hsla(${hue},70%,55%,0)`)
-
+      // Outer aura
       ctx.beginPath()
-      ctx.arc(p.x * w, p.y * h, size * 4, 0, Math.PI * 2)
-      ctx.fillStyle = grd
+      ctx.arc(p.x * w, p.y * h, size * 3, 0, Math.PI * 2)
+      ctx.fillStyle = `hsla(${hue},80%,65%,${finalAlpha * 0.15})`
+      ctx.fill()
+
+      // Inner core
+      ctx.beginPath()
+      ctx.arc(p.x * w, p.y * h, size, 0, Math.PI * 2)
+      ctx.fillStyle = `hsla(${hue},90%,75%,${finalAlpha * 0.6})`
       ctx.fill()
     })
   }, [])
 
-  // ─── Volumetric god rays ──────────────────────────────────────────────────
+  // ─── Volumetric god rays with Cached Offscreen Scaling & Adaptive Count ──────
   const drawRays = useCallback((prog: number, t: number) => {
     const ctx = raysCtxRef.current
     const canvas = raysCanvasRef.current
-    if (!ctx || !canvas) return
+    const offscreenCtx = raysOffscreenCtxRef.current
+    const offscreenCanvas = raysOffscreenCanvasRef.current
+    if (!ctx || !canvas || !offscreenCtx || !offscreenCanvas) return
 
     const w = canvas.width / dprRef.current
     const h = canvas.height / dprRef.current
     ctx.clearRect(0, 0, w, h)
 
+    const offW = offscreenCanvas.width / (dprRef.current / 2)
+    const offH = offscreenCanvas.height / (dprRef.current / 2)
+    offscreenCtx.clearRect(0, 0, offW, offH)
+
     const rayProg = remap(prog, 0.25, 0.95, 0, 1)
     if (rayProg <= 0) return
 
-    const cx = w * 0.5
-    const cy = h * 0.48
+    const cx = offW * 0.5
+    const cy = offH * 0.48
     const flicker = 0.85 + Math.sin(t * 1.2) * 0.08 + Math.sin(t * 2.3) * 0.04
-    const count = 7
+    
+    // Scale count: mobile (3), tablet (5), desktop (7)
+    const isMobile = w < 768
+    const isTablet = w >= 768 && w < 1024
+    const count = isMobile ? 3 : isTablet ? 5 : 7
 
     for (let i = 0; i < count; i++) {
       const angle = (-0.35 + (i / count) * 0.7) + Math.sin(t * 0.15 + i) * 0.02
-      const len = h * (0.55 + rayProg * 0.35)
+      const len = offH * (0.55 + rayProg * 0.35)
       const ex = cx + Math.sin(angle) * len
       const ey = cy - Math.cos(angle) * len * 0.9
 
-      const grd = ctx.createLinearGradient(cx, cy, ex, ey)
+      const grd = offscreenCtx.createLinearGradient(cx, cy, ex, ey)
       const a = (0.03 + rayProg * 0.09) * flicker * (0.7 + (i % 3) * 0.1)
       const warm = 38 + prog * 18
       grd.addColorStop(0, `hsla(${warm},85%,72%,${a * 1.4})`)
       grd.addColorStop(0.35, `hsla(${warm},70%,65%,${a * 0.5})`)
       grd.addColorStop(1, 'hsla(40,60%,60%,0)')
 
-      ctx.beginPath()
-      ctx.moveTo(cx, cy)
-      ctx.lineTo(ex - Math.cos(angle) * 40, ey + Math.sin(angle) * 40)
-      ctx.lineTo(ex + Math.cos(angle) * 40, ey - Math.sin(angle) * 40)
-      ctx.closePath()
-      ctx.fillStyle = grd
-      ctx.fill()
+      offscreenCtx.beginPath()
+      offscreenCtx.moveTo(cx, cy)
+      offscreenCtx.lineTo(ex - Math.cos(angle) * 20, ey + Math.sin(angle) * 20)
+      offscreenCtx.lineTo(ex + Math.cos(angle) * 20, ey - Math.sin(angle) * 20)
+      offscreenCtx.closePath()
+      offscreenCtx.fillStyle = grd
+      offscreenCtx.fill()
     }
+
+    ctx.save()
+    ctx.scale(2, 2)
+    ctx.drawImage(offscreenCanvas, 0, 0, w / 2, h / 2)
+    ctx.restore()
   }, [])
 
   // ─── Update CSS overlay layers ────────────────────────────────────────────
   const updateLayers = useCallback((prog: number) => {
-
     // ── Glow: blue mountain aura → warm saffron divine light ──
     if (glowRef.current) {
       const t = smoothstep(prog)
-      // Phase 1 (0-0.4): cool Himalayan blue aura
-      // Phase 2 (0.4-1): warm saffron/gold divine glow
       const phase = remap(prog, 0.35, 0.75, 0, 1)
       const r = Math.floor(40 + phase * 215)
       const g = Math.floor(90 + phase * 95)
@@ -390,7 +441,6 @@ export function HeroSection() {
       const topA = Math.max(0.42 - prog * 0.38, 0.04)
       const midA = Math.max(0.18 - prog * 0.12, 0.02)
       const botA = 0.30 + prog * 0.18
-      // Using smooth eased stops to eliminate horizontal contrast lines
       overlayRef.current.style.background =
         `linear-gradient(to bottom, rgba(3,8,22,${topA}) 0%, rgba(3,8,22,${topA * 0.6 + midA * 0.4}) 25%, rgba(3,8,22,${midA}) 50%, rgba(1.5,4,11,${midA * 0.5 + botA * 0.5}) 75%, rgba(0,0,0,${botA}) 100%)`
     }
@@ -424,7 +474,9 @@ export function HeroSection() {
   }, [])
 
   // ─── Main render loop ─────────────────────────────────────────────────────
-  const renderLoop = useCallback((ts: number) => {
+  const renderLoop = useCallback(function loop(ts: number) {
+    if (!isInViewRef.current) return
+    
     // Delta time for autonomous animation
     if (lastTsRef.current === 0) lastTsRef.current = ts
     const dt = Math.min((ts - lastTsRef.current) / 1000, 0.05) // cap at 50ms
@@ -432,7 +484,6 @@ export function HeroSection() {
     timeRef.current += dt
 
     // Smooth lerp toward scroll target
-    // Viewport-adaptive interpolation speed: snappy feedback on mobile/tablet (7.0) and cinematic glide on desktop (4.5)
     const isMobileOrTablet = typeof window !== 'undefined' && window.innerWidth < 1024
     const lerpSpeed = isMobileOrTablet ? 7.0 : 4.5
     const follow = 1 - Math.exp(-lerpSpeed * dt)
@@ -445,7 +496,6 @@ export function HeroSection() {
       smoothProg.current += diff * follow
     }
 
-    // Both frames AND overlays use the same smoothed progress — no raw jumps
     const prog = smoothProg.current
     const rawFrame = prog * (TOTAL_FRAMES - 1)
 
@@ -455,14 +505,39 @@ export function HeroSection() {
     drawRays(prog, timeRef.current)
     updateLayers(prog)
 
-    rafRef.current = requestAnimationFrame(renderLoop)
+    rafRef.current = requestAnimationFrame(loop)
   }, [drawFrames, drawFog, drawParticles, drawRays, updateLayers])
 
-  // ─── Resize all canvases ──────────────────────────────────────────────────
+  // ─── Loop state control based on visibility/focus ────────────────────────
+  const updateLoopState = useCallback(() => {
+    const isTabVisible = typeof document !== 'undefined' ? !document.hidden : true
+    const isWindowFocused = typeof document !== 'undefined' ? document.hasFocus() : true
+    const shouldAnimate = isInViewRef.current && isTabVisible && isWindowFocused
+
+    if (shouldAnimate) {
+      if (rafRef.current === 0) {
+        lastTsRef.current = 0
+        rafRef.current = requestAnimationFrame(renderLoop)
+      }
+    } else {
+      if (rafRef.current !== 0) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = 0
+      }
+    }
+  }, [renderLoop])
+
+  // ─── Resize all canvases (with offscreen caching setup) ─────────────────────
   const resizeAll = useCallback(() => {
     const w = window.innerWidth
     const h = window.innerHeight
-    dprRef.current = Math.min(window.devicePixelRatio || 1, 2)
+    
+    // Quality adjustment based on device type:
+    const isMobile = w < 768
+    const isTablet = w >= 768 && w < 1024
+    const maxDPR = isMobile ? 1 : isTablet ? 1.5 : 2
+    dprRef.current = Math.min(window.devicePixelRatio || 1, maxDPR)
+
     const canvases = [frameCanvasRef, particleCanvasRef, fogCanvasRef, raysCanvasRef]
     canvases.forEach((ref) => {
       const c = ref.current
@@ -484,10 +559,40 @@ export function HeroSection() {
     particleCtxRef.current = particleCanvasRef.current?.getContext('2d') ?? null
     fogCtxRef.current = fogCanvasRef.current?.getContext('2d') ?? null
     raysCtxRef.current = raysCanvasRef.current?.getContext('2d') ?? null
-      ;[frameCtxRef, particleCtxRef, fogCtxRef, raysCtxRef].forEach((r) => {
-        const ctx = r.current
-        if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
-      })
+    
+    ;[frameCtxRef, particleCtxRef, fogCtxRef, raysCtxRef].forEach((r) => {
+      const ctx = r.current
+      if (ctx) ctx.setTransform(dprRef.current, 0, 0, dprRef.current, 0, 0)
+    })
+
+    // Setup offscreen canvas for fog (downscaled 4x to save fill rate)
+    if (typeof document !== 'undefined') {
+      if (!fogOffscreenCanvasRef.current) {
+        fogOffscreenCanvasRef.current = document.createElement('canvas')
+      }
+      const fogOffscreen = fogOffscreenCanvasRef.current
+      fogOffscreen.width = Math.ceil(w * dprRef.current / 4)
+      fogOffscreen.height = Math.ceil(h * dprRef.current / 4)
+      const fogOffscreenCtx = fogOffscreen.getContext('2d')
+      if (fogOffscreenCtx) {
+        fogOffscreenCtx.setTransform(dprRef.current / 4, 0, 0, dprRef.current / 4, 0, 0)
+      }
+      fogOffscreenCtxRef.current = fogOffscreenCtx
+    }
+
+    // Setup offscreen canvas for god rays (downscaled 2x)
+    if (typeof document !== 'undefined') {
+      if (!raysOffscreenCanvasRef.current) {
+        raysOffscreenCanvasRef.current = document.createElement('canvas')
+      }
+      const raysOffscreen = raysOffscreenCanvasRef.current
+      raysOffscreen.width = Math.ceil(w * dprRef.current / 2)
+      raysOffscreen.height = Math.ceil(h * dprRef.current / 2)
+      const raysOffscreenCtx = raysOffscreen.getContext('2d')
+      if (raysOffscreenCtx) {
+        raysOffscreenCtx.setTransform(dprRef.current / 2, 0, 0, dprRef.current / 2, 0, 0)
+      }
+    }
   }, [])
 
   // ─── Preload frames (fully decoded before scroll) ─────────────────────────────
@@ -596,7 +701,17 @@ export function HeroSection() {
     const wrapper = wrapperRef.current
     if (!wrapper) return
 
-    const heroScroll = ScrollTrigger.create({
+    // Viewport IntersectionObserver to pause/resume the RAF render loop when scrolled away
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting
+        updateLoopState()
+      },
+      { threshold: 0.01 }
+    )
+    observer.observe(wrapper)
+
+    ScrollTrigger.create({
       trigger: wrapper,
       start: 'top top',
       end: '+=150%',
@@ -612,14 +727,29 @@ export function HeroSection() {
     const onResize = () => resizeAll()
     window.addEventListener('resize', onResize)
 
+    const onVisibilityChange = () => updateLoopState()
+    const onFocus = () => updateLoopState()
+    const onBlur = () => updateLoopState()
+
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    window.addEventListener('focus', onFocus)
+    window.addEventListener('blur', onBlur)
+
     return () => {
-      cancelAnimationFrame(rafRef.current)
+      observer.disconnect()
+      if (rafRef.current !== 0) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = 0
+      }
       window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      window.removeEventListener('focus', onFocus)
+      window.removeEventListener('blur', onBlur)
       // Reset refs
       lastTsRef.current = 0
       timeRef.current = 0
     }
-  }, { scope: wrapperRef, dependencies: [preloadFrames, initParticles, initFog, resizeAll, renderLoop] })
+  }, { scope: wrapperRef, dependencies: [preloadFrames, initParticles, initFog, resizeAll, renderLoop, updateLoopState] })
 
   // ──────────────────────────────────────────────────────────────────────────
   return (
