@@ -166,7 +166,7 @@ export default function UpcomingEvents() {
     if (!validateForm() || !selectedEvent) return
 
     setSubmitting(true)
-    const ticketId = `RI-${selectedEvent.id}-${Date.now().toString().slice(-6)}`
+    const ticketId = `RI-${Math.floor(100000 + Math.random() * 900000)}`
     
     const registrationData = {
       event_id: selectedEvent.id,

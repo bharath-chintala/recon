@@ -351,13 +351,15 @@ export default function UpcomingEventsDashboard() {
                 <p className="text-[10px] text-[#8bb8e8] uppercase tracking-wider">Visual CMS Editor</p>
               </div>
             </div>
-            {/* Top Navigation */}
             <nav className="hidden md:flex items-center gap-2 pl-6 ml-6 border-l border-white/10">
               <Link href="/dashboard" className="text-sm font-semibold text-[#8a9bb5] hover:text-white px-3 py-1.5 rounded-full transition-colors">
                 Past Events
               </Link>
               <Link href="/dashboard/upcoming" className="text-sm font-semibold text-white bg-white/10 px-3 py-1.5 rounded-full transition-colors">
                 Upcoming Events
+              </Link>
+              <Link href="/dashboard/registrations" className="text-sm font-semibold text-[#8a9bb5] hover:text-white px-3 py-1.5 rounded-full transition-colors">
+                Registrations
               </Link>
             </nav>
           </div>

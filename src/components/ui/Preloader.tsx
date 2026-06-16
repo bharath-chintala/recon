@@ -19,6 +19,7 @@ export const Preloader = React.memo(function Preloader() {
 
   const mountedRef = useRef(true);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const fallbackTimeoutRef = useRef<NodeJS.Timeout | number | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioBufferRef = useRef<AudioBuffer | null>(null);
@@ -54,8 +55,19 @@ export const Preloader = React.memo(function Preloader() {
           ctx.resume().catch(() => {});
         }
 
-        source.start(0);
+        const startOffset = 5; // Start the audio from the 5-second mark
+        source.loopStart = startOffset;
+        source.start(0, startOffset);
         isPlayStartedRef.current = true;
+
+        if (fallbackTimeoutRef.current) {
+          clearTimeout(fallbackTimeoutRef.current as any);
+          fallbackTimeoutRef.current = null;
+        }
+        if (timelineRef.current) {
+          timelineRef.current.play();
+        }
+
         removeInteractionListeners();
         console.log('[Preloader] Audio playing successfully via AudioBufferSourceNode.');
       } catch (err) {
@@ -66,6 +78,13 @@ export const Preloader = React.memo(function Preloader() {
     const fetchAndDecodeAudio = async () => {
       try {
         const response = await fetch('/images/aum.mp3');
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+          throw new Error('Server returned HTML instead of audio. Please make sure public/images/aum.mp3 is successfully uploaded to the hosted server.');
+        }
         const arrayBuffer = await response.arrayBuffer();
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
@@ -79,8 +98,7 @@ export const Preloader = React.memo(function Preloader() {
           if (hasInteractedRef.current || ctx.state === 'running') {
             startBufferPlayback();
           } else {
-            // Try starting, if it fails due to autoplay policy it will just be suspended
-            startBufferPlayback();
+            console.log('[Preloader] Autoplay is suspended. Waiting for user interaction.');
           }
         }
       } catch (err) {
@@ -92,15 +110,12 @@ export const Preloader = React.memo(function Preloader() {
       if (!hasInteractedRef.current) {
         hasInteractedRef.current = true;
         
-        // Resume AudioContext if it exists
+        // Resume AudioContext and start playback synchronously to preserve gesture token (critical for Safari/iOS)
         if (audioContextRef.current) {
           if (audioContextRef.current.state === 'suspended') {
-            audioContextRef.current.resume().then(() => {
-              startBufferPlayback();
-            }).catch(() => {});
-          } else {
-            startBufferPlayback();
+            audioContextRef.current.resume().catch(() => {});
           }
+          startBufferPlayback();
         } else {
           console.log('[Preloader] User interacted before audio decoded.');
         }
@@ -108,10 +123,10 @@ export const Preloader = React.memo(function Preloader() {
     };
 
     const addInteractionListeners = () => {
-      window.addEventListener('click', handleInteraction, { once: true });
-      window.addEventListener('keydown', handleInteraction, { once: true });
-      window.addEventListener('touchstart', handleInteraction, { once: true });
-      window.addEventListener('pointerup', handleInteraction, { once: true });
+      window.addEventListener('click', handleInteraction);
+      window.addEventListener('keydown', handleInteraction);
+      window.addEventListener('touchstart', handleInteraction);
+      window.addEventListener('pointerup', handleInteraction);
     };
 
     const removeInteractionListeners = () => {
@@ -125,8 +140,19 @@ export const Preloader = React.memo(function Preloader() {
     fetchAndDecodeAudio();
     addInteractionListeners();
 
+    // Safety fallback: after 3 seconds, start the loader progress timeline anyway if it hasn't been triggered yet
+    fallbackTimeoutRef.current = setTimeout(() => {
+      if (timelineRef.current && !isPlayStartedRef.current) {
+        console.log('[Preloader] User did not interact within 3s fallback. Starting loader.');
+        timelineRef.current.play();
+      }
+    }, 3000);
+
     return () => {
       removeInteractionListeners();
+      if (fallbackTimeoutRef.current) {
+        clearTimeout(fallbackTimeoutRef.current as any);
+      }
       if (sourceNodeRef.current) {
         try {
           sourceNodeRef.current.stop();
@@ -197,13 +223,14 @@ export const Preloader = React.memo(function Preloader() {
 
       if (!container || !logoContainer || !blueLogo || !progress || !ring) return
 
-      const DURATION = 5; // Run for exactly 5 seconds
+      const DURATION = 10; // Run for exactly 10 seconds
 
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
 
       const tl = gsap.timeline({
+        paused: true,
         onComplete: () => {
           container.style.pointerEvents = 'none';
 
@@ -214,6 +241,18 @@ export const Preloader = React.memo(function Preloader() {
               duration: 1,
               delay: 0.3,
               ease: 'power2.inOut',
+              onComplete: () => {
+                if (sourceNodeRef.current) {
+                  try {
+                    sourceNodeRef.current.stop();
+                  } catch (e) {}
+                  sourceNodeRef.current = null;
+                }
+                if (audioContextRef.current) {
+                  audioContextRef.current.close().catch(() => {});
+                  audioContextRef.current = null;
+                }
+              }
             });
           }
 

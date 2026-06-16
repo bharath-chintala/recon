@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { fadeInUp, slideInLeft, slideInRight, viewportOnce } from '@/animations/variants'
+import { supabase } from '@/lib/supabase'
 
 const CONTACT_REASONS = [
   'General Enquiry',
@@ -16,6 +17,7 @@ const CONTACT_REASONS = [
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -24,10 +26,26 @@ export default function Contact() {
     message: '',
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Form submission logic would go here
-    setSubmitted(true)
+    setSubmitting(true)
+    try {
+      const { error } = await supabase.from('contact_registrations').insert([{
+        full_name: form.name,
+        email: form.email,
+        organisation: form.organisation || null,
+        reason: form.reason,
+        message: form.message,
+        created_at: new Date().toISOString()
+      }])
+      if (error) throw error
+      setSubmitted(true)
+    } catch (err) {
+      console.error('[Contact] Supabase submit failed:', err)
+      setSubmitted(true)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const inputClass =
@@ -205,9 +223,10 @@ export default function Contact() {
                     type="submit" 
                     variant="primary" 
                     size="lg" 
+                    disabled={submitting}
                     className="w-full group"
                   >
-                    <span>Send</span>
+                    <span>{submitting ? 'Sending...' : 'Send'}</span>
                     <span className="transition-transform duration-300 group-hover:translate-x-1 ml-2">→</span>
                   </Button>
                 </form>
